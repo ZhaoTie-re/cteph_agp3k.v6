@@ -1,0 +1,1245 @@
+
+nextflow.enable.dsl = 2
+
+// -----------------------------------------------------------------------------
+// Parameters Configuration
+// -----------------------------------------------------------------------------
+params.vcf_dir                = '/LARGE1/gr10478/platform/JHRPv6/workspace/pipeline/output/VQSR.v6'
+params.out_dir                = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/wgs.auto.par/results'
+params.sif_dir                = '/home/b/b37974/simg'
+params.script_dir             = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/wgs.auto.par/scripts'
+params.sample_list            = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/info/cteph_agp3k.v6.ls'
+params.sample_info            = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/info/cteph_agp3k.v6.20260507.xlsx'
+params.cohort_prefix          = 'cteph_agp3k_v6_wgs'  // cohort identifier used as merged PLINK file prefix
+params.case_label             = 'CTEPH'               // display label for cases in plots/QC output
+params.ctrl_label             = 'AGP3K'               // display label for controls in plots/QC output
+params.nagasaki_pipeline_path = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/nagasaki_pipeline'
+params.fasta                  = "${params.nagasaki_pipeline_path}/data/hs38DH.fa"
+params.gatk_sif               = "${params.sif_dir}/gatk_latest.sif"
+params.bbj_raw_prefix         = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/BBJ_genome_b38/00.raw_data/NewOE13_Auto.id.b38'
+
+// -----------------------------------------------------------------------------
+// Sample Info Configuration
+// -----------------------------------------------------------------------------
+params.conda_env_activate     = 'cteph_geno_pro'
+params.sample_id_col          = 'ID_JHRPv6'
+params.phenotype_col          = 'Outcome'
+params.phenotype_case_value   = 'PH'
+params.phenotype_ctrl_value   = 'AGP3K'
+params.sex_col                = 'Sex'
+params.sex_female_value       = 'F'
+params.sex_male_value         = 'M'
+params.age_col                = 'Age_at_DNA_Collection'
+params.target_dp_col		  = 'Target_Depth'
+params.dp_col 			      = 'Observed_Depth'
+
+// -----------------------------------------------------------------------------
+// QC Configuration
+// -----------------------------------------------------------------------------
+params.sample_qc_config       = "${params.script_dir}/sample_qc_config.json"
+params.variant_qc_vmiss_config = "${params.script_dir}/vqc_config_vmiss.json"
+params.variant_qc_hwe_config   = "${params.script_dir}/vqc_config_hwe.json"
+params.high_ld_regions       = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/info/high-LD-regions-hg38-GRCh38_modified.txt'
+// true: in RUN_VARIANT_QC, exclude IIDs with SELECTED_FOR_REMOVAL=true from PI_HAT vertex-cover TSV for HWE calculations only (VMISS and AAF always use full samples)
+params.variant_qc_exclude_pihat_for_hwe = true
+
+// -----------------------------------------------------------------------------
+// BBJ Configuration
+// -----------------------------------------------------------------------------
+params.bbj_mind              = 0.01
+params.bbj_geno              = 0.01
+params.bbj_maf               = 0.05
+params.bbj_hwe               = 1e-6
+params.bbj_threads           = 16
+// Set bbj_use_external = true to reuse precomputed BBJ outputs from another project (e.g. v5).
+// The pipeline will run LINK_BBJ_FROM_EXTERNAL (local, fast) instead of PREPARE_BBJ_GENOTYPE (SLURM, 24h).
+// Signature is verified before linking; mismatches abort the run.
+// To rerun from scratch: set bbj_use_external = false and run without -resume.
+// To reuse a previous local run: set bbj_use_external = false and run with -resume.
+params.bbj_use_external         = true
+params.bbj_preprocess_reuse_dir = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v5/wgs.auto.par/results/09_bbj_preprocess/bbj_raw_qc_norm_plink'
+
+//-----------------------------------------------------------------------------
+// PopGMM Configuration & Separate MAF-based Subset Configuration
+//------------------------------------------------------------------------------
+params.popgmm = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/PopGMM_output'
+params.fixed_model_maf_group = 'ctrl'   // ctrl | case | all
+params.fixed_model_maf_threshold = 0.01
+
+// Resolve PopGMM keep-list inputs.
+// - If params.popgmm is a file: use that single file
+// - If params.popgmm is a directory: use all *fid_iid.txt files inside
+def resolvePopgmmKeepFiles(def popgmmParam) {
+	def target = new File(popgmmParam.toString())
+	if (!target.exists()) {
+		return []
+	}
+	if (target.isFile()) {
+		return [target]
+	}
+	def keepFiles = target.listFiles()?.findAll { f ->
+		f.isFile() && f.name.endsWith('fid_iid.txt')
+	} ?: []
+	return keepFiles.sort { a, b -> a.name <=> b.name }
+}
+
+def popgmmKeepIdFromFile(File keepFile) {
+	def stem = keepFile.name.replaceFirst(/\.fid_iid\.txt$/, '')
+	if (!stem) {
+		stem = keepFile.name
+	}
+	return stem.replaceAll(/[^A-Za-z0-9._-]/, '_')
+}
+
+// -----------------------------------------------------------------------------
+// Processes
+// -----------------------------------------------------------------------------
+
+process PREPARE_VCF {
+	executor 'slurm'
+	queue 'gr10478b'
+	time '36h'
+	tag "${chr}"
+
+	publishDir "${params.out_dir}/01_prepare_vcf", mode: 'symlink'
+
+	input:
+	val chr
+	path sample_list
+
+	output:
+	tuple val(chr), path("${chr}.selected.pass.norm_split.setid.vcf.gz"), path("${chr}.selected.pass.norm_split.setid.vcf.gz.tbi")
+
+	script:
+	// ---- Edit the line below to match your VCF filename convention ----
+	// Example: 'all.{chr}.vcf.gz' -> "${params.vcf_dir}/all.${chr}.vcf.gz"
+	def input_vcf = "${params.vcf_dir}/all.VQSR3.${chr}.vcf.gz"
+	def output_vcf = "${chr}.selected.pass.norm_split.setid.vcf.gz"
+
+	"""
+	# Step 1: Select target samples
+	# Step 2: Retain only PASS variants
+	# Step 3: Filter variants with MAC >= 1 (remove monomorphic sites, both all-ref and all-alt)
+	# Step 4: Normalize and split multiallelic variants
+	# Step 5: Remove spanning deletion alleles (where ALT is *)
+	# Step 6: Set variant IDs to CHROM:POS:REF:ALT format
+	bcftools view ${input_vcf} --threads 4 -S ${sample_list} --force-samples -Ou | \
+		bcftools view --threads 4 -f"PASS" -Ou | \
+		bcftools view --threads 4 --min-ac 1:minor -Ou | \
+		bcftools norm \
+			--multiallelics -any \
+			--fasta-ref ${params.fasta} \
+			--check-ref s \
+			--threads 4 \
+			-Ou | \
+		bcftools filter --threads 4 -e 'ALT="*"' -Ou | \
+		bcftools annotate --set-id '%CHROM:%POS:%REF:%ALT' -Oz -o ${output_vcf}
+
+	bcftools index --threads 4 -t ${output_vcf}
+	"""
+}
+
+process FILTER_VQC {
+	executor 'slurm'
+	queue 'gr10478b'
+	time '36h'
+	tag "${chr}"
+
+	publishDir "${params.out_dir}/02_filter_vqc", mode: 'symlink'
+
+	input:
+	tuple val(chr), path(vcf), path(vcf_tbi)
+
+	output:
+	tuple val(chr), path("${chr}.vqc.vcf.gz"), path("${chr}.vqc.vcf.gz.tbi")
+
+	script:
+	def filtered_vcf = "${chr}.vqc.vcf.gz"
+
+	"""
+	# Filter variants based on quality metrics:
+	# VQSLOD > 10: Variant Quality Score Log-Odds (confidence in variant call)
+	# MQ > 58.75: Mapping Quality (alignment quality of reads supporting the variant)
+	bcftools view ${vcf} --threads 4 -i 'VQSLOD > 10 & MQ > 58.75' -Oz -o ${filtered_vcf}
+	bcftools index --threads 4 -t ${filtered_vcf}
+	"""
+}
+
+process ANNOTATE_AF_NORM_GT {
+	executor 'slurm'
+	queue 'gr10478b'
+	time '36h'
+	tag "${chr}"
+
+	publishDir "${params.out_dir}/03_annotate_af_norm_gt", mode: 'symlink'
+
+	input:
+	tuple val(chr), path(vcf), path(vcf_tbi)
+
+	output:
+	tuple val(chr), path("${chr}.vqc.af.gtnorm.vcf.gz"), path("${chr}.vqc.af.gtnorm.vcf.gz.tbi")
+
+	script:
+	def tmp_vcf = "${chr}.vqc.af.tmp.vcf.gz"
+	def output_vcf = "${chr}.vqc.af.gtnorm.vcf.gz"
+
+	"""
+	# Step 1: Add AlleleFraction (old version: AlleleBalance) annotation using GATK VariantAnnotator
+	singularity exec \
+		--bind /LARGE0:/LARGE0 \
+		--bind /LARGE1:/LARGE1 \
+		${params.gatk_sif} gatk --java-options "-Xmx8G -XX:ParallelGCThreads=4" VariantAnnotator \
+		-R ${params.fasta} \
+		-V ${vcf} \
+		-O ${tmp_vcf} \
+		-A AlleleFraction \
+		--create-output-variant-index true
+
+	# Step 2: Unphase and sort all genotypes with bcftools +setGT
+	bcftools +setGT ${tmp_vcf} -Ou -- -t a -n u | bcftools view --threads 4 -Oz -o ${output_vcf}
+	bcftools index --threads 4 -t ${output_vcf}
+
+	# Clean up temp files
+	rm -f ${tmp_vcf}*
+	"""
+}
+
+process FILTER_GENOTYPE {
+	executor 'slurm'
+	queue 'gr10478b'
+	time '36h'
+	tag "${chr}"
+
+	publishDir "${params.out_dir}/04_filter_genotype", mode: 'symlink'
+
+	input:
+	tuple val(chr), path(vcf), path(tbi)
+
+	output:
+	tuple val(chr), path("${chr}.gt_qc.norm.vcf.gz"), path("${chr}.gt_qc.norm.vcf.gz.tbi")
+
+	script:
+	def tmp_vcf = "${chr}.gt_qc.tmp.vcf.gz"
+	def final_vcf = "${chr}.gt_qc.norm.vcf.gz"
+
+	"""
+	# Step 1: Normalization (sed nan -> NaN) and re-indexing
+	bcftools view ${vcf} --threads 4 | sed 's/nan/NaN/g' | bgzip > ${tmp_vcf}
+	bcftools index --threads 4 -t ${tmp_vcf}
+
+	# Step 2: GATK VariantFiltration for autosomes and PAR with unified thresholds
+	singularity exec \
+		--bind /LARGE0:/LARGE0 \
+		--bind /LARGE1:/LARGE1 \
+		${params.gatk_sif} gatk --java-options "-Xmx8G -XX:ParallelGCThreads=4" VariantFiltration \
+		-R ${params.fasta} \
+		-V ${tmp_vcf} \
+		-O ${final_vcf} \
+		--genotype-filter-name "LowGQ" \
+		--genotype-filter-expression "GQ < 20" \
+		--genotype-filter-name "LowDP" \
+		--genotype-filter-expression "DP < 8" \
+		--genotype-filter-name "ABB_outlier" \
+		--genotype-filter-expression "isHet == 1 && (AF < 0.2 || AF > 0.8)" \
+		--genotype-filter-name "ABB_NaN" \
+		--genotype-filter-expression "AF == 'NaN'" \
+		--set-filtered-genotype-to-no-call true \
+		--create-output-variant-index true
+
+	# Step 3: Delete tmp_vcf
+	rm -f ${tmp_vcf}*
+	"""
+}
+
+process VCF_TO_PLINK {
+	executor 'slurm'
+	queue 'gr10478b'
+	time '12h'
+	tag "${chr}"
+
+	publishDir "${params.out_dir}/05_vcf_to_plink", mode: 'symlink'
+
+	input:
+	tuple val(chr), path(vcf), path(tbi)
+
+	output:
+	path("${chr}.plink.bed"), emit: bed
+	path("${chr}.plink.bim"), emit: bim
+	path("${chr}.plink.fam"), emit: fam
+
+	script:
+	def mac_vcf = "${chr}.mac_filtered.vcf.gz"
+	def out_prefix = "${chr}.plink"
+	def update_tsv = "${chr}.plink.update.tsv"
+	def update_script = "${params.script_dir}/build_plink_update_table.py"
+	def split_par_opt = chr == 'PAR' ? '--split-par b38' : ''
+
+	"""
+	export PATH=/home/b/b37974/:\$PATH
+	source activate ${params.conda_env_activate}
+
+	# 1. Filter out MAC < 1 variants after GT filtering
+	bcftools view ${vcf} --threads 4 --min-ac 1:minor -Oz -o ${mac_vcf}
+
+	# 2. Build sex/pheno update table from sample_info.xlsx
+	python ${update_script} \
+		--xlsx ${params.sample_info} \
+		--out ${update_tsv} \
+		--sample-id-col "${params.sample_id_col}" \
+		--pheno-col "${params.phenotype_col}" \
+		--case-value "${params.phenotype_case_value}" \
+		--ctrl-value "${params.phenotype_ctrl_value}" \
+		--sex-col "${params.sex_col}" \
+		--female-value "${params.sex_female_value}" \
+		--male-value "${params.sex_male_value}"
+
+	# 3. Convert to PLINK format, update sex and phenotype in one step
+	plink2 \
+		--vcf ${mac_vcf} \
+		--double-id \
+		${split_par_opt} \
+		--update-sex ${update_tsv} \
+		--pheno ${update_tsv} \
+		--pheno-name PHENO \
+		--make-bed \
+		--out ${out_prefix} \
+		--threads 4
+
+	# Clean up temp files
+	rm -f ${mac_vcf} ${update_tsv}
+	"""
+}
+
+process MERGE_PLINK {
+	executor 'slurm'
+	queue 'gr10478b'
+	time '24h'
+
+	publishDir "${params.out_dir}/06_merged_plink", mode: 'symlink'
+
+	input:
+	path beds
+	path bims
+	path fams
+
+	output:
+	tuple path("${params.cohort_prefix}_merged.bed"), path("${params.cohort_prefix}_merged.bim"), path("${params.cohort_prefix}_merged.fam")
+
+	script:
+	def merged_name = "${params.cohort_prefix}_merged"
+	"""
+	export PATH=/home/b/b37974/:\$PATH
+
+	# Create merge list in chromosome order (chr1-22 only)
+	rm -f merge_list.txt
+	for i in {1..22}; do
+		if [ -f "chr\${i}.plink.bed" ]; then
+			echo "chr\${i}.plink" >> merge_list.txt
+		fi
+	done
+
+	# Merge using plink2
+	plink2 \
+		--pmerge-list merge_list.txt bfile \
+		--make-bed \
+		--out ${merged_name} \
+		--threads 4
+	"""
+}
+
+process BUILD_SAMPLE_QC_TABLE {
+	executor 'slurm'
+	queue 'gr10478b'
+	time '12h'
+
+	publishDir "${params.out_dir}/07_sample_qc/metrics", mode: 'symlink'
+
+	input:
+	tuple path(merged_bed), path(merged_bim), path(merged_fam)
+
+	output:
+	path("*.sample_qc_metrics.tsv")
+	path("${params.cohort_prefix}_merged.Fprune.prune.in")
+
+	script:
+	def merged_prefix = "${params.cohort_prefix}_merged"
+	def smiss_file = "${merged_prefix}.smiss"
+	def het_file = "${merged_prefix}.het"
+	def qc_table = "${merged_prefix}.sample_qc_metrics.tsv"
+	def qc_script = "${params.script_dir}/build_sample_qc_metrics_table.py"
+
+	"""
+	export PATH=/home/b/b37974/:\$PATH
+	source activate ${params.conda_env_activate}
+
+	# 1. Compute sample missingness from merged PLINK files
+	plink2 \
+		--bfile ${merged_prefix} \
+		--autosome \
+		--missing sample-only \
+		--out ${merged_prefix} \
+		--threads 8
+
+	# 2. Select variants for F calculation: remove high-LD regions and perform LD pruning (50 5 0.2)
+	plink2 \
+		--bfile ${merged_prefix} \
+		--autosome \
+		--snps-only just-acgt \
+		--maf 0.01 \
+		--geno 0.02 \
+		--hwe 1e-6 \
+		--exclude range ${params.high_ld_regions} \
+		--indep-pairwise 50 5 0.2 \
+		--out ${merged_prefix}.Fprune \
+		--threads 8
+
+	# 3. Compute per-sample heterozygosity coefficient (F) on pruned autosomal SNPs
+	plink2 \
+		--bfile ${merged_prefix} \
+		--extract ${merged_prefix}.Fprune.prune.in \
+		--autosome \
+		--het \
+		--out ${merged_prefix} \
+		--threads 8
+
+	# 4. Build sample-level QC metrics table
+	python ${qc_script} \
+		--xlsx ${params.sample_info} \
+		--fam ${merged_prefix}.fam \
+		--smiss ${smiss_file} \
+		--het ${het_file} \
+		--out ${qc_table} \
+		--sample-id-col "${params.sample_id_col}" \
+		--target-dp-col "${params.target_dp_col}" \
+		--dp-col "${params.dp_col}"
+	"""
+}
+
+process RUN_SAMPLE_QC_FROM_METRICS {
+	executor 'slurm'
+	queue 'gr10478b'
+	time '12h'
+
+	publishDir "${params.out_dir}/07_sample_qc/run_qc", mode: 'symlink'
+
+	input:
+	tuple path(merged_bed), path(merged_bim), path(merged_fam)
+	path sample_qc_metrics_tsv
+
+	output:
+	path("${params.cohort_prefix}_merged.sample_qc.detail.tsv")
+	path("${params.cohort_prefix}_merged.sample_qc.remove.id")
+	path("${params.cohort_prefix}_merged.sample_qc.keep.id")
+	path("${params.cohort_prefix}_merged.sample_qc.summary.json")
+	path("${params.cohort_prefix}_merged.sample_qc.summary.txt")
+	path("${params.cohort_prefix}_merged.sample_qc.png")
+	tuple path("${params.cohort_prefix}_merged.sample_qc.bed"), path("${params.cohort_prefix}_merged.sample_qc.bim"), path("${params.cohort_prefix}_merged.sample_qc.fam")
+
+	script:
+	def merged_prefix = "${params.cohort_prefix}_merged"
+	def qc_script = "${params.script_dir}/run_sample_qc.py"
+	def out_prefix = "${merged_prefix}.sample_qc"
+	def tmp_prefix = "${out_prefix}.tmp"
+
+	"""
+	export PATH=/home/b/b37974/:\$PATH
+	source activate ${params.conda_env_activate}
+
+	# 1. Apply sample QC rules to build remove/keep list and generate visualization
+	python ${qc_script} \
+		--metrics-tsv ${sample_qc_metrics_tsv} \
+		--config-json ${params.sample_qc_config} \
+		--out-prefix ${merged_prefix} \
+		--sample-info-xlsx ${params.sample_info} \
+		--sample-id-col "${params.sample_id_col}" \
+		--phenotype-col "${params.phenotype_col}" \
+		--case-value "${params.phenotype_case_value}" \
+		--ctrl-value "${params.phenotype_ctrl_value}" \
+		--case-label ${params.case_label}
+
+	# 2. Apply remove list to merged PLINK (sample-level QC)
+	plink2 \
+		--bfile ${merged_prefix} \
+		--remove ${merged_prefix}.sample_qc.remove.id \
+		--make-bed \
+		--out ${tmp_prefix} \
+		--threads 8
+
+	# 3. Remove monomorphic variants after sample removal
+	plink2 \
+		--bfile ${tmp_prefix} \
+		--mac 1 \
+		--make-bed \
+		--out ${out_prefix} \
+		--threads 8
+
+	# 4. Clean up temporary PLINK files
+	rm -f ${tmp_prefix}.bed ${tmp_prefix}.bim ${tmp_prefix}.fam ${tmp_prefix}.log ${tmp_prefix}.nosex
+	"""
+}
+
+process RUN_PIHAT_QC {
+	executor 'slurm'
+	queue 'gr10478b'
+	time '12h'
+
+	publishDir "${params.out_dir}/08_pi_hat_qc", mode: 'symlink'
+
+	input:
+	// Genotypes after sample-level QC from RUN_SAMPLE_QC_FROM_METRICS
+	tuple path(qc_bed), path(qc_bim), path(qc_fam)
+	// Pruned SNP list (Fprune.prune.in) used for PI_HAT calculation
+	path prune_in
+	// Sample-level QC metrics table providing SMISS etc.
+	path sample_qc_metrics_tsv
+
+	output:
+	// High-PI_HAT pairs table
+	path "*.pi_hat.pairs.tsv"
+	// Per-sample vertex-cover annotation table
+	path "*.pi_hat.vertex_cover_samples.tsv"
+	// Human-readable log describing the strategy
+	path "*.pi_hat.log.txt"
+	// Network visualization (PNG)
+	path "*.pi_hat.network.png"
+
+	script:
+	def bed_prefix = qc_bed.baseName
+	def genome_prefix = "${bed_prefix}.pi_hat_genome"
+	def qc_script = "${params.script_dir}/run_pihat_network_qc.py"
+
+	"""
+	export PATH=/home/b/b37974/:\$PATH
+	source activate ${params.conda_env_activate}
+
+	# 1. Compute pairwise PI_HAT using plink (not plink2),
+	#    restricted to LD-pruned autosomal SNPs from BUILD_SAMPLE_QC_TABLE (Fprune.prune.in)
+	plink \
+		--bfile ${bed_prefix} \
+		--extract ${prune_in} \
+		--genome \
+		--out ${genome_prefix} \
+		--threads 8
+
+	# 2. Build kinship network and weighted vertex cover summary
+	python ${qc_script} \
+		--genome ${genome_prefix}.genome \
+		--metrics-tsv ${sample_qc_metrics_tsv} \
+		--sample-info-xlsx ${params.sample_info} \
+		--sample-id-col "${params.sample_id_col}" \
+		--phenotype-col "${params.phenotype_col}" \
+		--case-value "${params.phenotype_case_value}" \
+		--ctrl-value "${params.phenotype_ctrl_value}" \
+		--pi-hat-threshold 0.20 \
+		--out-prefix ${bed_prefix}.pi_hat
+	"""
+}
+
+process LINK_BBJ_FROM_EXTERNAL {
+	// Lightweight local process: verify parameter signature and symlink BBJ outputs
+	// from an external project directory (e.g. v5 results).
+	// Use when bbj_use_external = true.  No SLURM job needed.
+	executor 'local'
+
+	publishDir "${params.out_dir}/09_bbj_preprocess/bbj_raw_qc_norm_plink", mode: 'symlink'
+
+	output:
+	tuple path("bbj.b38.auto.prep.bed"), path("bbj.b38.auto.prep.bim"), path("bbj.b38.auto.prep.fam")
+	path("bbj.b38.auto.prep.setid.vcf.gz")
+	path("bbj.b38.auto.prep.setid.vcf.gz.tbi")
+	path("bbj.preprocess.signature.txt")
+
+	script:
+	def src = params.bbj_preprocess_reuse_dir
+	"""
+	hwe_plain=\$(python3 -c "from decimal import Decimal; print(format(Decimal('${params.bbj_hwe}'), 'f').rstrip('0').rstrip('.'))")
+	expected="mind=${params.bbj_mind}|geno=${params.bbj_geno}|maf=${params.bbj_maf}|hwe=\${hwe_plain}"
+	actual=\$(cat "${src}/bbj.preprocess.signature.txt" 2>/dev/null || true)
+	if [ "\${expected}" != "\${actual}" ]; then
+		echo "[ERROR] BBJ signature mismatch."
+		echo "  Expected : \${expected}"
+		echo "  Found    : \${actual}"
+		echo "  Source   : ${src}/bbj.preprocess.signature.txt"
+		exit 1
+	fi
+	ln -sf "${src}/bbj.b38.auto.prep.bed"           bbj.b38.auto.prep.bed
+	ln -sf "${src}/bbj.b38.auto.prep.bim"           bbj.b38.auto.prep.bim
+	ln -sf "${src}/bbj.b38.auto.prep.fam"           bbj.b38.auto.prep.fam
+	ln -sf "${src}/bbj.b38.auto.prep.setid.vcf.gz"     bbj.b38.auto.prep.setid.vcf.gz
+	ln -sf "${src}/bbj.b38.auto.prep.setid.vcf.gz.tbi" bbj.b38.auto.prep.setid.vcf.gz.tbi
+	ln -sf "${src}/bbj.preprocess.signature.txt"    bbj.preprocess.signature.txt
+	"""
+}
+
+process PREPARE_BBJ_GENOTYPE {
+	// Full BBJ preprocessing pipeline: missingness, MAF, HWE filtering + normalization.
+	// Runs on SLURM.  Use when bbj_use_external = false.
+	// - First run              : set bbj_use_external = false (no -resume)
+	// - Reuse previous local run: set bbj_use_external = false and add -resume
+	executor 'slurm'
+	queue 'gr10478b'
+	time '24h'
+
+	publishDir "${params.out_dir}/09_bbj_preprocess/bbj_raw_qc_norm_plink", mode: 'symlink'
+
+	input:
+	tuple path(raw_bed), path(raw_bim), path(raw_fam)
+
+	output:
+	tuple path("bbj.b38.auto.prep.bed"), path("bbj.b38.auto.prep.bim"), path("bbj.b38.auto.prep.fam")
+	path("bbj.b38.auto.prep.setid.vcf.gz")
+	path("bbj.b38.auto.prep.setid.vcf.gz.tbi")
+	path("bbj.preprocess.signature.txt")
+
+	script:
+	def raw_prefix = raw_bed.baseName
+	def bbj_script = "${params.script_dir}/prepare_bbj_genotype.sh"
+	"""
+	export PATH=/home/b/b37974/:\$PATH
+	source activate ${params.conda_env_activate}
+
+	hwe_plain=\$(python3 -c "from decimal import Decimal; print(format(Decimal('${params.bbj_hwe}'), 'f').rstrip('0').rstrip('.'))")
+	echo "[\$(date)] Running BBJ preprocessing script..."
+	zsh ${bbj_script} \
+		${raw_prefix} \
+		${params.fasta} \
+		${params.bbj_mind} \
+		${params.bbj_geno} \
+		${params.bbj_maf} \
+		\${hwe_plain} \
+		${params.bbj_threads}
+
+	echo "mind=${params.bbj_mind}|geno=${params.bbj_geno}|maf=${params.bbj_maf}|hwe=\${hwe_plain}" > bbj.preprocess.signature.txt
+	"""
+}
+process RUN_VARIANT_QC {
+	executor 'slurm'
+	queue 'gr10478b'
+	time '24h'
+
+	publishDir "${params.out_dir}/10_variant_qc", mode: 'symlink'
+
+	input:
+	tuple path(qc_bed), path(qc_bim), path(qc_fam)
+	path pihat_vertex_cover_tsv
+
+	output:
+	path("*.variant_qc_summary.tsv")
+	path("*.vmiss_pass_variants.tsv")
+	path("*.hwe_pass_variants.tsv")
+	path("*.pass_variants.tsv")
+	tuple path("*.variant_qc.bed"), path("*.variant_qc.bim"), path("*.variant_qc.fam")
+	path("*.vmiss.*.png")
+	path("*.hwe.png")
+
+	script:
+	def bed_prefix = qc_bed.baseName
+	def output_prefix = "${bed_prefix}.variant_qc"
+	def variant_qc_script = "${params.script_dir}/variant_qc_pipeline.py"
+	def pihat_exclude_arg = params.variant_qc_exclude_pihat_for_hwe ? "--pihat-vertex-cover-tsv-for-hwe ${pihat_vertex_cover_tsv}" : ""
+	"""
+	export PATH=/home/b/b37974/:\$PATH
+	source activate ${params.conda_env_activate}
+
+	python ${variant_qc_script} \
+		--bed-prefix ${bed_prefix} \
+		--out-prefix ${output_prefix} \
+		--sample-info-xlsx ${params.sample_info} \
+		--sample-id-col "${params.sample_id_col}" \
+		--target-dp-col "${params.target_dp_col}" \
+		--phenotype-col "${params.phenotype_col}" \
+		--case-value "${params.phenotype_case_value}" \
+		--ctrl-value "${params.phenotype_ctrl_value}" \
+		--vmiss-config ${params.variant_qc_vmiss_config} \
+		--vmiss-mode dp \
+		--maf-group ctrl \
+		--hwe-config ${params.variant_qc_hwe_config} \
+		--script-path ${params.script_dir} \
+		--tmpdir "${output_prefix}_tmp" \
+		--threads 16 \
+		${pihat_exclude_arg} \
+		--no-stratify-by-maf
+	"""
+}
+
+
+process PREPARE_BBJ_PCA_BASE {
+	executor 'slurm'
+	queue 'gr10478b'
+	time '24h'
+
+	publishDir "${params.out_dir}/09_bbj_preprocess/bbj_pca_base", mode: 'symlink'
+
+	input:
+	// BBJ reference genotype after preprocessing
+	tuple path(bbj_bed), path(bbj_bim), path(bbj_fam)
+	// Case-control genotype after variant QC
+	tuple path(vqc_bed), path(vqc_bim), path(vqc_fam)
+
+	output:
+	// Keep outputs as separate channels to maximize resume compatibility.
+	path("bbj.pca.intersect.snps")
+	path("bbj.pca_base.eigenvec")
+	path("bbj.pca_base.eigenval")
+	path("bbj.pca_base.eigenvec.allele")
+	path("bbj.pca_base.acount")
+
+	script:
+	def bbj_prefix = bbj_bed.baseName
+	def vqc_prefix = vqc_bed.baseName
+	"""
+	export PATH=/home/b/b37974/:\$PATH
+	source activate ${params.conda_env_activate}
+
+	# 1. On BBJ genotype, remove high-LD regions and perform LD pruning (50 5 0.2)
+	plink2 \
+		--bfile ${bbj_prefix} \
+		--autosome \
+		--snps-only just-acgt \
+		--exclude range ${params.high_ld_regions} \
+		--indep-pairwise 50 5 0.2 \
+		--out bbj.pca_prune \
+		--threads 16
+
+	# 2. From case-control variant QC genotype, export the list of variant IDs
+	plink2 \
+		--bfile ${vqc_prefix} \
+		--write-snplist \
+		--out vqc_all_snps \
+		--threads 16
+
+	# 3. Take the intersection of pruned BBJ SNPs and variant-QC SNPs
+	sort -u bbj.pca_prune.prune.in > bbj.prune.sorted
+	sort -u vqc_all_snps.snplist > vqc.snps.sorted
+	comm -12 bbj.prune.sorted vqc.snps.sorted > bbj.pca.intersect.snps
+
+	# 4. Run PCA on BBJ genotype using the intersected SNP set
+	plink2 \
+		--bfile ${bbj_prefix} \
+		--extract bbj.pca.intersect.snps \
+		--freq counts \
+		--pca 20 allele-wts approx \
+		--out bbj.pca_base \
+		--threads 16
+	"""
+}
+
+
+process PROJECT_ONTO_BBJ_PCS {
+	executor 'slurm'
+	queue 'gr10478b'
+	time '24h'
+
+	publishDir "${params.out_dir}/11_bbj_projection", mode: 'symlink'
+
+	input:
+	// PCA base outputs from PREPARE_BBJ_PCA_BASE (separate channels)
+	path bbj_pca_snps
+	path bbj_pca_evec
+	path bbj_pca_eval
+	path bbj_pca_evec_allele
+	path bbj_pca_acount
+	// BBJ reference genotype after preprocessing
+	tuple path(bbj_bed), path(bbj_bim), path(bbj_fam)
+	// Case-control genotype after variant QC
+	tuple path(vqc_bed), path(vqc_bim), path(vqc_fam)
+
+	output:
+	// Projected PCs (scores) for merged BBJ + case/control genotypes
+	path("*.bbjproj.sscore")
+	path("*.bbjproj.sscore.vars")
+	// Figure 1: explained ratio / cumulative explained ratio
+	path("*.bbjproj.variance_summary.png")
+	// Figure 2: pairwise PC scatter plots
+	path("*.bbjproj.pc_pairs.pdf")
+
+	script:
+	def bbj_prefix  = bbj_bed.baseName
+	def vqc_prefix  = vqc_bed.baseName
+	def proj_prefix = "${vqc_prefix}.bbjproj"
+	def projection_plot_script = "${params.script_dir}/plot_bbj_projection.py"
+	"""
+	export PATH=/home/b/b37974/:\$PATH
+	source activate ${params.conda_env_activate}
+
+	# 1) Restrict BBJ and case-control genotypes to the common SNP set used by BBJ PCA base.
+	plink2 \
+		--bfile ${bbj_prefix} \
+		--extract ${bbj_pca_snps} \
+		--make-bed \
+		--out bbj.proj.base \
+		--threads 16
+
+	plink2 \
+		--bfile ${vqc_prefix} \
+		--extract ${bbj_pca_snps} \
+		--make-bed \
+		--out vqc.proj.base \
+		--threads 16
+
+	# 2) Merge BBJ and case-control genotypes with plink1.9 --bmerge.
+	#    This path is more stable than plink2 --pmerge-list for this use-case.
+	plink \
+		--bfile bbj.proj.base \
+		--bmerge vqc.proj.base.bed vqc.proj.base.bim vqc.proj.base.fam \
+		--make-bed \
+		--keep-allele-order \
+		--out merged.proj.base \
+		--threads 16
+
+	# 3) True projection onto BBJ PCs using allele weights and reference frequencies.
+	plink2 \
+		--bfile merged.proj.base \
+		--read-freq ${bbj_pca_acount} \
+		--score ${bbj_pca_evec_allele} 2 6 header-read no-mean-imputation variance-standardize list-variants \
+		--score-col-nums 7-26 \
+		--out ${proj_prefix} \
+		--threads 16
+
+	# Publication-style figures for BBJ PCA and projection results.
+	python ${projection_plot_script} \
+		--bbj-eigenval ${bbj_pca_eval} \
+		--projected-sscore ${proj_prefix}.sscore \
+		--sample-info ${params.sample_info} \
+		--sample-id-col "${params.sample_id_col}" \
+		--phenotype-col "${params.phenotype_col}" \
+		--phenotype-case-value "${params.phenotype_case_value}" \
+		--phenotype-ctrl-value "${params.phenotype_ctrl_value}" \
+		--bbj-id-prefix "bbj_" \
+		--bbj-label "BBJ" \
+		--case-label "${params.case_label}" \
+		--ctrl-label "${params.ctrl_label}" \
+		--max-pcs 20 \
+		--out-prefix ${proj_prefix}
+	"""
+}
+
+
+process POPGMM_SUBSET_AND_PLOT_BBJ_PROJECTION {
+	// executor 'slurm'
+	// queue 'gr10478b'
+	// time '24h'
+	tag "${popgmm_id}"
+
+	publishDir "${params.out_dir}/12_popgmm_subset_projection", mode: 'symlink', saveAs: { filename -> "${task.tag}/${filename}" }
+
+	input:
+	// Combined input to guarantee one independent task per PopGMM keep list.
+	tuple val(popgmm_id), path(popgmm_keep), path(vqc_bed), path(vqc_bim), path(vqc_fam), path(projected_sscore), path(bbj_pca_eval)
+
+	output:
+	tuple val(popgmm_id), path("*.popgmm.bed"), path("*.popgmm.bim"), path("*.popgmm.fam"), path("*.bbjproj.popgmm.sscore")
+	path("*.popgmm.subset.log.txt")
+	path("*.bbjproj.popgmm.variance_summary.png")
+	path("*.bbjproj.popgmm.pc_pairs.pdf")
+
+	script:
+	def vqc_prefix = vqc_bed.baseName
+	def subset_pre = "${vqc_prefix}.popgmm.keep"
+	def subset_out = "${vqc_prefix}.popgmm"
+	def proj_prefix = "${vqc_prefix}.bbjproj.popgmm"
+	def subset_log = "${vqc_prefix}.popgmm.subset.log.txt"
+	def projection_plot_script = "${params.script_dir}/plot_bbj_projection.py"
+	"""
+	export PATH=/home/b/b37974/:\$PATH
+	source activate ${params.conda_env_activate}
+
+	# 1) Subset variant-QC genotype by PopGMM samples
+	plink2 \
+		--bfile ${vqc_prefix} \
+		--keep ${popgmm_keep} \
+		--make-bed \
+		--out ${subset_pre} \
+		--threads 16
+
+	# 2) Remove monomorphic variants after sample subset
+	plink2 \
+		--bfile ${subset_pre} \
+		--mac 1 \
+		--make-bed \
+		--out ${subset_out} \
+		--threads 16
+
+	# 3) Log detailed sample/variant count changes
+	before_samples=\$(wc -l < ${vqc_prefix}.fam)
+	before_variants=\$(wc -l < ${vqc_prefix}.bim)
+	after_keep_samples=\$(wc -l < ${subset_pre}.fam)
+	after_keep_variants=\$(wc -l < ${subset_pre}.bim)
+	after_mac_samples=\$(wc -l < ${subset_out}.fam)
+	after_mac_variants=\$(wc -l < ${subset_out}.bim)
+
+	{
+		echo "[\$(date)] POPGMM subset + monomorphic-variant removal summary"
+		echo "INPUT_BFILE_PREFIX: ${vqc_prefix}"
+		echo "POPGMM_KEEP_FILE: ${popgmm_keep}"
+		echo "STEP1_KEEP_PREFIX: ${subset_pre}"
+		echo "STEP2_FINAL_PREFIX: ${subset_out}"
+		echo ""
+		echo "Counts (samples / variants):"
+		echo "  Before PopGMM keep            : \${before_samples} / \${before_variants}"
+		echo "  After PopGMM keep             : \${after_keep_samples} / \${after_keep_variants}"
+		echo "  After monomorphic rm (--mac 1): \${after_mac_samples} / \${after_mac_variants}"
+		echo ""
+		echo "Delta (after - before):"
+		echo "  Keep step   sample delta: \$((after_keep_samples - before_samples))"
+		echo "  Keep step  variant delta: \$((after_keep_variants - before_variants))"
+		echo "  MAC step    sample delta: \$((after_mac_samples - after_keep_samples))"
+		echo "  MAC step   variant delta: \$((after_mac_variants - after_keep_variants))"
+		echo "  Total       sample delta: \$((after_mac_samples - before_samples))"
+		echo "  Total      variant delta: \$((after_mac_variants - before_variants))"
+	} > ${subset_log}
+
+	# 4) Replot BBJ projection with optional non-BBJ PopGMM filtering
+	python ${projection_plot_script} \
+		--bbj-eigenval ${bbj_pca_eval} \
+		--projected-sscore ${projected_sscore} \
+		--sample-info ${params.sample_info} \
+		--sample-id-col "${params.sample_id_col}" \
+		--phenotype-col "${params.phenotype_col}" \
+		--phenotype-case-value "${params.phenotype_case_value}" \
+		--phenotype-ctrl-value "${params.phenotype_ctrl_value}" \
+		--bbj-id-prefix "bbj_" \
+		--bbj-label "BBJ" \
+		--case-label "${params.case_label}" \
+		--ctrl-label "${params.ctrl_label}" \
+		--max-pcs 20 \
+		--keep-non-bbj-iids ${popgmm_keep} \
+		--out-prefix ${proj_prefix}
+
+	# Keep a deterministic PopGMM-specific sscore artifact for downstream cov/pheno generation
+	# (header preserved; rows restricted to IIDs in popgmm_keep)
+	awk 'NR==FNR { keep[\$2] = 1; next } FNR==1 { print; next } (\$2 in keep) { print }' \
+		${popgmm_keep} ${projected_sscore} > ${proj_prefix}.sscore
+
+	# Clean temporary keep-only files
+	rm -f ${subset_pre}.bed ${subset_pre}.bim ${subset_pre}.fam ${subset_pre}.log ${subset_pre}.nosex
+	"""
+}
+
+
+process POPGMM_PIHAT_INTERSECTION_PROJECTION {
+	// executor 'slurm'
+	// queue 'gr10478b'
+	// time '24h'
+	tag "${popgmm_id}"
+
+	publishDir "${params.out_dir}/13_popgmm_pihat_projection", mode: 'symlink', saveAs: { filename -> "${task.tag}/${filename}" }
+
+	input:
+	// Combined input to preserve list-specific pairing.
+	tuple val(popgmm_id), path(pop_bed), path(pop_bim), path(pop_fam), path(pihat_vertex_tsv), path(popgmm_keep)
+
+	output:
+	tuple val(popgmm_id), path("*.all_samples_projection.sscore")
+	path("*.pihat_popgmm_intersection.iid")
+	path("*.pihat_popgmm_overlap.exclude.fid_iid")
+	tuple path("*.base_no_intersection.bed"), path("*.base_no_intersection.bim"), path("*.base_no_intersection.fam")
+	path("*.base_no_intersection.prune.prune.in")
+	path("*.base_no_intersection.pca.eigenvec")
+	path("*.base_no_intersection.pca.eigenval")
+	path("*.base_no_intersection.pca.eigenvec.allele")
+	path("*.base_no_intersection.pca.acount")
+	path("*.all_samples_projection.sscore.vars")
+	path("*.all_samples_projection.variance_summary.png")
+	path("*.all_samples_projection.pc_group_distribution.png")
+	path("*.all_samples_projection.pc_group_distribution.log.txt")
+	path("*.all_samples_projection.pc_pairs.pdf")
+	path("*.done.txt")
+
+	script:
+	def pop_prefix = pop_bed.baseName.replaceAll(/\.bed$/, '')
+	def out_prefix = "${pop_prefix}.pihat_proj"
+	def run_script = "${params.script_dir}/run_popgmm_pihat_projection.sh"
+	def plot_script = "${params.script_dir}/plot_popgmm_pihat_projection.py"
+	"""
+	export PATH=/home/b/b37974/:\$PATH
+	source activate ${params.conda_env_activate}
+
+	zsh ${run_script} \
+		${popgmm_keep} \
+		${pihat_vertex_tsv} \
+		${pop_prefix} \
+		${params.high_ld_regions} \
+		16 \
+		${out_prefix}
+
+	python ${plot_script} \
+		--base-eigenval ${out_prefix}.base_no_intersection.pca.eigenval \
+		--projected-sscore ${out_prefix}.all_samples_projection.sscore \
+		--relatedness-flagged-fid-iid ${out_prefix}.pihat_popgmm_overlap.exclude.fid_iid \
+		--sample-info ${params.sample_info} \
+		--sample-id-col "${params.sample_id_col}" \
+		--phenotype-col "${params.phenotype_col}" \
+		--phenotype-case-value "${params.phenotype_case_value}" \
+		--phenotype-ctrl-value "${params.phenotype_ctrl_value}" \
+		--case-label "${params.case_label}" \
+		--ctrl-label "${params.ctrl_label}" \
+		--max-pcs 20 \
+		--out-prefix ${out_prefix}.all_samples_projection
+	"""
+}
+
+
+process PREPARE_FIXED_MODEL_GENOTYPE {
+	// executor 'slurm'
+	// queue 'gr10478b'
+	// time '24h'
+	tag "${popgmm_id}"
+
+	publishDir "${params.out_dir}/14_fixed_model_prep", mode: 'symlink', saveAs: { filename -> "${task.tag}/${filename}" }
+
+	input:
+	// Combined input to preserve list-specific pairing.
+	tuple val(popgmm_id), path(pop_bed), path(pop_bim), path(pop_fam), path(pihat_vertex_tsv)
+
+	output:
+	tuple val(popgmm_id), path("*.maf_ge_threshold.variants.txt")
+	path("*.pihat_selected.exclude.fid_iid")
+	tuple path("*.fixed_ready.bed"), path("*.fixed_ready.bim"), path("*.fixed_ready.fam")
+	path("*.maf_group.keep.fid_iid")
+	path("*.maf_ref.afreq")
+	path("*.maf_lt_threshold.variants.txt")
+	tuple path("*.maf_ge_threshold.bed"), path("*.maf_ge_threshold.bim"), path("*.maf_ge_threshold.fam")
+	tuple path("*.maf_lt_threshold.bed"), path("*.maf_lt_threshold.bim"), path("*.maf_lt_threshold.fam"), optional: true
+	path("*.fixed_model_prep.log.txt")
+
+	script:
+	def pop_prefix = pop_bed.baseName.replaceAll(/\.bed$/, '')
+	def out_prefix = "${pop_prefix}.fixed_model"
+	def run_script = "${params.script_dir}/run_fixed_model_genotype_prep.sh"
+	"""
+	export PATH=/home/b/b37974/:\$PATH
+	source activate ${params.conda_env_activate}
+
+	zsh ${run_script} \
+		${pop_prefix} \
+		${pihat_vertex_tsv} \
+		${out_prefix} \
+		${params.fixed_model_maf_group} \
+		${params.fixed_model_maf_threshold} \
+		16
+	"""
+}
+
+
+process PREPARE_RANDOM_MODEL_GENOTYPE {
+	// executor 'slurm'
+	// queue 'gr10478b'
+	// time '12h'
+	tag "${popgmm_id}"
+
+	publishDir "${params.out_dir}/15_random_model_prep", mode: 'symlink', saveAs: { filename -> "${task.tag}/${filename}" }
+
+	input:
+	// Combined input to preserve list-specific pairing.
+	tuple val(popgmm_id), path(pop_bed), path(pop_bim), path(pop_fam), path(maf_ge_variants_list)
+
+	output:
+	tuple path("*.random_model.bed"), path("*.random_model.bim"), path("*.random_model.fam")
+	path("*.random_model_prep.log.txt")
+
+	script:
+	def pop_prefix = pop_bed.baseName.replaceAll(/\.bed$/, '')
+	def out_prefix = "${pop_prefix}.random_model"
+	def run_script = "${params.script_dir}/run_random_model_genotype_prep.sh"
+	"""
+	export PATH=/home/b/b37974/:\$PATH
+	source activate ${params.conda_env_activate}
+
+	zsh ${run_script} \
+		${pop_prefix} \
+		${maf_ge_variants_list} \
+		${out_prefix} \
+		16
+	"""
+}
+
+
+process PREPARE_POPGMM_COV_PHENO_FILES {
+	// executor 'slurm'
+	// queue 'gr10478b'
+	// time '12h'
+	tag "${popgmm_id}"
+
+	publishDir "${params.out_dir}/16_cov_pheno_prep", mode: 'symlink', saveAs: { filename -> "${task.tag}/${filename}" }
+
+	input:
+	// Combined input to preserve list-specific pairing.
+	tuple val(popgmm_id), path(popgmm_subset_sscore), path(popgmm_pihat_sscore)
+
+	output:
+	path("*.pheno.tsv")
+	path("*.cov.sex.tsv")
+	path("*.cov.sex_age_agez.tsv")
+	path("*.age_na.fid_iid")
+	path("popgmm_cov_pheno.log.txt")
+
+	script:
+	def build_script = "${params.script_dir}/build_popgmm_cov_pheno_from_sscore.py"
+	def out_log = "popgmm_cov_pheno.log.txt"
+	"""
+	export PATH=/home/b/b37974/:\$PATH
+	source activate ${params.conda_env_activate}
+
+	python ${build_script} \
+		--sscore-a ${popgmm_subset_sscore} \
+		--sscore-b ${popgmm_pihat_sscore} \
+		--label-a popgmm_subset_on_bbj_pcs \
+		--label-b popgmm_relatedness_aware_projection \
+		--sample-info ${params.sample_info} \
+		--sample-id-col "${params.sample_id_col}" \
+		--sex-col "${params.sex_col}" \
+		--sex-female-value "${params.sex_female_value}" \
+		--sex-male-value "${params.sex_male_value}" \
+		--age-col "${params.age_col}" \
+		--out-log ${out_log}
+	"""
+}
+
+
+// -----------------------------------------------------------------------------
+// Workflow Execution
+// -----------------------------------------------------------------------------
+
+workflow {
+	// 1. Initialize input channels: chr1-22 and PAR
+	ch_chrs = channel.fromList((1..22).collect { chrNum -> "chr${chrNum}" } + ['PAR'])
+	ch_sample_list = file(params.sample_list, checkIfExists: true)
+	ch_bbj_raw = channel.of([
+		file("${params.bbj_raw_prefix}.bed", checkIfExists: true),
+		file("${params.bbj_raw_prefix}.bim", checkIfExists: true),
+		file("${params.bbj_raw_prefix}.fam", checkIfExists: true)
+	])
+
+	// [BBJ-PREP] Raw genotype preprocessing for projection (outside main numbered flow)
+	// Branch: reuse external outputs (fast, local) vs. run full preprocessing (SLURM)
+	if (params.bbj_use_external) {
+		if (!params.bbj_preprocess_reuse_dir) {
+			error "bbj_use_external = true but bbj_preprocess_reuse_dir is not set"
+		}
+		ch_bbj_prepped = LINK_BBJ_FROM_EXTERNAL()
+	} else {
+		ch_bbj_prepped = PREPARE_BBJ_GENOTYPE(ch_bbj_raw)
+	}
+	ch_bbj_plink   = ch_bbj_prepped[0]
+
+	// 2. Execute process flow
+	ch_prepared         = PREPARE_VCF(ch_chrs, ch_sample_list)
+	ch_filtered_vqc     = FILTER_VQC(ch_prepared)
+	ch_annotated_gtnorm = ANNOTATE_AF_NORM_GT(ch_filtered_vqc)
+	ch_final_genotype   = FILTER_GENOTYPE(ch_annotated_gtnorm)
+
+	// 3. Filter MAC and convert to PLINK format
+	ch_plink_files      = VCF_TO_PLINK(ch_final_genotype)
+
+	// 4. Merge all PLINK files (only chr1-22,now)
+	ch_merged = MERGE_PLINK(
+		ch_plink_files.bed.collect(),
+		ch_plink_files.bim.collect(),
+		ch_plink_files.fam.collect()
+	)
+
+	// 5. Build sample-level QC metrics table from merged PLINK outputs
+	//    BUILD_SAMPLE_QC_TABLE has two outputs: metrics TSV and Fprune.prune.in
+	ch_build_qc_all      = BUILD_SAMPLE_QC_TABLE(ch_merged)
+	ch_sample_qc_metrics = ch_build_qc_all[0]
+	ch_fprune_in         = ch_build_qc_all[1]
+
+	// 6. Apply sample QC rules and generate post-QC PLINK files
+	ch_sample_qc_all   = RUN_SAMPLE_QC_FROM_METRICS(ch_merged, ch_sample_qc_metrics)
+	ch_sample_qc_plink = ch_sample_qc_all[6]
+
+	// 7. Run PI_HAT-based relatedness QC on post-QC genotypes (annotation only)
+	ch_pihat_all    = RUN_PIHAT_QC(ch_sample_qc_plink, ch_fprune_in, ch_sample_qc_metrics)
+	ch_pihat_vertex = ch_pihat_all[1]
+
+	// 8. Run variant QC on post-sample-QC genotypes
+	ch_variant_qc_all   = RUN_VARIANT_QC(ch_sample_qc_plink, ch_pihat_vertex)
+	ch_variant_qc_plink = ch_variant_qc_all[4]
+
+	// 9. Build BBJ PCA base for future projection using intersected pruned SNPs
+	ch_bbj_pca_base = PREPARE_BBJ_PCA_BASE(ch_bbj_plink, ch_variant_qc_plink)
+
+	// 10. Project case/control samples onto PCs using the same SNP intersection
+	ch_projected_all = PROJECT_ONTO_BBJ_PCS(
+		ch_bbj_pca_base[0],
+		ch_bbj_pca_base[1],
+		ch_bbj_pca_base[2],
+		ch_bbj_pca_base[3],
+		ch_bbj_pca_base[4],
+		ch_bbj_plink,
+		ch_variant_qc_plink
+	)
+
+	// 11-16. PopGMM-dependent steps (single file or directory with multiple *fid_iid.txt)
+	def popgmm_keep_files = resolvePopgmmKeepFiles(params.popgmm)
+	if (popgmm_keep_files.isEmpty()) {
+		log.warn "[PopGMM] No keep list found from params.popgmm: ${params.popgmm}"
+		log.warn "[PopGMM] Steps 11-16 are skipped. Provide a keep file or a directory containing *fid_iid.txt, then rerun with -resume."
+	} else {
+		def seenPopgmmIds = [:].withDefault { 0 }
+		def popgmm_entries = popgmm_keep_files.collect { keepFile ->
+			def idBase = popgmmKeepIdFromFile(keepFile)
+			seenPopgmmIds[idBase] = seenPopgmmIds[idBase] + 1
+			def id = seenPopgmmIds[idBase] == 1 ? idBase : "${idBase}_${seenPopgmmIds[idBase]}"
+			tuple(id, file(keepFile.absolutePath, checkIfExists: true))
+		}
+
+		log.info "[PopGMM] Found ${popgmm_entries.size()} keep list(s)."
+		popgmm_entries.each { entry ->
+			log.info "[PopGMM] keep-id=${entry[0]} file=${entry[1]}"
+		}
+
+		ch_popgmm_keep = channel.fromList(popgmm_entries)
+
+		// 11. PopGMM subset on variant-QC genotype + PopGMM-filtered replot from existing projection sscore
+		ch_step11_in = ch_popgmm_keep
+			.combine(ch_variant_qc_plink)
+			.map { id, keep, vqc_bed, vqc_bim, vqc_fam -> tuple(id, keep, vqc_bed, vqc_bim, vqc_fam) }
+			.combine(ch_projected_all[0])
+			.map { id, keep, vqc_bed, vqc_bim, vqc_fam, projected -> tuple(id, keep, vqc_bed, vqc_bim, vqc_fam, projected) }
+			.combine(ch_bbj_pca_base[2])
+			.map { id, keep, vqc_bed, vqc_bim, vqc_fam, projected, eval -> tuple(id, keep, vqc_bed, vqc_bim, vqc_fam, projected, eval) }
+
+		ch_popgmm_all = POPGMM_SUBSET_AND_PLOT_BBJ_PROJECTION(ch_step11_in)
+		ch_popgmm_primary = ch_popgmm_all[0]
+		ch_popgmm_plink = ch_popgmm_primary.map { id, bed, bim, fam, _sscore -> tuple(id, bed, bim, fam) }
+		ch_popgmm_subset_sscore = ch_popgmm_primary.map { id, _bed, _bim, _fam, sscore -> tuple(id, sscore) }
+
+		// 12. Intersect PopGMM with PI_HAT selected-for-removal samples, then perform base PCA and projection
+		ch_step12_in = ch_popgmm_plink
+			.join(ch_popgmm_keep)
+			.map { id, bed, bim, fam, keep -> tuple(id, bed, bim, fam, keep) }
+			.combine(ch_pihat_vertex)
+			.map { id, bed, bim, fam, keep, pihat -> tuple(id, bed, bim, fam, pihat, keep) }
+
+		ch_pihat_proj_all = POPGMM_PIHAT_INTERSECTION_PROJECTION(ch_step12_in)
+		ch_popgmm_pihat_sscore = ch_pihat_proj_all[0]
+
+		// 13. Prepare fixed-model genotype from PopGMM genotype:
+		//     remove PI_HAT selected samples, drop monomorphic variants,
+		//     and split by MAF threshold using ctrl/case/all reference group
+		ch_step13_in = ch_popgmm_plink
+			.combine(ch_pihat_vertex)
+			.map { id, bed, bim, fam, pihat -> tuple(id, bed, bim, fam, pihat) }
+
+		ch_fixed_model_all = PREPARE_FIXED_MODEL_GENOTYPE(ch_step13_in)
+		ch_maf_ge_variants = ch_fixed_model_all[0]
+
+		// 14. Prepare random model genotype from PopGMM genotype:
+		//     extract variants with MAF >= threshold for random effects model
+		ch_step14_in = ch_popgmm_plink
+			.join(ch_maf_ge_variants)
+			.map { id, bed, bim, fam, maf_ge -> tuple(id, bed, bim, fam, maf_ge) }
+
+		PREPARE_RANDOM_MODEL_GENOTYPE(ch_step14_in)
+
+		// 15. Build pheno/cov files from two PopGMM-related projection sscore files
+		ch_step15_in = ch_popgmm_subset_sscore
+			.join(ch_popgmm_pihat_sscore)
+			.map { id, subset_sscore, pihat_sscore -> tuple(id, subset_sscore, pihat_sscore) }
+
+		PREPARE_POPGMM_COV_PHENO_FILES(ch_step15_in)
+	}
+}
+

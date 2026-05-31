@@ -1,0 +1,13 @@
+{
+  "mix": {
+    "VMISS": 0.05
+  },
+  "dp": {
+    "15X_VMISS": 0.04,
+    "30X_VMISS": 0.03
+  },
+  "case_ctrl": {
+    "CTRL_VMISS": 0.05,
+    "CASE_VMISS": 0.05
+  }
+}
