@@ -138,7 +138,7 @@ process PREPARE_VCF {
 	bcftools index --threads 4 -t ${output_vcf}
 	"""
 }
-
+//test
 process FILTER_VQC {
 	executor 'slurm'
 	queue 'gr10478b'
