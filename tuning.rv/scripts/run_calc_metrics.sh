@@ -115,48 +115,123 @@ log "Threads: $THREADS"
 current_bed="$BED_PREFIX"
 
 if [[ "$MIN_AC" -gt 0 ]]; then
-    log "Step 0/6: Applying MAC filter >= $MIN_AC"
+    log "Step 0/8: Applying MAC filter >= $MIN_AC"
     filtered_prefix="$tmp_dir/filtered.minac${MIN_AC}"
     "$PLINK2" --threads "$THREADS" --bfile "$BED_PREFIX" --mac "$MIN_AC" --make-bed --out "$filtered_prefix" --silent
     require_file_prefix "$filtered_prefix"
     current_bed="$filtered_prefix"
 else
-    log "Step 0/6: Skip filtering because MinAC = 0"
+    log "Step 0/8: Skip filtering because MinAC = 0"
 fi
 
-log "Step 1/6: Sample counts and missingness"
+log "Step 1/8: Sample counts and missingness"
 "$PLINK2" --threads "$THREADS" --bfile "$current_bed" --sample-counts cols=maybefid,homref,het,homalt --missing sample-only --out "$tmp_dir/temp_sample"
 
-log "Step 2/6: Sample minor allele burden (SMinAC)"
+log "Step 2/8: Sample minor allele burden (SMinAC)"
 "$PLINK2" --threads "$THREADS" --bfile "$current_bed" --maj-ref force --make-bed --out "$tmp_dir/temp_aligned"
 "$PLINK2" --threads "$THREADS" --bfile "$tmp_dir/temp_aligned" --sample-counts cols=maybefid,het,homalt --out "$tmp_dir/temp_sample_minac"
 
-log "Step 3/6: Variant counts and missingness"
+log "Step 3/8: Variant counts and missingness"
 "$PLINK2" --threads "$THREADS" --bfile "$current_bed" --geno-counts cols=chrom,pos,ref,alt,homref,refalt1,homalt1 --missing variant-only --out "$tmp_dir/temp_variant"
 
-log "Step 4/6: Allele count table"
+log "Step 4/8: Build 15X/30X keep lists from info file"
+KEEP_15X="$tmp_dir/keep_15x.txt"
+KEEP_30X="$tmp_dir/keep_30x.txt"
+"$PYTHON_BIN" - "$INFO_FILE" "$ID_COL" "$TDP_COL" "$KEEP_15X" "$KEEP_30X" <<'PY'
+import re
+import sys
+import pandas as pd
+
+info_file, id_col, tdp_col, keep_15x, keep_30x = sys.argv[1:]
+
+df = pd.read_excel(info_file)
+if id_col not in df.columns:
+    raise SystemExit(f"ID column not found: {id_col}")
+if tdp_col not in df.columns:
+    raise SystemExit(f"Target depth column not found: {tdp_col}")
+
+tmp = df[[id_col, tdp_col]].copy()
+tmp[id_col] = tmp[id_col].astype(str).str.strip()
+tmp = tmp[tmp[id_col] != ""]
+
+def parse_depth(v):
+    if pd.isna(v):
+        return None
+    s = str(v).strip()
+    m = re.search(r"(\d+(?:\.\d+)?)", s)
+    if not m:
+        return None
+    try:
+        return int(round(float(m.group(1))))
+    except Exception:
+        return None
+
+tmp["_depth"] = tmp[tdp_col].map(parse_depth)
+
+for depth, out_path in ((15, keep_15x), (30, keep_30x)):
+    ids = tmp.loc[tmp["_depth"] == depth, id_col].drop_duplicates()
+    with open(out_path, "w", encoding="ascii") as fh:
+        for sid in ids:
+            fh.write(f"{sid}\t{sid}\n")
+PY
+
+log "Step 5/8: Depth-stratified variant counts (15X/30X)"
+VARIANT_COUNTS_15X=""
+FREQ_COUNTS_15X=""
+VARIANT_COUNTS_30X=""
+FREQ_COUNTS_30X=""
+
+if [[ -s "$KEEP_15X" ]]; then
+    "$PLINK2" --threads "$THREADS" --bfile "$current_bed" --keep "$KEEP_15X" --geno-counts cols=chrom,pos,ref,alt,homref,refalt1,homalt1 --out "$tmp_dir/temp_variant_15x"
+    "$PLINK2" --threads "$THREADS" --bfile "$current_bed" --keep "$KEEP_15X" --freq counts --out "$tmp_dir/temp_freq_15x"
+    VARIANT_COUNTS_15X="$tmp_dir/temp_variant_15x.gcount"
+    FREQ_COUNTS_15X="$tmp_dir/temp_freq_15x.acount"
+else
+    log "No 15X samples found in info; 15X AC columns will be set to 0"
+fi
+
+if [[ -s "$KEEP_30X" ]]; then
+    "$PLINK2" --threads "$THREADS" --bfile "$current_bed" --keep "$KEEP_30X" --geno-counts cols=chrom,pos,ref,alt,homref,refalt1,homalt1 --out "$tmp_dir/temp_variant_30x"
+    "$PLINK2" --threads "$THREADS" --bfile "$current_bed" --keep "$KEEP_30X" --freq counts --out "$tmp_dir/temp_freq_30x"
+    VARIANT_COUNTS_30X="$tmp_dir/temp_variant_30x.gcount"
+    FREQ_COUNTS_30X="$tmp_dir/temp_freq_30x.acount"
+else
+    log "No 30X samples found in info; 30X AC columns will be set to 0"
+fi
+
+log "Step 6/8: Allele count table"
 "$PLINK2" --threads "$THREADS" --bfile "$current_bed" --freq counts --out "$tmp_dir/temp_freq"
 
-log "Step 5/6: Aggregate metrics with Python"
-"$PYTHON_BIN" "$SCRIPT_DIR/calc_metrics.py" \
-    --sample-counts "$tmp_dir/temp_sample.scount" \
-    --sample-missing "$tmp_dir/temp_sample.smiss" \
-    --sample-minac "$tmp_dir/temp_sample_minac.scount" \
-    --variant-counts "$tmp_dir/temp_variant.gcount" \
-    --variant-missing "$tmp_dir/temp_variant.vmiss" \
-    --freq-counts "$tmp_dir/temp_freq.acount" \
-    --info "$INFO_FILE" \
-    --id-col "$ID_COL" \
-    --group-col "$GROUP_COL" \
-    --case-value "$CASE_VALUE" \
-    --tdp-col "$TDP_COL" \
-    --mdp-col "$MDP_COL" \
-    --out-sample "$OUT_SAMPLE" \
-    --out-variant "$OUT_VARIANT" \
-    --threads "$THREADS" \
+log "Step 7/8: Aggregate metrics with Python"
+calc_args=(
+    --sample-counts "$tmp_dir/temp_sample.scount"
+    --sample-missing "$tmp_dir/temp_sample.smiss"
+    --sample-minac "$tmp_dir/temp_sample_minac.scount"
+    --variant-counts "$tmp_dir/temp_variant.gcount"
+    --variant-missing "$tmp_dir/temp_variant.vmiss"
+    --freq-counts "$tmp_dir/temp_freq.acount"
+    --info "$INFO_FILE"
+    --id-col "$ID_COL"
+    --group-col "$GROUP_COL"
+    --case-value "$CASE_VALUE"
+    --tdp-col "$TDP_COL"
+    --mdp-col "$MDP_COL"
+    --out-sample "$OUT_SAMPLE"
+    --out-variant "$OUT_VARIANT"
+    --threads "$THREADS"
     --log calc_metrics.log
+)
 
-log "Step 6/6: bgzip + tabix outputs"
+if [[ -n "$VARIANT_COUNTS_15X" && -n "$FREQ_COUNTS_15X" ]]; then
+    calc_args+=(--variant-counts-15x "$VARIANT_COUNTS_15X" --freq-counts-15x "$FREQ_COUNTS_15X")
+fi
+if [[ -n "$VARIANT_COUNTS_30X" && -n "$FREQ_COUNTS_30X" ]]; then
+    calc_args+=(--variant-counts-30x "$VARIANT_COUNTS_30X" --freq-counts-30x "$FREQ_COUNTS_30X")
+fi
+
+"$PYTHON_BIN" "$SCRIPT_DIR/calc_metrics.py" "${calc_args[@]}"
+
+log "Step 8/8: bgzip + tabix outputs"
 bgzip -f "$OUT_SAMPLE"
 bgzip -f "$OUT_VARIANT"
 "$TABIX" -f -s 1 -b 2 -e 2 "${OUT_VARIANT}.gz"

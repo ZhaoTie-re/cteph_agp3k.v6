@@ -6,6 +6,7 @@ import os
 import multiprocessing
 import logging
 import time
+from itertools import repeat, zip_longest
 
 def setup_logging(log_file):
     logging.basicConfig(
@@ -51,6 +52,12 @@ METRIC_DESCRIPTIONS = {
     'RefAC': 'Reference Allele Count. Total number of REF alleles observed.',
     'AltAC': 'Alternative Allele Count. Total number of ALT alleles observed.',
     'MinAC': 'Minor Allele Count. The count of the less frequent allele (min(RefAC, AltAC)).',
+    'RefAC_15X': 'Reference Allele Count among samples with TargetDP = 15X.',
+    'AltAC_15X': 'Alternative Allele Count among samples with TargetDP = 15X.',
+    'MinAC_15X': 'Minor Allele Count among samples with TargetDP = 15X.',
+    'RefAC_30X': 'Reference Allele Count among samples with TargetDP = 30X.',
+    'AltAC_30X': 'Alternative Allele Count among samples with TargetDP = 30X.',
+    'MinAC_30X': 'Minor Allele Count among samples with TargetDP = 30X.',
     'VNumHomRef': 'Number of samples that are Homozygous Reference (0/0).',
     'VNumHet': 'Number of samples that are Heterozygous (0/1).',
     'VNumHomAlt': 'Number of samples that are Homozygous Alternative (1/1).',
@@ -233,11 +240,53 @@ def process_sample_metrics(args):
         logging.error(f"Error processing sample metrics: {e}")
         sys.exit(1)
 
+def _extract_depth_ac(base_variant_ids, g_chunk_depth, a_chunk_depth):
+    """Return Ref/Alt/Min AC arrays aligned to base_variant_ids for a depth stratum."""
+    n = len(base_variant_ids)
+    if g_chunk_depth is None or a_chunk_depth is None:
+        zeros = np.zeros(n, dtype=np.int64)
+        return zeros, zeros, zeros
+
+    g_chunk = normalize_id_column(g_chunk_depth.copy(), 'ID')
+    a_chunk = normalize_id_column(a_chunk_depth.copy(), 'ID')
+
+    if 'ALT_CTS' not in a_chunk.columns or 'OBS_CT' not in a_chunk.columns:
+        zeros = np.zeros(n, dtype=np.int64)
+        return zeros, zeros, zeros
+
+    ids_aligned = False
+    if len(g_chunk) == len(a_chunk) == n:
+        if g_chunk['ID'].equals(a_chunk['ID']) and g_chunk['ID'].astype(str).equals(base_variant_ids.astype(str)):
+            ids_aligned = True
+
+    if ids_aligned:
+        alt_ac = pd.to_numeric(a_chunk['ALT_CTS'], errors='coerce').fillna(0).to_numpy(dtype=np.int64)
+        obs_ct = pd.to_numeric(a_chunk['OBS_CT'], errors='coerce').fillna(0).to_numpy(dtype=np.int64)
+        ref_ac = obs_ct - alt_ac
+        min_ac = np.minimum(ref_ac, alt_ac)
+        return ref_ac, alt_ac, min_ac
+
+    base = pd.DataFrame({'VariantID': base_variant_ids.astype(str).values})
+    depth_df = pd.DataFrame({
+        'VariantID': a_chunk['ID'].astype(str),
+        'AltAC': pd.to_numeric(a_chunk['ALT_CTS'], errors='coerce').fillna(0),
+        'ObsCT': pd.to_numeric(a_chunk['OBS_CT'], errors='coerce').fillna(0),
+    })
+    depth_df = depth_df.groupby('VariantID', as_index=False).sum()
+    merged = base.merge(depth_df, on='VariantID', how='left').fillna(0)
+
+    alt_ac = merged['AltAC'].to_numpy(dtype=np.int64)
+    obs_ct = merged['ObsCT'].to_numpy(dtype=np.int64)
+    ref_ac = obs_ct - alt_ac
+    min_ac = np.minimum(ref_ac, alt_ac)
+    return ref_ac, alt_ac, min_ac
+
+
 def process_variant_chunk(chunk_data):
     """
-    Process a tuple of (gcount_chunk, acount_chunk, vmiss_chunk)
+    Process a tuple of chunked variant metrics, including optional depth strata.
     """
-    g_chunk, a_chunk, m_chunk = chunk_data
+    g_chunk, a_chunk, m_chunk, g15_chunk, a15_chunk, g30_chunk, a30_chunk = chunk_data
     g_chunk = g_chunk.copy()
     a_chunk = a_chunk.copy()
     m_chunk = m_chunk.copy()
@@ -325,8 +374,22 @@ def process_variant_chunk(chunk_data):
         # Fallback
         df['POS'] = df['VariantID'].apply(lambda x: x.split(':')[1] if ':' in str(x) else 0)
 
+    ref15, alt15, min15 = _extract_depth_ac(df['VariantID'], g15_chunk, a15_chunk)
+    ref30, alt30, min30 = _extract_depth_ac(df['VariantID'], g30_chunk, a30_chunk)
+    df['RefAC_15X'] = ref15
+    df['AltAC_15X'] = alt15
+    df['MinAC_15X'] = min15
+    df['RefAC_30X'] = ref30
+    df['AltAC_30X'] = alt30
+    df['MinAC_30X'] = min30
+
     # Select output columns
-    desired_cols = ['#CHROM', 'POS', 'VariantID', 'REF', 'ALT', 'RefAC', 'AltAC', 'MinAC', 'VNumHomRef', 'VNumHet', 'VNumHomAlt', 'VMissCount']
+    desired_cols = [
+        '#CHROM', 'POS', 'VariantID', 'REF', 'ALT', 'RefAC', 'AltAC', 'MinAC',
+        'RefAC_15X', 'AltAC_15X', 'MinAC_15X',
+        'RefAC_30X', 'AltAC_30X', 'MinAC_30X',
+        'VNumHomRef', 'VNumHet', 'VNumHomAlt', 'VMissCount'
+    ]
     final_cols = [c for c in desired_cols if c in df.columns]
     
     return df[final_cols]
@@ -347,6 +410,10 @@ def main():
     parser.add_argument('--out-sample', required=True)
     parser.add_argument('--out-variant', required=True)
     parser.add_argument('--sample-minac', required=False, help='Path to sample counts file with maj-ref alignment for correct SMinAC calculation')
+    parser.add_argument('--variant-counts-15x', required=False, help='Variant geno-counts file for TargetDP 15X')
+    parser.add_argument('--freq-counts-15x', required=False, help='Variant freq-counts file for TargetDP 15X')
+    parser.add_argument('--variant-counts-30x', required=False, help='Variant geno-counts file for TargetDP 30X')
+    parser.add_argument('--freq-counts-30x', required=False, help='Variant freq-counts file for TargetDP 30X')
     parser.add_argument('--threads', type=int, default=1, help='Number of threads for processing')
     parser.add_argument('--log', required=True, help='Log file path')
     args = parser.parse_args()
@@ -390,6 +457,27 @@ def main():
     g_iter = pd.read_csv(args.variant_counts, sep='\t', chunksize=chunk_size)
     a_iter = pd.read_csv(args.freq_counts, sep='\t', chunksize=chunk_size)
     m_iter = pd.read_csv(args.variant_missing, sep='\t', chunksize=chunk_size)
+
+    use_15x = bool(args.variant_counts_15x and args.freq_counts_15x and os.path.exists(args.variant_counts_15x) and os.path.exists(args.freq_counts_15x))
+    use_30x = bool(args.variant_counts_30x and args.freq_counts_30x and os.path.exists(args.variant_counts_30x) and os.path.exists(args.freq_counts_30x))
+
+    if use_15x:
+        logging.info(f"Using 15X depth files: {args.variant_counts_15x}, {args.freq_counts_15x}")
+        g15_iter = pd.read_csv(args.variant_counts_15x, sep='\t', chunksize=chunk_size)
+        a15_iter = pd.read_csv(args.freq_counts_15x, sep='\t', chunksize=chunk_size)
+    else:
+        logging.info("15X depth files not provided/found. RefAC_15X/AltAC_15X/MinAC_15X will be filled with 0.")
+        g15_iter = repeat(None)
+        a15_iter = repeat(None)
+
+    if use_30x:
+        logging.info(f"Using 30X depth files: {args.variant_counts_30x}, {args.freq_counts_30x}")
+        g30_iter = pd.read_csv(args.variant_counts_30x, sep='\t', chunksize=chunk_size)
+        a30_iter = pd.read_csv(args.freq_counts_30x, sep='\t', chunksize=chunk_size)
+    else:
+        logging.info("30X depth files not provided/found. RefAC_30X/AltAC_30X/MinAC_30X will be filled with 0.")
+        g30_iter = repeat(None)
+        a30_iter = repeat(None)
     
     # Use multiprocessing pool
     # We need to zip the iterators to process corresponding chunks together
@@ -403,11 +491,11 @@ def main():
     total_variants = 0
     
     with multiprocessing.Pool(processes=pool_size) as pool:
-        # Create a generator that yields tuples of (g_chunk, a_chunk, m_chunk)
-        chunk_generator = zip(g_iter, a_iter, m_iter)
+        # Keep all base chunks even if optional depth iterators differ in length.
+        chunk_generator = zip_longest(g_iter, a_iter, m_iter, g15_iter, a15_iter, g30_iter, a30_iter, fillvalue=None)
         
         # imap returns results in order, which is crucial for writing to file
-        for result_df in pool.imap(process_variant_chunk, chunk_generator):
+        for result_df in pool.imap(process_variant_chunk, (c for c in chunk_generator if c[0] is not None and c[1] is not None and c[2] is not None)):
             mode = 'w' if first_chunk else 'a'
             header = first_chunk
             
@@ -424,7 +512,13 @@ def main():
     logging.info(f"Total variants processed: {total_variants:,}")
     
     # 3. Generate Documentation
-    variant_cols = ['#CHROM', 'POS', 'VariantID', 'REF', 'ALT', 'RefAC', 'AltAC', 'MinAC', 'VNumHomRef', 'VNumHet', 'VNumHomAlt', 'VMissCount']
+    variant_cols = [
+        '#CHROM', 'POS', 'VariantID', 'REF', 'ALT',
+        'RefAC', 'AltAC', 'MinAC',
+        'RefAC_15X', 'AltAC_15X', 'MinAC_15X',
+        'RefAC_30X', 'AltAC_30X', 'MinAC_30X',
+        'VNumHomRef', 'VNumHet', 'VNumHomAlt', 'VMissCount'
+    ]
     out_dir = os.path.dirname(os.path.abspath(args.out_sample))
     write_documentation(out_dir, (sample_rows, sample_cols), (total_variants, variant_cols))
     

@@ -29,7 +29,7 @@ process REMOVE_SAMPLES {
     path "remove_samples.log", emit: log
 
     script:
-    def orig_prefix = "${params.GTPath}/14_fixed_model_prep/cteph_agp3k_v6_wgs_merged.sample_qc.variant_qc.popgmm.fixed_model.maf_lt_threshold"
+    def orig_prefix = "${params.GTPath}/14_fixed_model_prep/refined_core/cteph_agp3k_v6_wgs_merged.sample_qc.variant_qc.popgmm.fixed_model.maf_lt_threshold"
     """
     set -euo pipefail
 
@@ -168,7 +168,7 @@ process PLOT_SUMMARY_TREND {
     """
     set -euo pipefail
 
-    N_SAMPLES=\$(wc -l < ${params.GTPath}/14_fixed_model_prep/cteph_agp3k_v6_wgs_merged.sample_qc.variant_qc.popgmm.fixed_model.maf_lt_threshold.fam)
+    N_SAMPLES=\$(wc -l < ${params.GTPath}/14_fixed_model_prep/refined_core/cteph_agp3k_v6_wgs_merged.sample_qc.variant_qc.popgmm.fixed_model.maf_lt_threshold.fam)
     python3 ${params.ScriptDir}/plot_summary_trend.py \
         --qc-stats ${qc_stats} \
         --out-pdf qc_trend_plots.pdf \
@@ -177,7 +177,7 @@ process PLOT_SUMMARY_TREND {
 }
 
 workflow {
-    def orig_prefix = "${params.GTPath}/14_fixed_model_prep/cteph_agp3k_v6_wgs_merged.sample_qc.variant_qc.popgmm.fixed_model.maf_lt_threshold"
+    def orig_prefix = "${params.GTPath}/14_fixed_model_prep/refined_core/cteph_agp3k_v6_wgs_merged.sample_qc.variant_qc.popgmm.fixed_model.maf_lt_threshold"
     def rm_file = file(params.SampleRm, checkIfExists: false)
 
     minac_ch = channel.from(0..20)

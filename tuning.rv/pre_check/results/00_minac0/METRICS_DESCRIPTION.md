@@ -1,9 +1,9 @@
 # Metrics Output Documentation
 
-Generated on 2026-05-13 19:05:20
+Generated on 2026-06-01 18:12:43
 
 ## 1. Sample Metrics (sample_metrics.txt)
-**Dimensions:** 3,060 samples x 9 columns
+**Dimensions:** 2,166 samples x 9 columns
 
 | Column Name | Description |
 | :--- | :--- |
@@ -18,7 +18,7 @@ Generated on 2026-05-13 19:05:20
 | **SMinAC** | Sum of Minor Allele Counts (calculated as N_het + 2 * N_hom_minor using force-accepted major allele). |
 
 ## 2. Variant Metrics (variant_metrics.txt)
-**Dimensions:** 19,720,391 variants x 12 columns
+**Dimensions:** 16,200,624 variants x 18 columns
 
 | Column Name | Description |
 | :--- | :--- |
@@ -30,6 +30,12 @@ Generated on 2026-05-13 19:05:20
 | **RefAC** | Reference Allele Count. Total number of REF alleles observed. |
 | **AltAC** | Alternative Allele Count. Total number of ALT alleles observed. |
 | **MinAC** | Minor Allele Count. The count of the less frequent allele (min(RefAC, AltAC)). |
+| **RefAC_15X** | Reference Allele Count among samples with TargetDP = 15X. |
+| **AltAC_15X** | Alternative Allele Count among samples with TargetDP = 15X. |
+| **MinAC_15X** | Minor Allele Count among samples with TargetDP = 15X. |
+| **RefAC_30X** | Reference Allele Count among samples with TargetDP = 30X. |
+| **AltAC_30X** | Alternative Allele Count among samples with TargetDP = 30X. |
+| **MinAC_30X** | Minor Allele Count among samples with TargetDP = 30X. |
 | **VNumHomRef** | Number of samples that are Homozygous Reference (0/0). |
 | **VNumHet** | Number of samples that are Heterozygous (0/1). |
 | **VNumHomAlt** | Number of samples that are Homozygous Alternative (1/1). |
