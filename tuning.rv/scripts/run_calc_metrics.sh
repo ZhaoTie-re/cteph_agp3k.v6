@@ -175,28 +175,32 @@ for depth, out_path in ((15, keep_15x), (30, keep_30x)):
             fh.write(f"{sid}\t{sid}\n")
 PY
 
-log "Step 5/8: Depth-stratified variant counts (15X/30X)"
+log "Step 5/8: Depth-stratified variant counts + missingness (15X/30X)"
 VARIANT_COUNTS_15X=""
 FREQ_COUNTS_15X=""
+VARIANT_MISSING_15X=""
 VARIANT_COUNTS_30X=""
 FREQ_COUNTS_30X=""
+VARIANT_MISSING_30X=""
 
 if [[ -s "$KEEP_15X" ]]; then
-    "$PLINK2" --threads "$THREADS" --bfile "$current_bed" --keep "$KEEP_15X" --geno-counts cols=chrom,pos,ref,alt,homref,refalt1,homalt1 --out "$tmp_dir/temp_variant_15x"
+    "$PLINK2" --threads "$THREADS" --bfile "$current_bed" --keep "$KEEP_15X" --geno-counts cols=chrom,pos,ref,alt,homref,refalt1,homalt1 --missing variant-only --out "$tmp_dir/temp_variant_15x"
     "$PLINK2" --threads "$THREADS" --bfile "$current_bed" --keep "$KEEP_15X" --freq counts --out "$tmp_dir/temp_freq_15x"
     VARIANT_COUNTS_15X="$tmp_dir/temp_variant_15x.gcount"
     FREQ_COUNTS_15X="$tmp_dir/temp_freq_15x.acount"
+    VARIANT_MISSING_15X="$tmp_dir/temp_variant_15x.vmiss"
 else
-    log "No 15X samples found in info; 15X AC columns will be set to 0"
+    log "No 15X samples found in info; 15X AC columns will be set to 0 and vmiss_15x to NaN"
 fi
 
 if [[ -s "$KEEP_30X" ]]; then
-    "$PLINK2" --threads "$THREADS" --bfile "$current_bed" --keep "$KEEP_30X" --geno-counts cols=chrom,pos,ref,alt,homref,refalt1,homalt1 --out "$tmp_dir/temp_variant_30x"
+    "$PLINK2" --threads "$THREADS" --bfile "$current_bed" --keep "$KEEP_30X" --geno-counts cols=chrom,pos,ref,alt,homref,refalt1,homalt1 --missing variant-only --out "$tmp_dir/temp_variant_30x"
     "$PLINK2" --threads "$THREADS" --bfile "$current_bed" --keep "$KEEP_30X" --freq counts --out "$tmp_dir/temp_freq_30x"
     VARIANT_COUNTS_30X="$tmp_dir/temp_variant_30x.gcount"
     FREQ_COUNTS_30X="$tmp_dir/temp_freq_30x.acount"
+    VARIANT_MISSING_30X="$tmp_dir/temp_variant_30x.vmiss"
 else
-    log "No 30X samples found in info; 30X AC columns will be set to 0"
+    log "No 30X samples found in info; 30X AC columns will be set to 0 and vmiss_30x to NaN"
 fi
 
 log "Step 6/8: Allele count table"
@@ -225,8 +229,14 @@ calc_args=(
 if [[ -n "$VARIANT_COUNTS_15X" && -n "$FREQ_COUNTS_15X" ]]; then
     calc_args+=(--variant-counts-15x "$VARIANT_COUNTS_15X" --freq-counts-15x "$FREQ_COUNTS_15X")
 fi
+if [[ -n "$VARIANT_MISSING_15X" ]]; then
+    calc_args+=(--variant-missing-15x "$VARIANT_MISSING_15X")
+fi
 if [[ -n "$VARIANT_COUNTS_30X" && -n "$FREQ_COUNTS_30X" ]]; then
     calc_args+=(--variant-counts-30x "$VARIANT_COUNTS_30X" --freq-counts-30x "$FREQ_COUNTS_30X")
+fi
+if [[ -n "$VARIANT_MISSING_30X" ]]; then
+    calc_args+=(--variant-missing-30x "$VARIANT_MISSING_30X")
 fi
 
 "$PYTHON_BIN" "$SCRIPT_DIR/calc_metrics.py" "${calc_args[@]}"

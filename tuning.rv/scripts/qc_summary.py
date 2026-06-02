@@ -78,8 +78,12 @@ def analyze_qc(args):
             spearman_rho, spearman_p = np.nan, np.nan
 
         # 4. Poisson Regression (SMinAC ~ Group + MeanDP_Z)
+        #    - MeanDP_Z term : depth effect adjusted for phenotype
+        #    - Group_Bin term: phenotype effect adjusted for depth (the
+        #      statistically-correct "depth-adjusted case/control" contrast)
         beta, ci_lower, ci_upper, p_val = np.nan, np.nan, np.nan, np.nan
-        
+        group_beta, group_ci_lower, group_ci_upper, group_p = np.nan, np.nan, np.nan, np.nan
+
         reg_valid = reg_df.dropna(subset=['SMinAC', 'Group_Bin', 'MeanDP_Z'])
         if len(reg_valid) > 1:
             try:
@@ -99,6 +103,14 @@ def analyze_qc(args):
                     ci_lower = conf.loc['MeanDP_Z', 0]
                     ci_upper = conf.loc['MeanDP_Z', 1]
                     p_val = pvalues['MeanDP_Z']
+
+                # Group_Bin: 1 = Case, 0 = Control. Beta is the depth-adjusted
+                # log-rate-ratio of minor-allele burden (Case vs Control).
+                if 'Group_Bin' in params:
+                    group_beta = params['Group_Bin']
+                    group_ci_lower = conf.loc['Group_Bin', 0]
+                    group_ci_upper = conf.loc['Group_Bin', 1]
+                    group_p = pvalues['Group_Bin']
             except Exception as e:
                 print(f"Warning: Poisson regression failed: {e}", file=sys.stderr)
 
@@ -140,11 +152,15 @@ def analyze_qc(args):
             "Sample_Count",
             "Spearman_Rho_SMinAC_MeanDP", 
             "Spearman_P_SMinAC_MeanDP",
-            "Poisson_MeanDP_Beta", 
-            "Poisson_MeanDP_95CI_Lower", 
-            "Poisson_MeanDP_95CI_Upper", 
+            "Poisson_MeanDP_Beta",
+            "Poisson_MeanDP_95CI_Lower",
+            "Poisson_MeanDP_95CI_Upper",
             "Poisson_MeanDP_P",
-            "MWU_P_TargetDP", 
+            "Poisson_Group_Beta",
+            "Poisson_Group_95CI_Lower",
+            "Poisson_Group_95CI_Upper",
+            "Poisson_Group_P",
+            "MWU_P_TargetDP",
             "Wasserstein_Dist_TargetDP"
         ]
         
@@ -156,6 +172,7 @@ def analyze_qc(args):
                 str(len(df)),
                 f"{spearman_rho:.6g}", f"{spearman_p:.6g}",
                 f"{beta:.6g}", f"{ci_lower:.6g}", f"{ci_upper:.6g}", f"{p_val:.6g}",
+                f"{group_beta:.6g}", f"{group_ci_lower:.6g}", f"{group_ci_upper:.6g}", f"{group_p:.6g}",
                 f"{mwu_p:.6g}", f"{wass_dist:.6g}"
             ]
             f.write("\t".join(vals) + "\n")
@@ -188,7 +205,12 @@ def analyze_qc(args):
             f.write("  - $Z(D_{mean})$: Z-score standardized mean depth ($ \\frac{D - \\mu_D}{\\sigma_D} $).\n")
             f.write("- **Metrics**: `Poisson_MeanDP_Beta` ($\\beta_{depth}$), `95CI` (Confidence Interval), `P`.\n")
             f.write("- **Interpretation**: $\\beta_{depth}$ represents the log-count change in minor alleles per standard deviation increase in sequencing depth, holding phenotype constant. A value significantly different from 0 indicates an independent depth effect.\n\n")
-            
+
+            f.write("### 2.3 Depth-adjusted Phenotype Effect\n")
+            f.write("From the **same** Poisson model we also report the phenotype coefficient $\\beta_{group}$ (`Poisson_Group_Beta`, `95CI`, `P`), i.e. the Case-vs-Control contrast in minor-allele burden **after adjusting for sequencing depth**.\n\n")
+            f.write("- **Why this and not a residual test**: testing the residual of $S_{MinAC} \\sim D_{mean}$ against Case/Control only removes depth from the *outcome*. By the Frisch–Waugh–Lovell theorem, the unbiased depth-adjusted group effect requires partialling depth out of *both* the outcome and the group indicator; regressing the outcome-residual on raw group under-adjusts whenever depth differs between groups, and its naive p-value is anticonservative (the first-stage uncertainty is not propagated). The joint GLM coefficient $\\beta_{group}$ is the correct, single-step estimate.\n")
+            f.write("- **Interpretation**: $e^{\\beta_{group}}$ is the depth-adjusted rate ratio of minor-allele burden for Cases relative to Controls; $\\beta_{group}=0$ means no phenotype difference once depth is accounted for. A non-zero value flags residual phenotype-correlated burden (e.g. ancestry, batch, or true biology) that survives depth adjustment.\n\n")
+
             f.write("## 3. Depth Distribution Confounding Analysis\n")
             f.write("To ensure that sequencing depth is not confounded with the target depth design (e.g., 15x vs 30x batches), we compare the empirical distributions of observed $D_{mean}$ stratified by `TargetDP`.\n\n")
             

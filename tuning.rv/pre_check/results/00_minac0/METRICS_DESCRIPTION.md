@@ -1,6 +1,6 @@
 # Metrics Output Documentation
 
-Generated on 2026-06-01 18:12:43
+Generated on 2026-06-03 01:07:23
 
 ## 1. Sample Metrics (sample_metrics.txt)
 **Dimensions:** 2,166 samples x 9 columns
@@ -18,7 +18,7 @@ Generated on 2026-06-01 18:12:43
 | **SMinAC** | Sum of Minor Allele Counts (calculated as N_het + 2 * N_hom_minor using force-accepted major allele). |
 
 ## 2. Variant Metrics (variant_metrics.txt)
-**Dimensions:** 16,200,624 variants x 18 columns
+**Dimensions:** 16,200,624 variants x 21 columns
 
 | Column Name | Description |
 | :--- | :--- |
@@ -33,10 +33,13 @@ Generated on 2026-06-01 18:12:43
 | **RefAC_15X** | Reference Allele Count among samples with TargetDP = 15X. |
 | **AltAC_15X** | Alternative Allele Count among samples with TargetDP = 15X. |
 | **MinAC_15X** | Minor Allele Count among samples with TargetDP = 15X. |
+| **VMISS_15X** | Variant missing rate among samples with TargetDP = 15X (NaN if no 15X samples). |
 | **RefAC_30X** | Reference Allele Count among samples with TargetDP = 30X. |
 | **AltAC_30X** | Alternative Allele Count among samples with TargetDP = 30X. |
 | **MinAC_30X** | Minor Allele Count among samples with TargetDP = 30X. |
+| **VMISS_30X** | Variant missing rate among samples with TargetDP = 30X (NaN if no 30X samples). |
 | **VNumHomRef** | Number of samples that are Homozygous Reference (0/0). |
 | **VNumHet** | Number of samples that are Heterozygous (0/1). |
 | **VNumHomAlt** | Number of samples that are Homozygous Alternative (1/1). |
 | **VMissCount** | Number of samples where the genotype call is missing. |
+| **VMISS** | Variant missing rate across all samples (F_MISS = MISSING_CT / OBS_CT). |

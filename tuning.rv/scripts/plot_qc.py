@@ -1,5 +1,5 @@
 import matplotlib
-matplotlib.use('Agg') # Non-interactive backend
+matplotlib.use('Agg')  # Non-interactive backend
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
@@ -10,225 +10,229 @@ from matplotlib.ticker import FuncFormatter
 import gzip
 import sys
 
+# ── Publication palette (Wong 2011, colorblind-safe) + notebook aesthetic ────
+GROUP_COLORS = {'Case': '#D55E00', 'PH': '#D55E00', 'Control': '#0072B2', 'NaN': '#7F7F7F'}
+GROUP_FALLBACK = ['#009E73', '#CC79A7', '#E69F00', '#56B4E9', '#F0E442']
+TARGETDP_GRADIENT = ['#CFE8F3', '#73B3D8', '#2878B5', '#0F4C81']
+
+# Math symbols (italic, matching the pre-check notebook).
+S_MINAC = r'$\mathit{S}_{\mathit{minAC}}$'
+D_MEAN = r'$\mathit{D}_{\mathit{mean}}$'
+
+INT_FMT = FuncFormatter(lambda x, _: format(int(x), ','))
+
+
 def setup_style():
-    # Set academic style
-    sns.set_theme(style="ticks", context="paper", font_scale=1.4)
-    plt.rcParams['font.family'] = 'sans-serif'
-    plt.rcParams['axes.titlesize'] = 16
-    plt.rcParams['axes.labelsize'] = 14
-    plt.rcParams['legend.fontsize'] = 12
-    plt.rcParams['xtick.labelsize'] = 12
-    plt.rcParams['ytick.labelsize'] = 12
-    plt.rcParams['axes.grid'] = True
-    plt.rcParams['grid.alpha'] = 0.3
-    plt.rcParams['grid.linestyle'] = '--'
+    """White-background, despined, Arial sans-serif academic style."""
+    sns.set_theme(style='ticks', context='paper')
+    plt.rcParams.update({
+        'figure.facecolor': 'white', 'axes.facecolor': 'white', 'savefig.facecolor': 'white',
+        'savefig.dpi': 600, 'savefig.bbox': 'tight', 'figure.dpi': 150,
+        'font.family': 'sans-serif', 'font.sans-serif': ['Arial', 'Helvetica', 'DejaVu Sans'],
+        'mathtext.fontset': 'dejavusans',
+        'font.size': 12, 'axes.titlesize': 14, 'axes.labelsize': 13,
+        'axes.titleweight': 'bold',
+        'xtick.labelsize': 11, 'ytick.labelsize': 11, 'legend.fontsize': 11,
+        'axes.linewidth': 1.0, 'axes.edgecolor': 'black',
+        'xtick.direction': 'out', 'ytick.direction': 'out',
+        'axes.grid': True, 'grid.color': '#DDDDDD', 'grid.linewidth': 0.8, 'grid.alpha': 1.0,
+        'axes.spines.top': False, 'axes.spines.right': False,
+    })
+
+
+def _target_palette(levels):
+    """Ordered (numeric-aware) sequential palette for TargetDP levels; NaN -> grey."""
+    s = pd.Series(levels)
+    num = s.str.extract(r'(\d+(?:\.\d+)?)', expand=False).astype(float)
+    order = pd.DataFrame({'lvl': levels, 'num': num})
+    order['_na'] = order['num'].isna()
+    ordered = order.sort_values(['_na', 'num', 'lvl'])['lvl'].tolist()
+    pal = {}
+    for i, lvl in enumerate(ordered):
+        pal[lvl] = '#7F7F7F' if str(lvl).lower() == 'nan' else TARGETDP_GRADIENT[i % len(TARGETDP_GRADIENT)]
+    return pal, ordered
+
+
+def _group_palette(levels):
+    pal, fb = {}, 0
+    for g in levels:
+        if g in GROUP_COLORS:
+            pal[g] = GROUP_COLORS[g]
+        else:
+            pal[g] = GROUP_FALLBACK[fb % len(GROUP_FALLBACK)]
+            fb += 1
+    return pal
+
+
+def _despine(ax):
+    ax.set_axisbelow(True)
+    ax.grid(True, which='major')
+    sns.despine(ax=ax)
+    ax.tick_params(direction='out', length=4, width=1.0)
+
 
 def load_data(args):
     try:
-        # Load sample metrics
         df = pd.read_csv(args.sample_metrics, sep='\t')
         required_cols = {'TargetDP', 'MeanDP', 'SMinAC'}
         missing_cols = required_cols - set(df.columns)
         if missing_cols:
-            raise ValueError(f"sample metrics missing required columns: {sorted(missing_cols)}")
-        
-        # Get variant count
+            raise ValueError(f'sample metrics missing required columns: {sorted(missing_cols)}')
+
+        # Variant count = lines minus header (streamed; never loads the file).
         variant_count = 0
         with gzip.open(args.variant_metrics, 'rt') as f:
             for i, _ in enumerate(f):
-                variant_count = i
-        # Correction for header if needed, assuming variant_metrics has header
-        # If line count logic matches qc_summary.py: count = total_lines - 1 (header)
-        # i is index of last line (0-based) = total_lines - 1. So i is actually the count excluding header if there is 1 header line.
-        # e.g. 1 line (header) -> i=0. count=0. Correct.
-        
-        # Load stats
+                variant_count = i  # last 0-based index == line_count - 1 == data rows
+
         stats_df = pd.read_csv(args.qc_stats, sep='\t')
         if stats_df.empty:
-            raise ValueError(f"qc stats file is empty: {args.qc_stats}")
-        stats = stats_df.iloc[0]
-        
-        return df, variant_count, stats
+            raise ValueError(f'qc stats file is empty: {args.qc_stats}')
+        return df, variant_count, stats_df.iloc[0]
     except Exception as e:
-        print(f"Error loading data: {e}", file=sys.stderr)
+        print(f'Error loading data: {e}', file=sys.stderr)
         sys.exit(1)
 
+
 def get_annotation_text(stats, variant_count, sample_count, args, page_type):
-    min_ac = args.min_ac
-    
-    # Use formatted text blocks
-    lines = []
-    
-    # Header
-    lines.append(r"$\bf{STUDY\ DESIGN}$")
-    lines.append(f"Samples ($N$): {sample_count:,}")
-    lines.append(f"Variants ($V$): {variant_count:,}")
-    lines.append(f"MinAC Cutoff: {min_ac}")
-    lines.append("")
-    
+    lines = [r'$\bf{Study\ design}$',
+             f'Samples ($N$): {sample_count:,}',
+             f'Variants ($V$): {variant_count:,}',
+             f'MinAC cutoff: {args.min_ac}', '']
     if page_type == 'depth':
         try:
-            mwu_p = float(stats['MWU_P_TargetDP'])
-            wass_dist = float(stats['Wasserstein_Dist_TargetDP'])
-            
-            lines.append(r"$\bf{DISTRIBUTION\ TESTS}$")
-            lines.append(r"Mann-Whitney $U$:")
-            lines.append(f"  $p = {mwu_p:.2e}$")
-            lines.append("")
-            lines.append(r"Wasserstein Dist ($W_1$):")
-            lines.append(f"  $W_1 = {wass_dist:.4f}$")
-        except:
-            lines.append("Stats unavailable")
-        
+            lines += [r'$\bf{Distribution\ tests}$',
+                      r'Mann–Whitney $U$:',
+                      f"  $p = {float(stats['MWU_P_TargetDP']):.2e}$", '',
+                      r'Wasserstein ($W_1$):',
+                      f"  $W_1 = {float(stats['Wasserstein_Dist_TargetDP']):.4f}$"]
+        except Exception:
+            lines.append('Stats unavailable')
     elif page_type == 'bias':
         try:
-            rho = float(stats['Spearman_Rho_SMinAC_MeanDP'])
-            rho_p = float(stats['Spearman_P_SMinAC_MeanDP'])
-            beta = float(stats['Poisson_MeanDP_Beta'])
-            ci_lower = float(stats['Poisson_MeanDP_95CI_Lower'])
-            ci_upper = float(stats['Poisson_MeanDP_95CI_Upper'])
-            pois_p = float(stats['Poisson_MeanDP_P'])
-            
-            lines.append(r"$\bf{BIAS\ METRICS}$")
-            lines.append("Spearman Rank Correlation:")
-            lines.append(rf"  $\rho = {rho:.3f}$")
-            lines.append(rf"  $p = {rho_p:.2e}$")
-            lines.append("")
-            lines.append("Poisson Regression Model:")
-            lines.append(r"  $S_{MinAC} \sim Group + Z(D_{mean})$")
-            lines.append(rf"  $\beta_{{depth}} = {beta:.3f}$ (95% CI: {ci_lower:.3f}, {ci_upper:.3f})")
-            lines.append(rf"  $p = {pois_p:.2e}$")
-        except:
-            lines.append("Stats unavailable")
-    
-    return "\n".join(lines)
+            lines += [r'$\bf{Bias\ metrics}$',
+                      r'Spearman correlation:',
+                      rf"  $\rho = {float(stats['Spearman_Rho_SMinAC_MeanDP']):.3f}$",
+                      rf"  $p = {float(stats['Spearman_P_SMinAC_MeanDP']):.2e}$", '',
+                      'Poisson GLM:',
+                      rf'  {S_MINAC} ~ Group + $Z$({D_MEAN})',
+                      rf"  $\beta_{{depth}} = {float(stats['Poisson_MeanDP_Beta']):.3f}$",
+                      rf"  (95% CI {float(stats['Poisson_MeanDP_95CI_Lower']):.3f}, "
+                      rf"{float(stats['Poisson_MeanDP_95CI_Upper']):.3f})",
+                      rf"  $p = {float(stats['Poisson_MeanDP_P']):.2e}$"]
+        except Exception:
+            lines.append('Stats unavailable')
+    return '\n'.join(lines)
+
+
+def _stats_panel(ax, text):
+    ax.axis('off')
+    ax.text(0.0, 0.98, text, transform=ax.transAxes, va='top', ha='left',
+            fontsize=11, linespacing=1.6,
+            bbox=dict(boxstyle='round,pad=0.6', facecolor='white', edgecolor='#CCCCCC', linewidth=0.8))
+
+
+def _panel_letters(axes):
+    for ax, letter in zip(axes, 'abc'):
+        ax.text(-0.06, 1.04, f'({letter})', transform=ax.transAxes,
+                fontsize=15, fontweight='bold', ha='right', va='bottom')
+
 
 def plot_page1_depth(pdf, df, stats, variant_count, args):
-    # Adjust width ratios for better balance
-    fig, axes = plt.subplots(1, 3, figsize=(18, 7), gridspec_kw={'width_ratios': [1, 1, 0.6], 'wspace': 0.3})
-    
-    # Identify key columns
-    target_col = 'TargetDP' 
-    if 'SMinAC' in df.columns:
-        plot_col = 'SMinAC'
-        xlabel_text = "Sample Minor Allele Burden ($S_{MinAC}$)"
-        title_text_dist = "Distribution"
-        title_text_cdf = "Cumulative Distribution"
-    else:
-        plot_col = 'MeanDP'
-        xlabel_text = "Mean Sequencing Depth ($D_{mean}$)"
-        title_text_dist = "Depth Distribution"
-        title_text_cdf = "Depth Cumulative Distribution"
-    
+    fig, axes = plt.subplots(1, 3, figsize=(16, 6),
+                             gridspec_kw={'width_ratios': [1, 1, 0.55], 'wspace': 0.32})
+    target_col = 'TargetDP'
     if target_col not in df.columns:
         return
 
+    plot_col = 'SMinAC' if 'SMinAC' in df.columns else 'MeanDP'
+    xlabel = S_MINAC if plot_col == 'SMinAC' else D_MEAN
+
+    df = df.copy()
     df[target_col] = df[target_col].astype(str)
-    
-    # Use high-contrast categorical palette
-    unique_targets = sorted(df[target_col].unique())
-    palette = sns.color_palette("Set2", len(unique_targets))
-    
-    stat_type = args.hist_stat
-    y_label = "Density" if stat_type == 'density' else "Sample Count"
-    
-    # Plot 1: Histogram OR KDE
-    if stat_type == 'density':
-        sns.kdeplot(data=df, x=plot_col, hue=target_col, fill=True, ax=axes[0], 
-                    palette=palette, alpha=0.2, linewidth=1.5, common_norm=False)
+    levels = sorted(df[target_col].unique())
+    palette, hue_order = _target_palette(levels)
+
+    # (a) distribution
+    if args.hist_stat == 'density':
+        sns.kdeplot(data=df, x=plot_col, hue=target_col, hue_order=hue_order, fill=True,
+                    ax=axes[0], palette=palette, alpha=0.25, linewidth=1.6, common_norm=False)
+        axes[0].set_ylabel('Density')
     else:
-        sns.histplot(data=df, x=plot_col, hue=target_col, kde=False, ax=axes[0], 
-                     element="step", stat="count", palette=palette, alpha=0.3, linewidth=1.5)
-        # Apply comma formatting to Y axis for counts
-        axes[0].yaxis.set_major_formatter(FuncFormatter(lambda x, p: format(int(x), ',')))
-        
-    axes[0].set_title(title_text_dist, fontweight='bold')
-    axes[0].set_xlabel(xlabel_text)
-    axes[0].set_ylabel(y_label)
-    sns.move_legend(axes[0], "upper right")
+        sns.histplot(data=df, x=plot_col, hue=target_col, hue_order=hue_order, ax=axes[0],
+                     element='step', stat='count', palette=palette, alpha=0.30, linewidth=1.6)
+        axes[0].set_ylabel('Sample count')
+        axes[0].yaxis.set_major_formatter(INT_FMT)
+    axes[0].set_title('Distribution by target depth')
+    axes[0].set_xlabel(xlabel)
 
-    # Plot 2: ECDF
-    sns.ecdfplot(data=df, x=plot_col, hue=target_col, ax=axes[1], 
-                 palette=palette, linewidth=3, alpha=0.9)
-    axes[1].set_title(title_text_cdf, fontweight='bold')
-    axes[1].set_xlabel(xlabel_text)
-    axes[1].set_ylabel("Cumulative Proportion")
-    axes[1].grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.5)
+    # (b) ECDF
+    sns.ecdfplot(data=df, x=plot_col, hue=target_col, hue_order=hue_order, ax=axes[1],
+                 palette=palette, linewidth=2.4)
+    axes[1].set_title('Cumulative distribution')
+    axes[1].set_xlabel(xlabel)
+    axes[1].set_ylabel('Cumulative proportion')
 
-    # Apply comma formatting to X axis if plotting SMinAC (counts)
     if plot_col == 'SMinAC':
-        axes[0].xaxis.set_major_formatter(FuncFormatter(lambda x, p: format(int(x), ',')))
-        axes[1].xaxis.set_major_formatter(FuncFormatter(lambda x, p: format(int(x), ',')))
-    
-    # Plot 3: Stats Text
-    annot_text = get_annotation_text(stats, variant_count, len(df), args, 'depth')
-    axes[2].axis('off')
-    
-    # Refined text layout to match plot content area
-    axes[2].text(0.0, 0.95, annot_text, transform=axes[2].transAxes, 
-                 verticalalignment='top', fontsize=12, family='serif', linespacing=1.5)
-    
-    # Adjust layout
-    plt.subplots_adjust(top=0.9)
-    
+        axes[0].xaxis.set_major_formatter(INT_FMT)
+        axes[1].xaxis.set_major_formatter(INT_FMT)
+
+    for ax in (axes[0], axes[1]):
+        _despine(ax)
+        leg = ax.get_legend()
+        if leg is not None:
+            leg.set_title('Target depth')
+            leg.set_frame_on(False)
+
+    _stats_panel(axes[2], get_annotation_text(stats, variant_count, len(df), args, 'depth'))
+    _panel_letters(axes)
+    fig.suptitle(f'Depth distribution · MinAC ≥ {args.min_ac}', fontsize=16, y=1.02)
     pdf.savefig(fig, bbox_inches='tight')
-    plt.close()
+    plt.close(fig)
+
 
 def plot_page2_bias(pdf, df, stats, variant_count, args):
-    fig, axes = plt.subplots(1, 3, figsize=(18, 7), gridspec_kw={'width_ratios': [1, 1, 0.6], 'wspace': 0.3})
-    
-    x_col = 'MeanDP'
-    y_col = 'SMinAC'
-    target_col = 'TargetDP'
-    group_col = 'Group'
-    
-    df[target_col] = df[target_col].astype(str)
-    
-    unique_targets = sorted(df[target_col].unique())
-    palette_target = sns.color_palette("Set2", len(unique_targets))
-    
-    # Plot 1: Standard Scatter
-    sns.scatterplot(data=df, x=x_col, y=y_col, hue=target_col, alpha=0.7, s=40, edgecolor='w', linewidth=0.5, 
-                    ax=axes[0], palette=palette_target)
-    axes[0].set_title(f"Burden vs. Depth\n(by Target Depth)", fontweight='bold')
-    axes[0].set_xlabel("Mean Depth ($D_{mean}$)")
-    axes[0].set_ylabel("Sample Minor Allele Burden ($S_{MinAC}$)")
-    axes[0].yaxis.set_major_formatter(FuncFormatter(lambda x, p: format(int(x), ',')))
-    
-    # Plot 2: Biological Scatter
-    if group_col in df.columns:
-        # Custom palette for Case/Control (Red/Blue ideally)
-        groups = sorted(df[group_col].dropna().unique())
-        # Use a distinct palette if Case/Control
-        if set(groups) <= {'Case', 'Control', 'PH', 'Control'}:
-             palette_group = {"Case": "#d62728", "PH": "#d62728", "Control": "#1f77b4"} # Tab10 Red/Blue
-             # Fallback if other keys
-             palette_group = {k: palette_group.get(k, "#7f7f7f") for k in groups}
-        else:
-             palette_group = "tab10"
-             
-        sns.scatterplot(data=df, x=x_col, y=y_col, hue=group_col, alpha=0.7, s=40, edgecolor='w', linewidth=0.5,
-                        ax=axes[1], palette=palette_group)
+    fig, axes = plt.subplots(1, 3, figsize=(16, 6),
+                             gridspec_kw={'width_ratios': [1, 1, 0.55], 'wspace': 0.32})
+    x_col, y_col = 'MeanDP', 'SMinAC'
+    df = df.copy()
+    df['TargetDP'] = df['TargetDP'].astype(str)
+
+    scatter_kw = dict(alpha=0.75, s=30, edgecolor='white', linewidth=0.3)
+
+    # (a) coloured by target depth
+    t_levels = sorted(df['TargetDP'].unique())
+    t_pal, t_order = _target_palette(t_levels)
+    sns.scatterplot(data=df, x=x_col, y=y_col, hue='TargetDP', hue_order=t_order,
+                    ax=axes[0], palette=t_pal, **scatter_kw)
+    axes[0].set_title('Burden vs depth · target depth')
+
+    # (b) coloured by phenotype group
+    if 'Group' in df.columns:
+        g_levels = [str(g) for g in df['Group'].fillna('NaN').unique()]
+        g_pal = _group_palette(g_levels)
+        sns.scatterplot(data=df.assign(Group=df['Group'].fillna('NaN').astype(str)),
+                        x=x_col, y=y_col, hue='Group', palette=g_pal, ax=axes[1], **scatter_kw)
     else:
-        sns.scatterplot(data=df, x=x_col, y=y_col, alpha=0.7, s=40, ax=axes[1], color="#1f77b4")
-        
-    axes[1].set_title(f"Burden vs. Depth\n(by Phenotype Group)", fontweight='bold')
-    axes[1].set_xlabel("Mean Depth ($D_{mean}$)")
-    axes[1].set_ylabel("Sample Minor Allele Burden ($S_{MinAC}$)")
-    axes[1].yaxis.set_major_formatter(FuncFormatter(lambda x, p: format(int(x), ',')))
-    
-    # Plot 3: Stats Text
-    annot_text = get_annotation_text(stats, variant_count, len(df), args, 'bias')
-    axes[2].axis('off')
-    
-    # Refined text layout to match plot content area
-    axes[2].text(0.0, 0.95, annot_text, transform=axes[2].transAxes, 
-                 verticalalignment='top', fontsize=12, family='serif', linespacing=1.5)
+        sns.scatterplot(data=df, x=x_col, y=y_col, ax=axes[1], color='#0072B2', **scatter_kw)
+    axes[1].set_title('Burden vs depth · phenotype')
 
-    plt.subplots_adjust(top=0.9)
+    for ax, ttl in zip((axes[0], axes[1]), ('Target depth', 'Group')):
+        ax.set_xlabel(D_MEAN)
+        ax.set_ylabel(S_MINAC)
+        ax.yaxis.set_major_formatter(INT_FMT)
+        _despine(ax)
+        leg = ax.get_legend()
+        if leg is not None:
+            leg.set_title(ttl)
+            leg.set_frame_on(False)
 
+    _stats_panel(axes[2], get_annotation_text(stats, variant_count, len(df), args, 'bias'))
+    _panel_letters(axes)
+    fig.suptitle(f'Depth–burden bias · MinAC ≥ {args.min_ac}', fontsize=16, y=1.02)
     pdf.savefig(fig, bbox_inches='tight')
-    plt.close()
+    plt.close(fig)
+
 
 def main():
     parser = argparse.ArgumentParser(description='Render per-MinAC QC visualization report.')
@@ -237,21 +241,21 @@ def main():
     parser.add_argument('--qc-stats', required=True)
     parser.add_argument('--min-ac', required=True)
     parser.add_argument('--out-pdf', required=True)
-    parser.add_argument('--hist-stat', choices=['count', 'density'], default='density', help='Statistic to use for histogram (count or density)')
+    parser.add_argument('--hist-stat', choices=['count', 'density'], default='density',
+                        help='Statistic for the distribution panel (count or density)')
     args = parser.parse_args()
-    
+
     try:
         setup_style()
         df, variant_count, stats = load_data(args)
-        
         with PdfPages(args.out_pdf) as pdf:
             plot_page1_depth(pdf, df, stats, variant_count, args)
             plot_page2_bias(pdf, df, stats, variant_count, args)
-            
-        print(f"Generated plots: {args.out_pdf}")
+        print(f'Generated plots: {args.out_pdf}')
     except Exception as e:
-        print(f"Error generating plots: {e}", file=sys.stderr)
+        print(f'Error generating plots: {e}', file=sys.stderr)
         sys.exit(1)
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     main()

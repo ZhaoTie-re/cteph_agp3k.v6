@@ -61,7 +61,10 @@ METRIC_DESCRIPTIONS = {
     'VNumHomRef': 'Number of samples that are Homozygous Reference (0/0).',
     'VNumHet': 'Number of samples that are Heterozygous (0/1).',
     'VNumHomAlt': 'Number of samples that are Homozygous Alternative (1/1).',
-    'VMissCount': 'Number of samples where the genotype call is missing.'
+    'VMissCount': 'Number of samples where the genotype call is missing.',
+    'VMISS': 'Variant missing rate across all samples (F_MISS = MISSING_CT / OBS_CT).',
+    'VMISS_15X': 'Variant missing rate among samples with TargetDP = 15X (NaN if no 15X samples).',
+    'VMISS_30X': 'Variant missing rate among samples with TargetDP = 30X (NaN if no 30X samples).'
 }
 
 def write_documentation(out_dir, sample_info, variant_info):
@@ -282,11 +285,48 @@ def _extract_depth_ac(base_variant_ids, g_chunk_depth, a_chunk_depth):
     return ref_ac, alt_ac, min_ac
 
 
+def _compute_vmiss(m_df):
+    """Return F_MISS (variant missing rate) as a Series aligned to m_df's index."""
+    if 'F_MISS' in m_df.columns:
+        return pd.to_numeric(m_df['F_MISS'], errors='coerce')
+    if 'MISSING_CT' in m_df.columns and 'OBS_CT' in m_df.columns:
+        miss = pd.to_numeric(m_df['MISSING_CT'], errors='coerce')
+        obs = pd.to_numeric(m_df['OBS_CT'], errors='coerce')
+        return miss / obs.replace(0, np.nan)
+    return pd.Series(np.nan, index=m_df.index)
+
+
+def _extract_depth_vmiss(base_variant_ids, m_chunk_depth):
+    """Return variant missing-rate array aligned to base_variant_ids for a depth stratum."""
+    n = len(base_variant_ids)
+    if m_chunk_depth is None:
+        return np.full(n, np.nan)
+
+    m_chunk = normalize_id_column(m_chunk_depth.copy(), 'ID')
+    vmiss_series = _compute_vmiss(m_chunk)
+
+    # Fast path: line-aligned with the base variant order
+    if len(m_chunk) == n and m_chunk['ID'].astype(str).reset_index(drop=True).equals(
+        base_variant_ids.astype(str).reset_index(drop=True)
+    ):
+        return vmiss_series.to_numpy(dtype=float)
+
+    base = pd.DataFrame({'VariantID': base_variant_ids.astype(str).values})
+    depth_df = pd.DataFrame({
+        'VariantID': m_chunk['ID'].astype(str).values,
+        'vmiss': vmiss_series.to_numpy(dtype=float),
+    })
+    depth_df = depth_df.groupby('VariantID', as_index=False).mean()
+    merged = base.merge(depth_df, on='VariantID', how='left')
+    return merged['vmiss'].to_numpy(dtype=float)
+
+
 def process_variant_chunk(chunk_data):
     """
     Process a tuple of chunked variant metrics, including optional depth strata.
     """
-    g_chunk, a_chunk, m_chunk, g15_chunk, a15_chunk, g30_chunk, a30_chunk = chunk_data
+    (g_chunk, a_chunk, m_chunk, g15_chunk, a15_chunk, m15_chunk,
+     g30_chunk, a30_chunk, m30_chunk) = chunk_data
     g_chunk = g_chunk.copy()
     a_chunk = a_chunk.copy()
     m_chunk = m_chunk.copy()
@@ -320,7 +360,10 @@ def process_variant_chunk(chunk_data):
             df['VMissCount'] = m_chunk['MISSING_CT'].values
         else:
             df['VMissCount'] = 0
-        
+
+        # Variant missing rate (F_MISS) across all samples
+        df['VMISS'] = _compute_vmiss(m_chunk).to_numpy(dtype=float)
+
         # Rename
         rename_map = {
             'ID': 'VariantID',
@@ -344,10 +387,12 @@ def process_variant_chunk(chunk_data):
         df = pd.merge(g_chunk, a_chunk[['VariantID', 'ALT_CTS', 'OBS_CT']], on='VariantID', how='left')
         
         if 'MISSING_CT' in m_chunk.columns:
-            df = pd.merge(df, m_chunk[['VariantID', 'MISSING_CT']], on='VariantID', how='left')
+            m_chunk['VMISS'] = _compute_vmiss(m_chunk).to_numpy(dtype=float)
+            df = pd.merge(df, m_chunk[['VariantID', 'MISSING_CT', 'VMISS']], on='VariantID', how='left')
             df['VMissCount'] = df['MISSING_CT']
         else:
             df['VMissCount'] = 0
+            df['VMISS'] = np.nan
         
         df['AltAC'] = df['ALT_CTS']
         df['RefAC'] = df['OBS_CT'] - df['ALT_CTS']
@@ -379,16 +424,18 @@ def process_variant_chunk(chunk_data):
     df['RefAC_15X'] = ref15
     df['AltAC_15X'] = alt15
     df['MinAC_15X'] = min15
+    df['VMISS_15X'] = _extract_depth_vmiss(df['VariantID'], m15_chunk)
     df['RefAC_30X'] = ref30
     df['AltAC_30X'] = alt30
     df['MinAC_30X'] = min30
+    df['VMISS_30X'] = _extract_depth_vmiss(df['VariantID'], m30_chunk)
 
     # Select output columns
     desired_cols = [
         '#CHROM', 'POS', 'VariantID', 'REF', 'ALT', 'RefAC', 'AltAC', 'MinAC',
-        'RefAC_15X', 'AltAC_15X', 'MinAC_15X',
-        'RefAC_30X', 'AltAC_30X', 'MinAC_30X',
-        'VNumHomRef', 'VNumHet', 'VNumHomAlt', 'VMissCount'
+        'RefAC_15X', 'AltAC_15X', 'MinAC_15X', 'VMISS_15X',
+        'RefAC_30X', 'AltAC_30X', 'MinAC_30X', 'VMISS_30X',
+        'VNumHomRef', 'VNumHet', 'VNumHomAlt', 'VMissCount', 'VMISS'
     ]
     final_cols = [c for c in desired_cols if c in df.columns]
     
@@ -412,8 +459,10 @@ def main():
     parser.add_argument('--sample-minac', required=False, help='Path to sample counts file with maj-ref alignment for correct SMinAC calculation')
     parser.add_argument('--variant-counts-15x', required=False, help='Variant geno-counts file for TargetDP 15X')
     parser.add_argument('--freq-counts-15x', required=False, help='Variant freq-counts file for TargetDP 15X')
+    parser.add_argument('--variant-missing-15x', required=False, help='Variant missingness (.vmiss) file for TargetDP 15X')
     parser.add_argument('--variant-counts-30x', required=False, help='Variant geno-counts file for TargetDP 30X')
     parser.add_argument('--freq-counts-30x', required=False, help='Variant freq-counts file for TargetDP 30X')
+    parser.add_argument('--variant-missing-30x', required=False, help='Variant missingness (.vmiss) file for TargetDP 30X')
     parser.add_argument('--threads', type=int, default=1, help='Number of threads for processing')
     parser.add_argument('--log', required=True, help='Log file path')
     args = parser.parse_args()
@@ -461,6 +510,9 @@ def main():
     use_15x = bool(args.variant_counts_15x and args.freq_counts_15x and os.path.exists(args.variant_counts_15x) and os.path.exists(args.freq_counts_15x))
     use_30x = bool(args.variant_counts_30x and args.freq_counts_30x and os.path.exists(args.variant_counts_30x) and os.path.exists(args.freq_counts_30x))
 
+    has_vmiss_15x = bool(args.variant_missing_15x and os.path.exists(args.variant_missing_15x))
+    has_vmiss_30x = bool(args.variant_missing_30x and os.path.exists(args.variant_missing_30x))
+
     if use_15x:
         logging.info(f"Using 15X depth files: {args.variant_counts_15x}, {args.freq_counts_15x}")
         g15_iter = pd.read_csv(args.variant_counts_15x, sep='\t', chunksize=chunk_size)
@@ -470,6 +522,13 @@ def main():
         g15_iter = repeat(None)
         a15_iter = repeat(None)
 
+    if has_vmiss_15x:
+        logging.info(f"Using 15X missingness file: {args.variant_missing_15x}")
+        m15_iter = pd.read_csv(args.variant_missing_15x, sep='\t', chunksize=chunk_size)
+    else:
+        logging.info("15X missingness file not provided/found. vmiss_15x will be filled with NaN.")
+        m15_iter = repeat(None)
+
     if use_30x:
         logging.info(f"Using 30X depth files: {args.variant_counts_30x}, {args.freq_counts_30x}")
         g30_iter = pd.read_csv(args.variant_counts_30x, sep='\t', chunksize=chunk_size)
@@ -478,6 +537,13 @@ def main():
         logging.info("30X depth files not provided/found. RefAC_30X/AltAC_30X/MinAC_30X will be filled with 0.")
         g30_iter = repeat(None)
         a30_iter = repeat(None)
+
+    if has_vmiss_30x:
+        logging.info(f"Using 30X missingness file: {args.variant_missing_30x}")
+        m30_iter = pd.read_csv(args.variant_missing_30x, sep='\t', chunksize=chunk_size)
+    else:
+        logging.info("30X missingness file not provided/found. vmiss_30x will be filled with NaN.")
+        m30_iter = repeat(None)
     
     # Use multiprocessing pool
     # We need to zip the iterators to process corresponding chunks together
@@ -492,7 +558,12 @@ def main():
     
     with multiprocessing.Pool(processes=pool_size) as pool:
         # Keep all base chunks even if optional depth iterators differ in length.
-        chunk_generator = zip_longest(g_iter, a_iter, m_iter, g15_iter, a15_iter, g30_iter, a30_iter, fillvalue=None)
+        chunk_generator = zip_longest(
+            g_iter, a_iter, m_iter,
+            g15_iter, a15_iter, m15_iter,
+            g30_iter, a30_iter, m30_iter,
+            fillvalue=None,
+        )
         
         # imap returns results in order, which is crucial for writing to file
         for result_df in pool.imap(process_variant_chunk, (c for c in chunk_generator if c[0] is not None and c[1] is not None and c[2] is not None)):
@@ -515,9 +586,9 @@ def main():
     variant_cols = [
         '#CHROM', 'POS', 'VariantID', 'REF', 'ALT',
         'RefAC', 'AltAC', 'MinAC',
-        'RefAC_15X', 'AltAC_15X', 'MinAC_15X',
-        'RefAC_30X', 'AltAC_30X', 'MinAC_30X',
-        'VNumHomRef', 'VNumHet', 'VNumHomAlt', 'VMissCount'
+        'RefAC_15X', 'AltAC_15X', 'MinAC_15X', 'VMISS_15X',
+        'RefAC_30X', 'AltAC_30X', 'MinAC_30X', 'VMISS_30X',
+        'VNumHomRef', 'VNumHet', 'VNumHomAlt', 'VMissCount', 'VMISS'
     ]
     out_dir = os.path.dirname(os.path.abspath(args.out_sample))
     write_documentation(out_dir, (sample_rows, sample_cols), (total_variants, variant_cols))

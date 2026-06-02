@@ -1,57 +1,85 @@
 nextflow.enable.dsl = 2
 
+// ── Inputs / paths ─────────────────────────────────────────────────────────
 params.GTPath      = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/wgs.auto.par/results'
+// Single source of truth for the genotype prefix (reused by every process).
+params.BedPrefix   = "${params.GTPath}/14_fixed_model_prep/refined_core/cteph_agp3k_v6_wgs_merged.sample_qc.variant_qc.popgmm.fixed_model.maf_lt_threshold"
 params.InfoPath    = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/info/cteph_agp3k.v6.20260507.xlsx'
 params.OutDir      = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/tuning.rv/results'
 params.ScriptDir   = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/tuning.rv/scripts'
-params.Plink2      = '/home/b/b37974/plink2_alpha6/plink2'
-params.Tabix       = '/home/b/b37974/htslib-1.9/tabix'
+
+// Conda env activated in every process; plink2 / tabix / bgzip / python come
+// from PATH + this env (see the prelude at the top of each process script).
+params.conda_env_activate = 'cteph_geno_pro'
+
+// ── Info-file column mapping ────────────────────────────────────────────────
 params.IDCol       = 'ID_JHRPv6'
 params.GroupCol    = 'Outcome'
 params.CaseValue   = 'PH'
 params.TdpCol      = 'Target_Depth'
 params.MdpCol      = 'Observed_Depth'
-params.SampleRm    = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/tuning.rv/pre_check/results/01_outliers_z3/outliers_sminac_robustz.remove.txt'
+
+// ── QC removal lists (both OPTIONAL; each applied only if the file exists) ───
+//   SampleRm  : FID<TAB>IID per line   -> plink2 --remove   (pre_check step 1)
+//   VariantRm : VariantID  per line    -> plink2 --exclude  (pre_check step 3)
+params.SampleRm    = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/tuning.rv/pre_check/results/01_resid_outliers_z5/outliers_sminac_resid_robustz.remove.txt'
+params.VariantRm   = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/tuning.rv/pre_check/results/02_vmiss_depthdiff_knee/variants_vmiss_depthdiff_gt0.0330.exclude.txt'
+
 params.ThreadsCalc = 4
 
 // ─────────────────────────────────────────────────────────────────────────
-// Remove outlier samples from the genotype file BEFORE metric calculation.
-// Only executed when params.SampleRm resolves to an existing file.
+// FILTER_CALLSET — filter the genotype call set BEFORE metric calculation.
+//   - removes outlier samples   (--remove,  if params.SampleRm exists)
+//   - excludes flagged variants (--exclude, if params.VariantRm exists)
+// At least one list must exist; the workflow only invokes this when so.
 // ─────────────────────────────────────────────────────────────────────────
-process REMOVE_SAMPLES {
+process FILTER_CALLSET {
     executor 'slurm'
     queue 'gr10478b'
     time '1h'
-    publishDir "${params.OutDir}/00.sample_rm", mode: 'symlink'
+    publishDir "${params.OutDir}/00.callset_filter", mode: 'symlink'
 
     output:
     tuple path("filtered.bed"), path("filtered.bim"), path("filtered.fam"), emit: filtered
-    path "remove_samples.log", emit: log
+    path "filter_callset.log", emit: log
 
     script:
-    def orig_prefix = "${params.GTPath}/14_fixed_model_prep/refined_core/cteph_agp3k_v6_wgs_merged.sample_qc.variant_qc.popgmm.fixed_model.maf_lt_threshold"
+    def has_sample   = params.SampleRm  && file(params.SampleRm).exists()
+    def has_variant  = params.VariantRm && file(params.VariantRm).exists()
+    def remove_flag  = has_sample  ? "--remove \"${params.SampleRm}\""   : ""
+    def exclude_flag = has_variant ? "--exclude \"${params.VariantRm}\"" : ""
     """
     set -euo pipefail
+    export PATH=/home/b/b37974/:/home/b/b37974/htslib-1.9/:\$PATH
+    source activate ${params.conda_env_activate}
 
-    echo "[REMOVE_SAMPLES] Removing samples listed in: ${params.SampleRm}" | tee remove_samples.log
-    echo "[REMOVE_SAMPLES] Input prefix: ${orig_prefix}"               >> remove_samples.log
+    {
+      echo "[FILTER_CALLSET] Input prefix : ${params.BedPrefix}"
+      echo "[FILTER_CALLSET] Sample list  : ${has_sample  ? params.SampleRm  : '(none)'}"
+      echo "[FILTER_CALLSET] Variant list : ${has_variant ? params.VariantRm : '(none)'}"
+    } | tee filter_callset.log
 
-    n_rm=\$(wc -l < "${params.SampleRm}")
-    echo "[REMOVE_SAMPLES] Samples to remove: \${n_rm}"                >> remove_samples.log
+    if [[ -n "${remove_flag}" ]]; then
+        echo "[FILTER_CALLSET] Samples to remove  : \$(wc -l < "${params.SampleRm}")"  >> filter_callset.log
+    fi
+    if [[ -n "${exclude_flag}" ]]; then
+        echo "[FILTER_CALLSET] Variants to exclude: \$(wc -l < "${params.VariantRm}")" >> filter_callset.log
+    fi
 
-    ${params.Plink2} \\
-        --bfile "${orig_prefix}" \\
-        --remove "${params.SampleRm}" \\
-        --make-bed \\
-        --out filtered \\
-        --threads ${params.ThreadsCalc} \\
-        >> remove_samples.log 2>&1
+    plink2 --bfile "${params.BedPrefix}" ${remove_flag} ${exclude_flag} \\
+        --make-bed --out filtered --threads ${params.ThreadsCalc} \\
+        >> filter_callset.log 2>&1
 
-    n_after=\$(wc -l < filtered.fam)
-    echo "[REMOVE_SAMPLES] Samples retained: \${n_after}"             >> remove_samples.log
+    echo "[FILTER_CALLSET] Samples retained  : \$(wc -l < filtered.fam)" >> filter_callset.log
+    echo "[FILTER_CALLSET] Variants retained : \$(wc -l < filtered.bim)" >> filter_callset.log
     """
 }
 
+// ─────────────────────────────────────────────────────────────────────────
+// CALC_METRICS — sample/variant metrics via run_calc_metrics.sh.
+// The script also emits depth-stratified missingness columns
+// (VMISS, VMISS_15X, VMISS_30X) in variant_metrics; the CLI is unchanged.
+// ─────────────────────────────────────────────────────────────────────────
 process CALC_METRICS {
     executor 'slurm'
     queue 'gr10478b'
@@ -61,7 +89,7 @@ process CALC_METRICS {
 
     input:
     val min_ac
-    tuple path(bed), path(bim), path(fam)   // staged genotype files (original or sample-removed)
+    tuple path(bed), path(bim), path(fam)   // staged genotype files (original or filtered)
 
     output:
     tuple val(min_ac), path("sample_metrics.txt.gz"), path("variant_metrics.txt.gz"), path("variant_metrics.txt.gz.tbi"), emit: metrics
@@ -70,6 +98,8 @@ process CALC_METRICS {
     script:
     """
     set -euo pipefail
+    export PATH=/home/b/b37974/:/home/b/b37974/htslib-1.9/:\$PATH
+    source activate ${params.conda_env_activate}
 
     bash ${params.ScriptDir}/run_calc_metrics.sh \\
         --bed-prefix "${bed.baseName}" \\
@@ -77,8 +107,8 @@ process CALC_METRICS {
         --out-sample "sample_metrics.txt" \\
         --out-variant "variant_metrics.txt" \\
         --script-dir "${params.ScriptDir}" \\
-        --plink2 "${params.Plink2}" \\
-        --tabix "${params.Tabix}" \\
+        --plink2 "\$(command -v plink2)" \\
+        --tabix "\$(command -v tabix)" \\
         --id-col "${params.IDCol}" \\
         --group-col "${params.GroupCol}" \\
         --case-value "${params.CaseValue}" \\
@@ -107,25 +137,27 @@ process QC_SUMMARY {
     script:
     """
     set -euo pipefail
+    export PATH=/home/b/b37974/:/home/b/b37974/htslib-1.9/:\$PATH
+    source activate ${params.conda_env_activate}
 
-    python3 ${params.ScriptDir}/qc_summary.py \
-        --sample-metrics ${sample_metrics} \
-        --variant-metrics ${variant_metrics} \
-        --min-ac ${min_ac} \
-        --out-tsv qc_summary_stats.minac${min_ac}.tsv \
+    python3 ${params.ScriptDir}/qc_summary.py \\
+        --sample-metrics ${sample_metrics} \\
+        --variant-metrics ${variant_metrics} \\
+        --min-ac ${min_ac} \\
+        --out-tsv qc_summary_stats.minac${min_ac}.tsv \\
         --out-md qc_summary_methods.md
 
-    python3 ${params.ScriptDir}/plot_qc.py \
-        --sample-metrics ${sample_metrics} \
-        --variant-metrics ${variant_metrics} \
-        --qc-stats qc_summary_stats.minac${min_ac}.tsv \
-        --min-ac ${min_ac} \
-        --out-pdf qc_summary_plots.pdf \
+    python3 ${params.ScriptDir}/plot_qc.py \\
+        --sample-metrics ${sample_metrics} \\
+        --variant-metrics ${variant_metrics} \\
+        --qc-stats qc_summary_stats.minac${min_ac}.tsv \\
+        --min-ac ${min_ac} \\
+        --out-pdf qc_summary_plots.pdf \\
         --hist-stat density
     """
 }
 
-process MERGE_ALL_SUMMARIES {
+process MERGE_QC_SUMMARIES {
     executor 'slurm'
     queue 'gr10478b'
     time '10m'
@@ -140,19 +172,21 @@ process MERGE_ALL_SUMMARIES {
     script:
     """
     set -euo pipefail
+    export PATH=/home/b/b37974/:/home/b/b37974/htslib-1.9/:\$PATH
+    source activate ${params.conda_env_activate}
 
     awk 'NR==1 || FNR > 1' ${tsvs} > temp_merged.tsv
     python3 - <<'PY'
 import pandas as pd
 
-df = pd.read_csv('temp_merged.tsv', sep='\t')
+df = pd.read_csv('temp_merged.tsv', sep='\\t')
 df = df.sort_values('MinAC_Threshold')
-df.to_csv('all_qc_summary_stats.tsv', sep='\t', index=False)
+df.to_csv('all_qc_summary_stats.tsv', sep='\\t', index=False)
 PY
     """
 }
 
-process PLOT_SUMMARY_TREND {
+process PLOT_QC_TREND {
     executor 'slurm'
     queue 'gr10478b'
     time '10m'
@@ -167,44 +201,47 @@ process PLOT_SUMMARY_TREND {
     script:
     """
     set -euo pipefail
+    export PATH=/home/b/b37974/:/home/b/b37974/htslib-1.9/:\$PATH
+    source activate ${params.conda_env_activate}
 
-    N_SAMPLES=\$(wc -l < ${params.GTPath}/14_fixed_model_prep/refined_core/cteph_agp3k_v6_wgs_merged.sample_qc.variant_qc.popgmm.fixed_model.maf_lt_threshold.fam)
-    python3 ${params.ScriptDir}/plot_summary_trend.py \
-        --qc-stats ${qc_stats} \
-        --out-pdf qc_trend_plots.pdf \
+    N_SAMPLES=\$(wc -l < "${params.BedPrefix}.fam")
+    python3 ${params.ScriptDir}/plot_summary_trend.py \\
+        --qc-stats ${qc_stats} \\
+        --out-pdf qc_trend_plots.pdf \\
         --sample-n \${N_SAMPLES}
     """
 }
 
 workflow {
-    def orig_prefix = "${params.GTPath}/14_fixed_model_prep/refined_core/cteph_agp3k_v6_wgs_merged.sample_qc.variant_qc.popgmm.fixed_model.maf_lt_threshold"
-    def rm_file = file(params.SampleRm, checkIfExists: false)
-
     minac_ch = channel.from(0..20)
 
-    // ── Conditional sample removal ────────────────────────────────────────────
-    if (rm_file.exists()) {
-        log.info "[workflow] SampleRm found: ${params.SampleRm} — running REMOVE_SAMPLES"
-        bed_files_ch = REMOVE_SAMPLES().filtered
+    // Resolve removal lists (both optional; applied only if the file exists).
+    def sampleRmFile  = params.SampleRm  ? file(params.SampleRm,  checkIfExists: false) : null
+    def variantRmFile = params.VariantRm ? file(params.VariantRm, checkIfExists: false) : null
+    def hasSampleRm   = sampleRmFile  != null && sampleRmFile.exists()
+    def hasVariantRm  = variantRmFile != null && variantRmFile.exists()
+
+    // ── Conditional genotype filtering (samples and/or variants) ─────────────
+    if (hasSampleRm || hasVariantRm) {
+        log.info "[workflow] genotype filtering ON  (samples=${hasSampleRm}, variants=${hasVariantRm}) — running FILTER_CALLSET"
+        genotypes_ch = FILTER_CALLSET().filtered
     } else {
-        log.info "[workflow] SampleRm not found — using original genotype files"
-        bed_files_ch = channel.value([
-            file("${orig_prefix}.bed"),
-            file("${orig_prefix}.bim"),
-            file("${orig_prefix}.fam")
+        log.info "[workflow] no removal lists found — using original genotype files"
+        genotypes_ch = channel.value([
+            file("${params.BedPrefix}.bed"),
+            file("${params.BedPrefix}.bim"),
+            file("${params.BedPrefix}.fam")
         ])
     }
     // ─────────────────────────────────────────────────────────────────────────
 
-    calc_out = CALC_METRICS(minac_ch, bed_files_ch)
+    calc_out = CALC_METRICS(minac_ch, genotypes_ch)
     qc_out = QC_SUMMARY(calc_out.metrics)
 
     summary_tsvs_ch = qc_out.summary_stats
         .map { _min_ac, tsv -> tsv }
         .collect()
 
-    merged_out = MERGE_ALL_SUMMARIES(summary_tsvs_ch)
-    PLOT_SUMMARY_TREND(merged_out.merged_stats)
+    merged_out = MERGE_QC_SUMMARIES(summary_tsvs_ch)
+    PLOT_QC_TREND(merged_out.merged_stats)
 }
-
-
