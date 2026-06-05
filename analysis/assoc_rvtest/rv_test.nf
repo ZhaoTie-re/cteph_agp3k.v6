@@ -16,7 +16,7 @@
               │
         [0] FILTER_GENOTYPE (optional)  ──(QC'd PLINK)──┐
               │ (skipped if --filterGenotype false)     │
-              ▼                                          ▼
+              ▼                                         ▼
         PLINK + pheno + covar + refFlat ──────▶ [1] RVTEST_PREPARE
               │
         [1] ──(vcf)──▶ [2] SNPEFF_ANNOTATE ──(stats)──▶ [3] PLOT_SNPEFF_STATS
@@ -608,22 +608,5 @@ workflow {
         // -- [6] FDR post-processing, then [7] visualisation --------------------------
         RVTEST_POST_PROCESS(RVTEST_RUN.out.results)
         RVTEST_VISUALIZATION(RVTEST_POST_PROCESS.out.final_assoc)
-    }
-
-    // -- Completion / failure handlers (must live inside the entry workflow) ----------
-    workflow.onComplete {
-        log.info """
-=========================================================================================
- Pipeline ${workflow.success ? 'COMPLETED SUCCESSFULLY' : 'FAILED'}
------------------------------------------------------------------------------------------
- Duration  : ${workflow.duration}
- Exit code : ${workflow.exitStatus}
- Results   : ${params.outDir}
-=========================================================================================
-""".stripIndent()
-    }
-
-    workflow.onError {
-        log.error "Pipeline execution stopped: ${workflow.errorMessage}"
     }
 }

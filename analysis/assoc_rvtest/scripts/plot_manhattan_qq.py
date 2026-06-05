@@ -235,9 +235,9 @@ def main() -> None:
         ax_man.scatter(x_glob, c_data['LOG10_P'], color=CHR_COLORS[i % 2],
                        s=8, alpha=0.9, linewidth=0, zorder=2, rasterized=True)
 
-    # Genome-wide (Bonferroni) threshold
+    # Bonferroni threshold (0.05 / number of genes)
     ax_man.axhline(bonferroni_thresh, color=THRESH_COLOR, linestyle='--', linewidth=1.0, zorder=3,
-                   label=r'Genome-wide ($P = %.1e$)' % bonferroni_p)
+                   label=r'Bonferroni ($P = %.1e$)' % bonferroni_p)
 
     # Significant genes: highlight + italic labels
     sig = df[df['LOG10_P'] >= bonferroni_thresh].copy()
