@@ -1,9 +1,10 @@
 nextflow.enable.dsl = 2
 
 // ── Inputs / paths ─────────────────────────────────────────────────────────
+params.CohortName  = 'refined_core' // refined_core, expanded_core, or full_mainland
 params.GTPath      = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/wgs.auto.par/results'
 // Single source of truth for the genotype prefix (reused by every process).
-params.BedPrefix   = "${params.GTPath}/14_fixed_model_prep/refined_core/cteph_agp3k_v6_wgs_merged.sample_qc.variant_qc.popgmm.fixed_model.maf_lt_threshold"
+params.BedPrefix   = "${params.GTPath}/14_fixed_model_prep/${params.CohortName}/cteph_agp3k_v6_wgs_merged.sample_qc.variant_qc.popgmm.fixed_model.maf_lt_threshold"
 params.InfoPath    = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/info/cteph_agp3k.v6.20260507.xlsx'
 params.OutDir      = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/tuning.rv/results'
 params.ScriptDir   = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/tuning.rv/scripts'

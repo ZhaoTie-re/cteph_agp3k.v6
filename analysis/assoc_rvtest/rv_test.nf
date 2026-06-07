@@ -96,16 +96,16 @@ nextflow.enable.dsl = 2
 
 // ---- Project identity (label only; used for tags and the run banner) --------------------
 params.project           = 'cteph_agp3k_v6'
-
+params.cohortName  = 'refined_core' // refined_core, expanded_core, or full_mainland
 // ----------------------------------------------------------------------------------------
 //  Required inputs — the only project-specific values. Point these at your dataset.
 // ----------------------------------------------------------------------------------------
 // PLINK genotype set — the pipeline expects <inputPlinkPrefix>.{bed,bim,fam}
-params.inputPlinkPrefix  = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/wgs.auto.par/results/14_fixed_model_prep/refined_core/cteph_agp3k_v6_wgs_merged.sample_qc.variant_qc.popgmm.fixed_model.maf_lt_threshold'
+params.inputPlinkPrefix  = "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/wgs.auto.par/results/14_fixed_model_prep/${params.cohortName}/cteph_agp3k_v6_wgs_merged.sample_qc.variant_qc.popgmm.fixed_model.maf_lt_threshold"
 
 // Phenotype / covariate tables (rvtest format, tab-separated)
-params.phenoFile         = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/wgs.auto.par/results/16_cov_pheno_prep/refined_core/popgmm_subset_on_bbj_pcs.pheno.tsv'
-params.covarFile         = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/wgs.auto.par/results/16_cov_pheno_prep/refined_core/popgmm_subset_on_bbj_pcs.cov.sex.tsv'
+params.phenoFile         = "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/wgs.auto.par/results/16_cov_pheno_prep/${params.cohortName}/popgmm_subset_on_bbj_pcs.pheno.tsv"
+params.covarFile         = "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/wgs.auto.par/results/16_cov_pheno_prep/${params.cohortName}/popgmm_subset_on_bbj_pcs.cov.sex.tsv"
 
 // Reference resources
 params.refFlatPath       = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/anno_raw/refFlat.hg38.txt.gz'
