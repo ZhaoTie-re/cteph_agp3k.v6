@@ -23,6 +23,11 @@ def parse_args() -> argparse.Namespace:
 	parser.add_argument("--sample-id-col", required=True, help="Column name containing sample IDs")
 	parser.add_argument("--target-dp-col", required=True, help="Column name containing Target DP")
 	parser.add_argument("--dp-col", required=True, help="Column name containing DP")
+	parser.add_argument(
+		"--platform-col",
+		default="WGS_Platform",
+		help="Column name containing the sequencing platform (used to stratify the DP robust-Z)",
+	)
 	return parser.parse_args()
 
 
@@ -60,16 +65,17 @@ def load_sample_info(
 	sample_id_col: str,
 	target_dp_col: str,
 	dp_col: str,
+	platform_col: str,
 ) -> pd.DataFrame:
 	df = pd.read_excel(xlsx_path, engine="openpyxl")
 
-	required = [sample_id_col, target_dp_col, dp_col]
+	required = [sample_id_col, target_dp_col, dp_col, platform_col]
 	missing = [col for col in required if col not in df.columns]
 	if missing:
 		raise ValueError(f"Missing required column(s) in sample info: {', '.join(missing)}")
 
-	sub = df[[sample_id_col, target_dp_col, dp_col]].copy()
-	sub.columns = ["IID", "Target_DP", "DP"]
+	sub = df[[sample_id_col, target_dp_col, dp_col, platform_col]].copy()
+	sub.columns = ["IID", "Target_DP", "DP", "WGS_Platform"]
 	sub["IID"] = sub["IID"].map(normalize_text)
 	sub = sub[sub["IID"].notna()].copy()
 
@@ -77,13 +83,16 @@ def load_sample_info(
 		raise ValueError("No usable sample records after filtering empty sample IDs")
 
 	sub["Target_DP"] = sub["Target_DP"].map(normalize_text)
+	sub["WGS_Platform"] = sub["WGS_Platform"].map(normalize_text)
 	sub["DP"] = pd.to_numeric(sub["DP"], errors="coerce")
 
 	duplicated = sub["IID"].duplicated(keep=False)
 	if duplicated.any():
-		dup_rows = sub.loc[duplicated, ["IID", "Target_DP", "DP"]].copy()
+		dup_rows = sub.loc[duplicated, ["IID", "Target_DP", "DP", "WGS_Platform"]].copy()
 		agg = dup_rows.groupby("IID", dropna=False).nunique(dropna=True)
-		conflict_ids = agg[(agg["Target_DP"] > 1) | (agg["DP"] > 1)].index.tolist()
+		conflict_ids = agg[
+			(agg["Target_DP"] > 1) | (agg["DP"] > 1) | (agg["WGS_Platform"] > 1)
+		].index.tolist()
 		if conflict_ids:
 			preview = ", ".join(sorted(conflict_ids)[:10])
 			raise ValueError(f"Conflicting duplicate IID found in sample info: {preview}")
@@ -149,7 +158,11 @@ def load_het(het_path: Path) -> pd.DataFrame:
 	return out
 
 
-def calc_group_robust_z(df: pd.DataFrame) -> pd.Series:
+def calc_group_robust_z(df: pd.DataFrame, group_col: str = "WGS_Platform") -> pd.Series:
+	# DP outlier detection asks "is this sample anomalously low FOR ITS OWN PLATFORM"
+	# (a failed library), so the robust-Z is computed within WGS_Platform. Grouping by
+	# Target_DP would pool platforms of genuinely different depth (T7 ~18x, NovaSeq ~30x,
+	# G400RS ~35x all sit in "30x") and flag platform membership, not sample quality.
 	def _per_group(values: pd.Series) -> pd.Series:
 		numeric = pd.to_numeric(values, errors="coerce")
 		if numeric.notna().sum() == 0:
@@ -160,13 +173,19 @@ def calc_group_robust_z(df: pd.DataFrame) -> pd.Series:
 			return pd.Series([math.nan] * len(values), index=values.index)
 		return (numeric - median) / (1.4826 * mad)
 
-	return df.groupby("Target_DP", dropna=False)["DP"].transform(_per_group)
+	return df.groupby(group_col, dropna=False)["DP"].transform(_per_group)
 
 
 def write_output(df: pd.DataFrame, out_path: Path) -> None:
+	# Columns 1-6 (#FID..SMISS) are byte-identical to the previous version so downstream
+	# by-name readers (run_pihat_network_qc.py uses IID, SMISS) are unaffected. Two columns
+	# are appended: DP_RobustZ_in_Platform (was DP_RobustZ_in_TargetDP, now grouped by
+	# platform) and WGS_Platform (needed by run_sample_qc.py for per-platform Het_F).
 	with out_path.open("w", encoding="utf-8", newline="") as handle:
 		writer = csv.writer(handle, delimiter="\t")
-		writer.writerow(["#FID", "IID", "Het_F", "Target_DP", "DP", "SMISS", "DP_RobustZ_in_TargetDP"])
+		writer.writerow(
+			["#FID", "IID", "Het_F", "Target_DP", "DP", "SMISS", "DP_RobustZ_in_Platform", "WGS_Platform"]
+		)
 		for row in df.itertuples(index=False):
 			fid = "" if pd.isna(row.FID) else str(row.FID)
 			iid = "" if pd.isna(row.IID) else str(row.IID)
@@ -174,8 +193,9 @@ def write_output(df: pd.DataFrame, out_path: Path) -> None:
 			target_dp = "" if pd.isna(row.Target_DP) else str(row.Target_DP)
 			dp = "" if pd.isna(row.DP) else f"{float(row.DP):.6f}"
 			smiss = "" if pd.isna(row.SMISS) else f"{float(row.SMISS):.8f}"
-			rz = "" if pd.isna(row.DP_RobustZ_in_TargetDP) else f"{float(row.DP_RobustZ_in_TargetDP):.6f}"
-			writer.writerow([fid, iid, het_f, target_dp, dp, smiss, rz])
+			rz = "" if pd.isna(row.DP_RobustZ_in_Platform) else f"{float(row.DP_RobustZ_in_Platform):.6f}"
+			platform = "" if pd.isna(row.WGS_Platform) else str(row.WGS_Platform)
+			writer.writerow([fid, iid, het_f, target_dp, dp, smiss, rz, platform])
 
 
 def main() -> int:
@@ -187,6 +207,7 @@ def main() -> int:
 			args.sample_id_col,
 			args.target_dp_col,
 			args.dp_col,
+			args.platform_col,
 		)
 		smiss_df = load_smiss(Path(args.smiss))
 		het_df = load_het(Path(args.het))
@@ -194,7 +215,7 @@ def main() -> int:
 		merged = fam_df.merge(info_df, on="IID", how="left")
 		merged = merged.merge(het_df[["IID", "Het_F"]], on="IID", how="left")
 		merged = merged.merge(smiss_df[["IID", "SMISS"]], on="IID", how="left")
-		merged["DP_RobustZ_in_TargetDP"] = calc_group_robust_z(merged)
+		merged["DP_RobustZ_in_Platform"] = calc_group_robust_z(merged, group_col="WGS_Platform")
 
 		out_path = Path(args.out)
 		write_output(merged, out_path)
@@ -202,10 +223,12 @@ def main() -> int:
 		missing_info = int(merged["Target_DP"].isna().sum())
 		missing_het = int(merged["Het_F"].isna().sum())
 		missing_smiss = int(merged["SMISS"].isna().sum())
+		missing_platform = int(merged["WGS_Platform"].isna().sum())
 		print(
 			(
 				f"Wrote {len(merged)} samples to {out_path}; "
-				f"missing sample_info={missing_info}, missing het={missing_het}, missing smiss={missing_smiss}"
+				f"missing sample_info={missing_info}, missing het={missing_het}, "
+				f"missing smiss={missing_smiss}, missing platform={missing_platform}"
 			),
 			file=sys.stderr,
 		)

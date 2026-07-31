@@ -1,20 +1,16 @@
 {
-  "_comment": "Sample QC rules: remove sample if CONDITION1 OR CONDITION2 is true.",
-  "condition1": {
-    "_comment_mode": "mode options: dp_robustz | smiss",
-    "mode": "dp_robustz",
-    "dp_robustz": {
-      "_comment": "Remove when DP_RobustZ_in_TargetDP < remove_if_less_than",
-      "remove_if_less_than": -3.0
-    },
-    "smiss": {
-      "_comment": "Remove when SMISS > remove_if_greater_than",
-      "remove_if_greater_than": 0.05
-    }
+  "_design": "within-platform sample QC; see cteph_agp3k.v6/tuning.sample_qc/README.md",
+  "stratify_by": "WGS_Platform",
+  "dp_outlier": {
+    "_doc": "failed-library detector: robust-Z (MAD) of Observed_Depth, one-sided low, within platform",
+    "enabled": true,
+    "robustz_threshold": -3.0
   },
-  "condition2": {
-    "_comment": "Het_F outlier rule based on mean ± sd_multiplier * SD",
+  "het_f": {
+    "_doc": "excess-homozygosity / contamination: Het_F within-platform mean +/- k*SD (ddof=1), two-sided; upper tail removed as excess-homozygosity outliers (no ROH triage)",
     "enabled": true,
     "sd_multiplier": 5.0
-  }
+  },
+  "quarantine_missing_metrics": true,
+  "_not_used": "no sample call-rate (SMISS) filter and no sex check by design"
 }

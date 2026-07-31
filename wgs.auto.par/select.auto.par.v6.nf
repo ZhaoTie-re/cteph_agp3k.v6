@@ -32,6 +32,7 @@ params.sex_male_value         = 'M'
 params.age_col                = 'Age_at_DNA_Collection'
 params.target_dp_col		  = 'Target_Depth'
 params.dp_col 			      = 'Observed_Depth'
+params.platform_col           = 'WGS_Platform'   // sequencing platform; sample QC is stratified within it
 
 // -----------------------------------------------------------------------------
 // QC Configuration
@@ -62,7 +63,11 @@ params.bbj_preprocess_reuse_dir = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension
 //-----------------------------------------------------------------------------
 // PopGMM Configuration & Separate MAF-based Subset Configuration
 //------------------------------------------------------------------------------
-params.popgmm = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/PopGMM_output'
+// TEMPORARY (sample-QC refactor): point popgmm at a nonexistent path so resolvePopgmmKeepFiles()
+// returns empty and the else-branch (steps 12-16) is skipped — the run stops after dir 11.
+// >>> REVERT to '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/PopGMM_output'
+// >>> before running steps 12-16.
+params.popgmm = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/PopGMM_output.__STOP_AT_11__'
 params.fixed_model_maf_group = 'ctrl'   // ctrl | case | all
 params.fixed_model_maf_threshold = 0.01
 
@@ -402,7 +407,7 @@ process BUILD_SAMPLE_QC_TABLE {
 		--out ${merged_prefix} \
 		--threads 8
 
-	# 4. Build sample-level QC metrics table
+	# 4. Build sample-level QC metrics table (adds WGS_Platform + per-platform DP robust-Z)
 	python ${qc_script} \
 		--xlsx ${params.sample_info} \
 		--fam ${merged_prefix}.fam \
@@ -411,7 +416,8 @@ process BUILD_SAMPLE_QC_TABLE {
 		--out ${qc_table} \
 		--sample-id-col "${params.sample_id_col}" \
 		--target-dp-col "${params.target_dp_col}" \
-		--dp-col "${params.dp_col}"
+		--dp-col "${params.dp_col}" \
+		--platform-col "${params.platform_col}"
 	"""
 }
 
@@ -445,11 +451,12 @@ process RUN_SAMPLE_QC_FROM_METRICS {
 	export PATH=/home/b/b37974/:\$PATH
 	source activate ${params.conda_env_activate}
 
-	# 1. Apply sample QC rules to build remove/keep list and generate visualization
+	# 1. Apply within-platform sample QC rules to build remove/keep list and generate visualization
 	python ${qc_script} \
 		--metrics-tsv ${sample_qc_metrics_tsv} \
 		--config-json ${params.sample_qc_config} \
 		--out-prefix ${merged_prefix} \
+		--stratify-by "${params.platform_col}" \
 		--sample-info-xlsx ${params.sample_info} \
 		--sample-id-col "${params.sample_id_col}" \
 		--phenotype-col "${params.phenotype_col}" \
@@ -719,6 +726,7 @@ process PREPARE_BBJ_PCA_BASE {
 		--extract bbj.pca.intersect.snps \
 		--freq counts \
 		--pca 20 allele-wts approx \
+		--seed 123 \
 		--out bbj.pca_base \
 		--threads 16
 	"""
