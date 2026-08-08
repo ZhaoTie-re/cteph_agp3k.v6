@@ -1,3 +1,12 @@
+#!/usr/bin/env python3
+# ---------------------------------------------------------------------------
+# Purpose : Aggregate PLINK2 sample/variant count + missingness outputs (incl.
+#           the depth-stratified 15X / 30X strata) into tidy per-sample and
+#           per-variant metric tables, and emit the metric data dictionary
+#           (METRICS_DESCRIPTION.md).
+# Project : cteph_agp3k.v6 / tuning.rv  (rare-variant depth-confounding QC)
+# Used by : run_calc_metrics.sh  (aggregation step of CALC_METRICS_BASE / CALC_METRICS)
+# ---------------------------------------------------------------------------
 import pandas as pd
 import numpy as np
 import argparse
@@ -469,7 +478,14 @@ def main():
 
     setup_logging(args.log)
     logging.info("Starting metric calculation...")
-    logging.info(f"Arguments: {args}")
+    # Concise, portable param summary (not the full Namespace with absolute temp paths).
+    logging.info(
+        "Params: threads=%s | id_col=%s group_col=%s case=%s tdp_col=%s mdp_col=%s | "
+        "out_sample=%s out_variant=%s",
+        args.threads, args.id_col, args.group_col, args.case_value,
+        args.tdp_col, args.mdp_col,
+        os.path.basename(args.out_sample), os.path.basename(args.out_variant),
+    )
 
     start_time = time.time()
 

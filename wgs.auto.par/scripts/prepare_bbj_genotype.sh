@@ -1,11 +1,12 @@
 #!/bin/zsh
 # =============================================================================
-# BBJ (Japanese Cohort) Genotype Preprocessing Pipeline
+# prepare_bbj_genotype.sh
+# -----------------------------------------------------------------------------
+# Purpose : BBJ genotype preprocessing (QC, HWE filtering, format normalization).
+# Project : cteph_agp3k.v6 WGS pipeline (wgs.auto.par/select.auto.par.v6.nf)
+# Used by : PREPARE_BBJ_GENOTYPE
 # =============================================================================
-# Purpose: QC, HWE filtering, and format normalization for BBJ genotypes
-# Input: PLINK binary format (bed/bim/fam)
-# Output: QC-filtered PLINK binary with standardized VCF
-# =============================================================================
+# Input : PLINK binary (bed/bim/fam)    Output: QC-filtered PLINK + standardized VCF
 
 set -euo pipefail
 

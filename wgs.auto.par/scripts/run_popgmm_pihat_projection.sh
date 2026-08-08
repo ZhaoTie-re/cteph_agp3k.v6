@@ -1,8 +1,12 @@
 #!/bin/zsh
 # =============================================================================
-# PopGMM-PIHAT PCA Base and Projection Pipeline
+# run_popgmm_pihat_projection.sh
+# -----------------------------------------------------------------------------
+# Purpose : Relatedness-aware in-sample PCA base + projection of all set samples.
+# Project : cteph_agp3k.v6 WGS pipeline (wgs.auto.par/select.auto.par.v6.nf)
+# Used by : POPGMM_PIHAT_INTERSECTION_PROJECTION
 # =============================================================================
-# Purpose:
+# Details:
 #   Build a PCA base after excluding samples in the overlap between
 #   PopGMM samples and PI_HAT SELECTED_FOR_REMOVAL samples, then project
 #   PopGMM samples onto that PCA base.
@@ -116,6 +120,7 @@ plink2 \
   --extract "${base_prune_prefix}.prune.in" \
   --freq counts \
   --pca 20 allele-wts approx \
+  --seed 42 \
   --out "${base_pca_prefix}" \
   --threads "${num_threads}"
 

@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Variant Quality Control Pipeline (CLI Version)
-==============================================
-A robust, professional, and concise command-line tool for large-scale genotype variant QC.
+# =============================================================================
+# variant_qc_pipeline.py
+# -----------------------------------------------------------------------------
+# Purpose : Variant QC CLI orchestrator (metrics + filters).
+# Project : cteph_agp3k.v6 WGS pipeline (wgs.auto.par/select.auto.par.v6.nf)
+# Used by : RUN_VARIANT_QC
+# =============================================================================
+"""Variant QC CLI: large-scale genotype variant quality control.
 
-Author: ZHAO TIE
+Orchestrates variant-level metric computation (variant_qc_metrics.py) and
+filtering/visualization (variant_qc_filters.py) behind one command-line entry point.
 """
 
 import os

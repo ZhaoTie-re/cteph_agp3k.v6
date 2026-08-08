@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# =============================================================================
+# build_plink_update_table.py
+# -----------------------------------------------------------------------------
+# Purpose : Build a PLINK #FID/IID/SEX/PHENO update table from the sample-info xlsx.
+# Project : cteph_agp3k.v6 WGS pipeline (wgs.auto.par/select.auto.par.v6.nf)
+# Used by : VCF_TO_PLINK
+# =============================================================================
 
 import argparse
 import csv

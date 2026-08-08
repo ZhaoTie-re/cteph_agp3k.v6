@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# =============================================================================
+# plot_bbj_projection.py
+# -----------------------------------------------------------------------------
+# Purpose : Publication PCA figures from a merged BBJ + cohort projection sscore.
+# Project : cteph_agp3k.v6 WGS pipeline (wgs.auto.par/select.auto.par.v6.nf)
+# Used by : PROJECT_ONTO_BBJ_PCS, POPGMM_SUBSET_AND_PLOT_BBJ_PROJECTION, PREPARE_POPGMM_COV_PHENO_FILES
+# =============================================================================
 """Create publication-style projection PCA figures.
 
 Outputs:
@@ -22,8 +29,10 @@ import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
 import numpy as np
 import pandas as pd
+import seaborn as sns
 
 
 def parse_args() -> argparse.Namespace:
@@ -45,6 +54,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--ctrl-label", default="AGP3K", help="Label for control samples")
 
     parser.add_argument("--max-pcs", type=int, default=20, help="Number of PCs to use")
+    parser.add_argument("--kde-n-cols", type=int, default=5, help="Columns in the per-PC KDE grid")
     parser.add_argument(
         "--keep-non-bbj-iids",
         default=None,
@@ -414,6 +424,113 @@ def plot_pairwise_scatter(
             plt.close(fig)
 
 
+def _configure_kde_matplotlib() -> None:
+    plt.style.use("seaborn-v0_8-whitegrid")
+    sns.set_context("paper", font_scale=2.0)
+    plt.rcParams.update(
+        {
+            "figure.dpi": 300,
+            "savefig.dpi": 300,
+            "font.family": "sans-serif",
+            "font.sans-serif": ["Arial", "Helvetica", "DejaVu Sans"],
+            "font.size": 18,
+            "axes.titlesize": 24,
+            "axes.labelsize": 20,
+            "xtick.labelsize": 15,
+            "ytick.labelsize": 15,
+            "legend.fontsize": 22,
+            "figure.titlesize": 30,
+            "axes.spines.top": False,
+            "axes.spines.right": False,
+            "axes.linewidth": 1.4,
+            "xtick.major.width": 1.3,
+            "ytick.major.width": 1.3,
+            "grid.color": "#C3C3C3",
+            "grid.linestyle": "--",
+            "grid.alpha": 0.35,
+            "pdf.fonttype": 42,
+            "ps.fonttype": 42,
+        }
+    )
+
+
+def _format_pc_label(pc_num: int, explained_pct: np.ndarray) -> str:
+    return f"PC{pc_num} ({explained_pct[pc_num - 1]:.1f}%)"
+
+
+def plot_grouped_pc_kde(
+    plot_df: pd.DataFrame,
+    explained_pct: np.ndarray,
+    out_png: Path,
+    case_label: str,
+    ctrl_label: str,
+    n_cols: int = 5,
+) -> None:
+    """Per-PC case/control KDE distributions (BBJ/OTHER groups are excluded)."""
+    _configure_kde_matplotlib()
+    ctrl_color = "#1F78B4"
+    case_color = "#E31A1C"
+
+    pc_cols = [c for c in plot_df.columns if re.match(r"^PC\d+$", str(c))]
+    pc_cols = sorted(pc_cols, key=lambda c: int(str(c).replace("PC", "")))
+    if not pc_cols:
+        raise ValueError("No PC columns available for KDE plotting.")
+
+    n_cols = max(1, int(n_cols))
+    n_rows = int(np.ceil(len(pc_cols) / n_cols))
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(6.2 * n_cols, 4.8 * n_rows), squeeze=False)
+    fig.subplots_adjust(wspace=0.30, hspace=0.45, left=0.06, right=0.98, top=0.82, bottom=0.07)
+
+    for idx, col in enumerate(pc_cols, start=1):
+        ax = axes[(idx - 1) // n_cols][(idx - 1) % n_cols]
+        x_ctrl = pd.to_numeric(plot_df.loc[plot_df["GROUP"] == ctrl_label, col], errors="coerce").to_numpy(dtype=float, copy=False)
+        x_case = pd.to_numeric(plot_df.loc[plot_df["GROUP"] == case_label, col], errors="coerce").to_numpy(dtype=float, copy=False)
+        x_ctrl = x_ctrl[np.isfinite(x_ctrl)]
+        x_case = x_case[np.isfinite(x_case)]
+
+        combined = np.concatenate([x_ctrl, x_case]) if (x_ctrl.size or x_case.size) else np.array([], dtype=float)
+        if combined.size > 0:
+            x_min = float(np.min(combined))
+            x_max = float(np.max(combined))
+            span = (x_max - x_min) or 1.0
+            ax.set_xlim(x_min - span * 0.08, x_max + span * 0.08)
+
+        if x_ctrl.size > 1:
+            sns.kdeplot(x=x_ctrl, color=ctrl_color, fill=True, alpha=0.60, linewidth=2.5, ax=ax)
+        if x_case.size > 1:
+            sns.kdeplot(x=x_case, color=case_color, fill=True, alpha=0.60, linewidth=2.5, ax=ax)
+
+        pc_num = int(str(col).replace("PC", ""))
+        ax.set_title(_format_pc_label(pc_num, explained_pct), pad=10, fontweight="bold")
+        ax.set_xlabel("")
+        ax.set_ylabel("Density")
+        ax.grid(True, linestyle="--", alpha=0.35, color="#C3C3C3")
+        ax.tick_params(axis="both", which="major", length=4.8, width=1.1)
+        for spine in ax.spines.values():
+            spine.set_visible(True)
+            spine.set_linewidth(1.1)
+        if ax.get_legend() is not None:
+            ax.get_legend().remove()
+
+    for j in range(len(pc_cols) + 1, n_rows * n_cols + 1):
+        axes[(j - 1) // n_cols][(j - 1) % n_cols].axis("off")
+
+    fig.suptitle("Case/Control distributions on projected PC axes", fontweight="bold", y=0.995)
+    fig.legend(
+        handles=[
+            Patch(color=ctrl_color, alpha=0.60, label=ctrl_label),
+            Patch(color=case_color, alpha=0.60, label=case_label),
+        ],
+        loc="upper center",
+        bbox_to_anchor=(0.5, 0.965),
+        ncol=2,
+        frameon=False,
+        fontsize=22,
+    )
+    fig.savefig(out_png, bbox_inches="tight", dpi=300)
+    plt.close(fig)
+
+
 def main() -> None:
     args = parse_args()
     _configure_matplotlib()
@@ -474,7 +591,18 @@ def main() -> None:
         ctrl_label=args.ctrl_label,
     )
 
+    kde_png = Path(f"{out_prefix}.pc_group_distribution.png")
+    plot_grouped_pc_kde(
+        plot_df=plot_df,
+        explained_pct=explained_pct,
+        out_png=kde_png,
+        case_label=args.case_label,
+        ctrl_label=args.ctrl_label,
+        n_cols=args.kde_n_cols,
+    )
+
     print(f"[OK] Variance summary PNG: {variance_png}")
+    print(f"[OK] PC distribution PNG: {kde_png}")
     print(f"[OK] Pairwise PDF: {out_prefix}.pc_pairs.pdf")
 
 

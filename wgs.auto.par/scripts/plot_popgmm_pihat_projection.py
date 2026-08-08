@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# =============================================================================
+# plot_popgmm_pihat_projection.py
+# -----------------------------------------------------------------------------
+# Purpose : PCA projection figures for the relatedness-aware in-sample PCA.
+# Project : cteph_agp3k.v6 WGS pipeline (wgs.auto.par/select.auto.par.v6.nf)
+# Used by : POPGMM_PIHAT_INTERSECTION_PROJECTION
+# =============================================================================
 """Plot PCA projection results for PopGMM samples after relatedness-aware exclusion.
 
 Outputs:

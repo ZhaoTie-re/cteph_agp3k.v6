@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+# =============================================================================
+# variant_qc_metrics.py
+# -----------------------------------------------------------------------------
+# Purpose : Variant-QC metric computation (AAF/MAF, VMISS, HWE; chunked multiprocessing).
+# Project : cteph_agp3k.v6 WGS pipeline (wgs.auto.par/select.auto.par.v6.nf)
+# Used by : imported by variant_qc_pipeline.py (RUN_VARIANT_QC)
+# =============================================================================
 """Core metric computation utilities for variant-level QC.
 
 This module runs PLINK2-based metric generation and produces a consolidated

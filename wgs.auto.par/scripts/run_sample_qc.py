@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# =============================================================================
+# run_sample_qc.py
+# -----------------------------------------------------------------------------
+# Purpose : Within-platform sample QC filtering (DP robust-Z, Het_F).
+# Project : cteph_agp3k.v6 WGS pipeline (wgs.auto.par/select.auto.par.v6.nf)
+# Used by : RUN_SAMPLE_QC_FROM_METRICS
+# =============================================================================
 """Sample QC filtering — within-platform design (see cteph_agp3k.v6/tuning.sample_qc/).
 
 Two graded filters, both stratified WITHIN sequencing platform, plus a silent-pass fix:

@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+# ---------------------------------------------------------------------------
+# Purpose : Orchestrate per-(minAC) metric calculation — optional MAC filter,
+#           PLINK2 sample/variant counts + missingness (overall and 15X/30X
+#           strata), SMinAC via major-ref forcing — then aggregate with
+#           calc_metrics.py and bgzip/tabix the outputs. Step narrative is
+#           routed into the published calc_metrics.log via rv_log.sh.
+# Project : cteph_agp3k.v6 / tuning.rv  (rare-variant depth-confounding QC)
+# Used by : tuning.rv.nf  processes CALC_METRICS_BASE / CALC_METRICS
+# ---------------------------------------------------------------------------
 
 set -euo pipefail
 
@@ -107,10 +116,19 @@ cleanup() {
 }
 trap cleanup EXIT
 
+# Route the step narrative into the SAME published log that calc_metrics.py appends
+# its detail to (calc_metrics.log), via the shared structured-logging helper.
+if [[ -f "$SCRIPT_DIR/rv_log.sh" ]]; then
+    # shellcheck source=/dev/null
+    source "$SCRIPT_DIR/rv_log.sh"
+    rv_log_init "CALC_METRICS" "calc_metrics.log"
+    rv_kv "BED prefix" "$BED_PREFIX"
+    rv_kv "MinAC cutoff" "$MIN_AC"
+    rv_kv "Threads" "$THREADS"
+    log() { rv_log "$*"; }   # reroute all subsequent step narrative to the tee'd log
+fi
+
 log "Starting metrics calculation"
-log "BED prefix: $BED_PREFIX"
-log "MinAC cutoff: $MIN_AC"
-log "Threads: $THREADS"
 
 current_bed="$BED_PREFIX"
 

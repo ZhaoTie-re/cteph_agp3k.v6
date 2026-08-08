@@ -1,6 +1,10 @@
 #!/bin/zsh
 # =============================================================================
-# Prepare genotype for fixed-model fitting
+# run_fixed_model_genotype_prep.sh
+# -----------------------------------------------------------------------------
+# Purpose : Fixed-model genotype: remove related samples, drop mac=0, split by MAF threshold.
+# Project : cteph_agp3k.v6 WGS pipeline (wgs.auto.par/select.auto.par.v6.nf)
+# Used by : PREPARE_FIXED_MODEL_GENOTYPE
 # =============================================================================
 # Steps:
 # 1) Remove samples marked SELECTED_FOR_REMOVAL=true in PI_HAT vertex table
@@ -168,44 +172,55 @@ if [[ -s "$maf_lt_list" ]]; then
     --threads "$threads"
 fi
 
+plink_version=$(plink2 --version 2>/dev/null | head -1 || echo "plink2 (version unavailable)")
 before_n=$(wc -l < "${popgmm_bfile_prefix}.fam")
 before_v=$(wc -l < "${popgmm_bfile_prefix}.bim")
+n_flagged=$(wc -l < "$selected_iid")
+n_removed=$(wc -l < "$remove_fid_iid")
 after_rm_n=$(wc -l < "${post_remove_prefix}.fam")
 after_rm_v=$(wc -l < "${post_remove_prefix}.bim")
 after_fix_n=$(wc -l < "${fixed_ready_prefix}.fam")
 after_fix_v=$(wc -l < "${fixed_ready_prefix}.bim")
+maf_group_n=$(wc -l < "$maf_group_keep")
 ge_n=$(wc -l < "$maf_ge_list")
 lt_n=$(wc -l < "$maf_lt_list")
+ge_bfile_v=$(wc -l < "${maf_ge_prefix}.bim")
+if [[ -s "$maf_lt_list" ]]; then lt_bfile_v=$(wc -l < "${maf_lt_prefix}.bim"); else lt_bfile_v=0; fi
 
 {
-  echo "[$(date)] Fixed-model genotype preparation summary"
-  echo "INPUT_BFILE_PREFIX: $popgmm_bfile_prefix"
-  echo "PIHAT_VERTEX_TSV: $pihat_vertex_tsv"
-  echo "MAF_GROUP: $maf_group"
-  echo "MAF_THRESHOLD: $maf_threshold"
+  echo "=============================================================================="
+  echo "Fixed-model genotype preparation"
+  echo "=============================================================================="
+  echo "TIMESTAMP        : $(date '+%Y-%m-%d %H:%M:%S')"
+  echo "TOOL             : ${plink_version}"
+  echo "INPUT_BFILE      : ${popgmm_bfile_prefix}  (${before_n} samples / ${before_v} variants)"
+  echo "PIHAT_VERTEX_TSV : ${pihat_vertex_tsv}"
+  echo "MAF_GROUP        : ${maf_group}"
+  echo "MAF_THRESHOLD    : ${maf_threshold}"
   echo ""
-  echo "Generated files:"
-  echo "  remove list           : $remove_fid_iid"
-  echo "  fixed-ready bfile     : ${fixed_ready_prefix}.{bed,bim,fam}"
-  echo "  maf group keep list   : $maf_group_keep"
-  echo "  af/maf reference      : ${maf_ref_prefix}.afreq"
-  echo "  MAF >= threshold list : $maf_ge_list"
-  echo "  MAF <  threshold list : $maf_lt_list"
-  echo "  MAF >= threshold bfile: ${maf_ge_prefix}.{bed,bim,fam}"
+  echo "Step 1 | Remove PI_HAT related samples (SELECTED_FOR_REMOVAL)"
+  echo "  flagged in vertex table          : ${n_flagged}"
+  echo "  present in this set (removed)     : ${n_removed}     -> ${remove_fid_iid}"
+  echo "  samples: ${before_n} -> ${after_rm_n}  (delta $((after_rm_n - before_n)))"
+  echo ""
+  echo "Step 2 | Remove monomorphic variants (plink2 --mac 1, i.e. drop mac=0)"
+  echo "  variants: ${after_rm_v} -> ${after_fix_v}  (delta $((after_fix_v - after_rm_v)))"
+  echo "  fixed-ready bfile                : ${fixed_ready_prefix}.{bed,bim,fam}  (${after_fix_n} / ${after_fix_v})"
+  echo ""
+  echo "Step 3 | Split variants by MAF threshold (${maf_threshold}) estimated in group='${maf_group}'"
+  echo "  MAF reference group N samples    : ${maf_group_n}     -> ${maf_group_keep}"
+  echo "  allele-freq table                : ${maf_ref_prefix}.afreq"
+  echo "  common (MAF >= ${maf_threshold}) : ${ge_n} variants -> ${maf_ge_prefix}.{bed,bim,fam} (bim ${ge_bfile_v})"
   if [[ -s "$maf_lt_list" ]]; then
-    echo "  MAF <  threshold bfile: ${maf_lt_prefix}.{bed,bim,fam}"
+    echo "  rare   (MAF <  ${maf_threshold}) : ${lt_n} variants -> ${maf_lt_prefix}.{bed,bim,fam} (bim ${lt_bfile_v})"
   else
-    echo "  MAF <  threshold bfile: not generated (0 variants)"
+    echo "  rare   (MAF <  ${maf_threshold}) : ${lt_n} variants -> not generated (0 variants)"
   fi
   echo ""
-  echo "Counts (samples / variants):"
-  echo "  Input genotype            : ${before_n} / ${before_v}"
-  echo "  After PIHAT sample rm     : ${after_rm_n} / ${after_rm_v}"
-  echo "  After monomorphic rm      : ${after_fix_n} / ${after_fix_v}"
-  echo ""
-  echo "MAF split variant counts:"
-  echo "  MAF >= threshold          : ${ge_n}"
-  echo "  MAF <  threshold          : ${lt_n}"
+  echo "Interpretation:"
+  echo "  common part -> single-variant tests; rare part -> burden/aggregate tests."
+  echo "  Sample set here EXCLUDES PI_HAT-related samples (fixed-effects model)."
+  echo "=============================================================================="
 } > "$log_file"
 
 echo "[OK] Fixed-model genotype prepared: $out_prefix"

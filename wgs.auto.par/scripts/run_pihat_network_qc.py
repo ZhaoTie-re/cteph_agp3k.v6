@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-
+# =============================================================================
+# run_pihat_network_qc.py
+# -----------------------------------------------------------------------------
+# Purpose : PI_HAT relatedness QC via minimum-weight vertex cover.
+# Project : cteph_agp3k.v6 WGS pipeline (wgs.auto.par/select.auto.par.v6.nf)
+# Used by : RUN_PIHAT_QC
+# =============================================================================
 """PI_HAT-based relatedness QC using weighted vertex cover.
 
 This script:

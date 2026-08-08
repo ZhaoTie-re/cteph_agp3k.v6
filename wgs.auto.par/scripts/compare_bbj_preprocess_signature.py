@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# =============================================================================
+# compare_bbj_preprocess_signature.py
+# -----------------------------------------------------------------------------
+# Purpose : Compare BBJ-preprocess signatures for numeric equivalence (external-reuse gate).
+# Project : cteph_agp3k.v6 WGS pipeline (wgs.auto.par/select.auto.par.v6.nf)
+# Used by : standalone utility (BBJ external-reuse signature check)
+# =============================================================================
 """Compare BBJ preprocess signatures with numeric equivalence.
 
 Exit code:

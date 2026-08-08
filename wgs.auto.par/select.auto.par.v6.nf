@@ -41,6 +41,15 @@ params.sample_qc_config       = "${params.script_dir}/sample_qc_config.json"
 params.variant_qc_vmiss_config = "${params.script_dir}/vqc_config_vmiss.json"
 params.variant_qc_hwe_config   = "${params.script_dir}/vqc_config_hwe.json"
 params.high_ld_regions       = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/info/high-LD-regions-hg38-GRCh38_modified.txt'
+// Mainland-restricted BBJ PCA space + cohort projection (MAINLAND_PCA_PROJECTION, under 11_bbj_projection/mainland).
+// reference_full_mainland -> BBJ reference bfiles (PCA base); full_mainland -> case/control bfiles (projection). Do not swap.
+params.mainland_bbj_keep     = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/PopGMM_output/reference_full_mainland.fid_iid.txt'
+params.mainland_cohort_keep  = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/PopGMM_output/full_mainland.fid_iid.txt'
+// Model-input prep (dir 12_model_inputs): cohort sample sets fanned out for genotype + cov/pheno.
+// Explicit allow-list (each resolved to ${popgmm_dir}/<name>.fid_iid.txt) so the BBJ reference_* file
+// can never enter the cohort fan-out.
+params.popgmm_dir            = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/PopGMM_output'
+params.model_sample_sets     = ['narrow_mainland', 'intermediate_mainland', 'full_mainland']
 // true: in RUN_VARIANT_QC, exclude IIDs with SELECTED_FOR_REMOVAL=true from PI_HAT vertex-cover TSV for HWE calculations only (VMISS and AAF always use full samples)
 params.variant_qc_exclude_pihat_for_hwe = true
 
@@ -823,13 +832,122 @@ process PROJECT_ONTO_BBJ_PCS {
 }
 
 
+process MAINLAND_PCA_PROJECTION {
+	executor 'slurm'
+	queue 'gr10478b'
+	time '24h'
+
+	publishDir "${params.out_dir}/11_bbj_projection/mainland", mode: 'symlink'
+
+	input:
+	// BBJ reference genotype (same tuple as PREPARE_BBJ_PCA_BASE)
+	tuple path(bbj_bed), path(bbj_bim), path(bbj_fam)
+	// Case/control genotype after variant QC
+	tuple path(vqc_bed), path(vqc_bim), path(vqc_fam)
+	// Reused SNP set from PREPARE_BBJ_PCA_BASE (bbj.pca.intersect.snps): same variants as the
+	// full-cohort projection, so the mainland space is directly comparable (no re-pruning).
+	path bbj_pca_snps
+	// Mainland keep lists: BBJ reference and case/control (FID IID, no header)
+	path bbj_keep
+	path cohort_keep
+
+	output:
+	path("mainland.pca_base.eigenvec")
+	path("mainland.pca_base.eigenval")
+	path("mainland.pca_base.eigenvec.allele")
+	path("mainland.pca_base.acount")
+	path("mainland.bbjproj.sscore")
+	path("mainland.bbjproj.sscore.vars")
+	path("mainland.bbjproj.variance_summary.png")
+	path("mainland.bbjproj.pc_pairs.pdf")
+	path("mainland.bbjproj.pc_group_distribution.png")
+	path("mainland.bbjproj.pc_group_distribution.log.txt")
+	path("mainland.bbjproj.pc_stats.tsv")
+	path("mainland.bbjproj.pc_tests.tsv")
+
+	script:
+	def bbj_prefix = bbj_bed.baseName
+	def vqc_prefix = vqc_bed.baseName
+	def projection_plot_script = "${params.script_dir}/plot_mainland_pca_projection.py"
+	"""
+	export PATH=/home/b/b37974/:\$PATH
+	source activate ${params.conda_env_activate}
+
+	# 0. Restrict BBJ reference and case-control genotypes to their mainland samples, extracting
+	#    the reused BBJ PCA SNP set (bbj.pca.intersect.snps) so the mainland space uses exactly the
+	#    same variants as the full-cohort projection (no re-pruning / re-intersection here).
+	plink2 \
+		--bfile ${bbj_prefix} \
+		--keep ${bbj_keep} \
+		--extract ${bbj_pca_snps} \
+		--make-bed \
+		--out bbj.mainland \
+		--threads 16
+
+	plink2 \
+		--bfile ${vqc_prefix} \
+		--keep ${cohort_keep} \
+		--extract ${bbj_pca_snps} \
+		--make-bed \
+		--out vqc.mainland \
+		--threads 16
+
+	# 1. Run PCA on BBJ mainland genotype over the reused SNP set.
+	plink2 \
+		--bfile bbj.mainland \
+		--freq counts \
+		--pca 20 allele-wts approx \
+		--seed 42 \
+		--out mainland.pca_base \
+		--threads 16
+
+	# 2. Merge BBJ mainland + cohort mainland (plink1.9) and project onto BBJ mainland PCs.
+	plink \
+		--bfile bbj.mainland \
+		--bmerge vqc.mainland.bed vqc.mainland.bim vqc.mainland.fam \
+		--make-bed \
+		--keep-allele-order \
+		--out merged.mainland.proj \
+		--threads 16
+
+	plink2 \
+		--bfile merged.mainland.proj \
+		--read-freq mainland.pca_base.acount \
+		--score mainland.pca_base.eigenvec.allele 2 6 header-read no-mean-imputation variance-standardize list-variants \
+		--score-col-nums 7-26 \
+		--out mainland.bbjproj \
+		--threads 16
+
+	# 3. Publication-style figures and case-vs-control statistics.
+	python ${projection_plot_script} \
+		--bbj-eigenval mainland.pca_base.eigenval \
+		--projected-sscore mainland.bbjproj.sscore \
+		--sample-info ${params.sample_info} \
+		--sample-id-col "${params.sample_id_col}" \
+		--phenotype-col "${params.phenotype_col}" \
+		--phenotype-case-value "${params.phenotype_case_value}" \
+		--phenotype-ctrl-value "${params.phenotype_ctrl_value}" \
+		--bbj-id-prefix "bbj_" \
+		--bbj-label "BBJ" \
+		--case-label "${params.case_label}" \
+		--ctrl-label "${params.ctrl_label}" \
+		--max-pcs 20 \
+		--out-prefix mainland.bbjproj
+	"""
+}
+
+
 process POPGMM_SUBSET_AND_PLOT_BBJ_PROJECTION {
-	// executor 'slurm'
-	// queue 'gr10478b'
-	// time '24h'
+	executor 'slurm'
+	queue 'gr10478b'
+	time '24h'
 	tag "${popgmm_id}"
 
-	publishDir "${params.out_dir}/12_popgmm_subset_projection", mode: 'symlink', saveAs: { filename -> "${task.tag}/${filename}" }
+	publishDir "${params.out_dir}/12_model_inputs", mode: 'symlink', saveAs: { fn ->
+		if (fn.endsWith('.log.txt')) return "${task.tag}/logs/${fn}"
+		if (fn ==~ /.*\.popgmm\.(bed|bim|fam)$/) return "${task.tag}/genotype/base/${fn}"
+		return "${task.tag}/pca/bbj/${fn}"
+	}
 
 	input:
 	// Combined input to guarantee one independent task per PopGMM keep list.
@@ -840,6 +958,7 @@ process POPGMM_SUBSET_AND_PLOT_BBJ_PROJECTION {
 	path("*.popgmm.subset.log.txt")
 	path("*.bbjproj.popgmm.variance_summary.png")
 	path("*.bbjproj.popgmm.pc_pairs.pdf")
+	path("*.bbjproj.popgmm.pc_group_distribution.png")
 
 	script:
 	def vqc_prefix = vqc_bed.baseName
@@ -926,12 +1045,15 @@ process POPGMM_SUBSET_AND_PLOT_BBJ_PROJECTION {
 
 
 process POPGMM_PIHAT_INTERSECTION_PROJECTION {
-	// executor 'slurm'
-	// queue 'gr10478b'
-	// time '24h'
+	executor 'slurm'
+	queue 'gr10478b'
+	time '24h'
 	tag "${popgmm_id}"
 
-	publishDir "${params.out_dir}/13_popgmm_pihat_projection", mode: 'symlink', saveAs: { filename -> "${task.tag}/${filename}" }
+	publishDir "${params.out_dir}/12_model_inputs", mode: 'symlink', saveAs: { fn ->
+		if (fn.endsWith('.log.txt') || fn.endsWith('.done.txt') || fn.endsWith('.iid') || fn.endsWith('.fid_iid')) return "${task.tag}/logs/${fn}"
+		return "${task.tag}/pca/insample/${fn}"
+	}
 
 	input:
 	// Combined input to preserve list-specific pairing.
@@ -989,12 +1111,16 @@ process POPGMM_PIHAT_INTERSECTION_PROJECTION {
 
 
 process PREPARE_FIXED_MODEL_GENOTYPE {
-	// executor 'slurm'
-	// queue 'gr10478b'
-	// time '24h'
+	executor 'slurm'
+	queue 'gr10478b'
+	time '24h'
 	tag "${popgmm_id}"
 
-	publishDir "${params.out_dir}/14_fixed_model_prep", mode: 'symlink', saveAs: { filename -> "${task.tag}/${filename}" }
+	publishDir "${params.out_dir}/12_model_inputs", mode: 'symlink', saveAs: { fn ->
+		if (fn.endsWith('.log.txt')) return "${task.tag}/logs/${fn}"
+		if (fn.endsWith('.exclude.fid_iid')) return "${task.tag}/logs/${fn}"
+		return "${task.tag}/genotype/fixed_model/${fn}"
+	}
 
 	input:
 	// Combined input to preserve list-specific pairing.
@@ -1010,6 +1136,8 @@ process PREPARE_FIXED_MODEL_GENOTYPE {
 	tuple path("*.maf_ge_threshold.bed"), path("*.maf_ge_threshold.bim"), path("*.maf_ge_threshold.fam")
 	tuple path("*.maf_lt_threshold.bed"), path("*.maf_lt_threshold.bim"), path("*.maf_lt_threshold.fam"), optional: true
 	path("*.fixed_model_prep.log.txt")
+	// id-tagged summary bundle for SUMMARIZE_MODEL_INPUTS (small files only)
+	tuple val(popgmm_id), path("*.fixed_ready.fam"), path("*.maf_ge_threshold.variants.txt"), path("*.maf_lt_threshold.variants.txt"), path("*.pihat_selected.exclude.fid_iid")
 
 	script:
 	def pop_prefix = pop_bed.baseName.replaceAll(/\.bed$/, '')
@@ -1031,12 +1159,15 @@ process PREPARE_FIXED_MODEL_GENOTYPE {
 
 
 process PREPARE_RANDOM_MODEL_GENOTYPE {
-	// executor 'slurm'
-	// queue 'gr10478b'
-	// time '12h'
+	executor 'slurm'
+	queue 'gr10478b'
+	time '12h'
 	tag "${popgmm_id}"
 
-	publishDir "${params.out_dir}/15_random_model_prep", mode: 'symlink', saveAs: { filename -> "${task.tag}/${filename}" }
+	publishDir "${params.out_dir}/12_model_inputs", mode: 'symlink', saveAs: { fn ->
+		if (fn.endsWith('.log.txt')) return "${task.tag}/logs/${fn}"
+		return "${task.tag}/genotype/random_model/${fn}"
+	}
 
 	input:
 	// Combined input to preserve list-specific pairing.
@@ -1045,6 +1176,8 @@ process PREPARE_RANDOM_MODEL_GENOTYPE {
 	output:
 	tuple path("*.random_model.bed"), path("*.random_model.bim"), path("*.random_model.fam")
 	path("*.random_model_prep.log.txt")
+	// id-tagged summary bundle for SUMMARIZE_MODEL_INPUTS
+	tuple val(popgmm_id), path("*.random_model.fam"), path("*.random_model.bim")
 
 	script:
 	def pop_prefix = pop_bed.baseName.replaceAll(/\.bed$/, '')
@@ -1064,43 +1197,121 @@ process PREPARE_RANDOM_MODEL_GENOTYPE {
 
 
 process PREPARE_POPGMM_COV_PHENO_FILES {
-	// executor 'slurm'
-	// queue 'gr10478b'
-	// time '12h'
+	executor 'slurm'
+	queue 'gr10478b'
+	time '12h'
 	tag "${popgmm_id}"
 
-	publishDir "${params.out_dir}/16_cov_pheno_prep", mode: 'symlink', saveAs: { filename -> "${task.tag}/${filename}" }
+	publishDir "${params.out_dir}/12_model_inputs", mode: 'symlink', saveAs: { fn ->
+		if (fn == 'pheno.tsv') return "${task.tag}/phenotype/${fn}"
+		if (fn.endsWith('.sex.tsv') || fn.endsWith('.sex_age.tsv')) return "${task.tag}/covariates/${fn}"
+		if (fn.endsWith('.sscore') || fn.endsWith('.png') || fn.endsWith('.pdf')) return "${task.tag}/pca/bbj_mainland/${fn}"
+		return "${task.tag}/logs/${fn}"
+	}
 
 	input:
-	// Combined input to preserve list-specific pairing.
-	tuple val(popgmm_id), path(popgmm_subset_sscore), path(popgmm_pihat_sscore)
+	// (id, bbj_pc sscore [A], geno_pc sscore [B], mainland sscore, mainland eigenval, set keep)
+	tuple val(popgmm_id), path(bbj_sscore), path(geno_sscore), path(mainland_sscore), path(mainland_eigenval), path(popgmm_keep)
 
 	output:
-	path("*.pheno.tsv")
-	path("*.cov.sex.tsv")
-	path("*.cov.sex_age_agez.tsv")
-	path("*.age_na.fid_iid")
-	path("popgmm_cov_pheno.log.txt")
+	// id-tagged summary bundle for SUMMARIZE_MODEL_INPUTS (must stay output[0])
+	tuple val(popgmm_id), path("pheno.tsv"), path("*.sex.tsv"), path("*.sex_age.tsv"), path("age_na.fid_iid"), path("sex_na.fid_iid")
+	path("*.sex.tsv")
+	path("*.sex_age.tsv")
+	path("pheno.tsv")
+	path("age_na.fid_iid")
+	path("sex_na.fid_iid")
+	path("cov_pheno.log.txt")
+	path("${popgmm_id}.mainland.sscore")
+	path("${popgmm_id}.bbj_mainland.variance_summary.png")
+	path("${popgmm_id}.bbj_mainland.pc_pairs.pdf")
+	path("${popgmm_id}.bbj_mainland.pc_group_distribution.png")
 
 	script:
 	def build_script = "${params.script_dir}/build_popgmm_cov_pheno_from_sscore.py"
-	def out_log = "popgmm_cov_pheno.log.txt"
+	def plot_script = "${params.script_dir}/plot_bbj_projection.py"
 	"""
 	export PATH=/home/b/b37974/:\$PATH
 	source activate ${params.conda_env_activate}
 
+	# 1) Per-set mainland projection: cohort-only restricted sscore + figure (BBJ backdrop + this set)
+	awk 'NR==FNR { keep[\$2]=1; next } FNR==1 { print; next } (\$2 in keep) { print }' \
+		${popgmm_keep} ${mainland_sscore} > ${popgmm_id}.mainland.sscore
+
+	python ${plot_script} \
+		--bbj-eigenval ${mainland_eigenval} \
+		--projected-sscore ${mainland_sscore} \
+		--sample-info ${params.sample_info} \
+		--sample-id-col "${params.sample_id_col}" \
+		--phenotype-col "${params.phenotype_col}" \
+		--phenotype-case-value "${params.phenotype_case_value}" \
+		--phenotype-ctrl-value "${params.phenotype_ctrl_value}" \
+		--bbj-id-prefix "bbj_" \
+		--bbj-label "BBJ" \
+		--case-label "${params.case_label}" \
+		--ctrl-label "${params.ctrl_label}" \
+		--max-pcs 20 \
+		--keep-non-bbj-iids ${popgmm_keep} \
+		--out-prefix ${popgmm_id}.bbj_mainland
+
+	# 2) Covariates (geno_pc / bbj_pc / bbj_mainland_pc, each x sex|sex_age) + phenotype
 	python ${build_script} \
-		--sscore-a ${popgmm_subset_sscore} \
-		--sscore-b ${popgmm_pihat_sscore} \
-		--label-a popgmm_subset_on_bbj_pcs \
-		--label-b popgmm_relatedness_aware_projection \
+		--sscore geno_pc=${geno_sscore} \
+		--sscore bbj_pc=${bbj_sscore} \
+		--sscore bbj_mainland_pc=${popgmm_id}.mainland.sscore \
+		--pheno-source bbj_pc \
+		--keep ${popgmm_keep} \
+		--n-pcs 20 \
 		--sample-info ${params.sample_info} \
 		--sample-id-col "${params.sample_id_col}" \
 		--sex-col "${params.sex_col}" \
 		--sex-female-value "${params.sex_female_value}" \
 		--sex-male-value "${params.sex_male_value}" \
 		--age-col "${params.age_col}" \
-		--out-log ${out_log}
+		--out-log cov_pheno.log.txt
+	"""
+}
+
+
+process SUMMARIZE_MODEL_INPUTS {
+	executor 'slurm'
+	queue 'gr10478b'
+	time '1h'
+	tag "${popgmm_id}"
+
+	publishDir "${params.out_dir}/12_model_inputs", mode: 'symlink', saveAs: { fn -> "${task.tag}/${fn}" }
+
+	input:
+	// Joined by id: base(fam,bim) + fixed(ready.fam, common.vars, rare.vars, exclude) +
+	//               random(fam,bim) + covpheno(pheno, [sex], [sex_age], age_na, sex_na)
+	tuple val(popgmm_id), path(base_fam), path(base_bim), path(fixed_ready_fam), path(common_variants), path(rare_variants), path(pihat_exclude), path(random_fam), path(random_bim), path(pheno), path(cov_sex_files), path(cov_sex_age_files), path(age_na), path(sex_na)
+
+	output:
+	path("MANIFEST.tsv")
+	path("prep_summary.log")
+
+	script:
+	def summarize_script = "${params.script_dir}/summarize_model_inputs.py"
+	"""
+	export PATH=/home/b/b37974/:\$PATH
+	source activate ${params.conda_env_activate}
+
+	python ${summarize_script} \
+		--set-id ${popgmm_id} \
+		--base-fam ${base_fam} \
+		--base-bim ${base_bim} \
+		--fixed-ready-fam ${fixed_ready_fam} \
+		--common-variants ${common_variants} \
+		--rare-variants ${rare_variants} \
+		--pihat-exclude ${pihat_exclude} \
+		--random-fam ${random_fam} \
+		--random-bim ${random_bim} \
+		--pheno ${pheno} \
+		--age-na ${age_na} \
+		--sex-na ${sex_na} \
+		--cov-dir . \
+		--out-manifest MANIFEST.tsv \
+		--out-summary prep_summary.log
 	"""
 }
 
@@ -1179,28 +1390,31 @@ workflow {
 		ch_variant_qc_plink
 	)
 
-	// 11-16. PopGMM-dependent steps (single file or directory with multiple *fid_iid.txt)
-	def popgmm_keep_files = resolvePopgmmKeepFiles(params.popgmm)
-	if (popgmm_keep_files.isEmpty()) {
-		log.warn "[PopGMM] No keep list found from params.popgmm: ${params.popgmm}"
-		log.warn "[PopGMM] Steps 11-16 are skipped. Provide a keep file or a directory containing *fid_iid.txt, then rerun with -resume."
+	// 10b. Mainland-restricted PCA space (BBJ mainland) + cohort mainland projection, viz + stats.
+	//      Independent of the PopGMM gate; publishes under 11_bbj_projection/mainland.
+	//      out[1]=mainland eigenval, out[4]=mainland projection sscore (used as bbj_mainland_pc source below).
+	ch_mainland = MAINLAND_PCA_PROJECTION(
+		ch_bbj_plink,
+		ch_variant_qc_plink,
+		ch_bbj_pca_base[0],
+		file(params.mainland_bbj_keep, checkIfExists: true),
+		file(params.mainland_cohort_keep, checkIfExists: true)
+	)
+
+	// 12_model_inputs. Per-set model-input prep for the cohort mainland sample sets.
+	// Fan-out from an explicit allow-list (each name -> ${popgmm_dir}/<name>.fid_iid.txt) so the BBJ
+	// reference_* keep file can never enter the cohort fan-out. id == set name (already filesystem-safe).
+	def popgmm_entries = params.model_sample_sets.collect { name ->
+		tuple(name, file("${params.popgmm_dir}/${name}.fid_iid.txt", checkIfExists: true))
+	}
+
+	if (popgmm_entries.isEmpty()) {
+		log.warn "[model-inputs] params.model_sample_sets is empty; steps 12+ skipped."
 	} else {
-		def seenPopgmmIds = [:].withDefault { 0 }
-		def popgmm_entries = popgmm_keep_files.collect { keepFile ->
-			def idBase = popgmmKeepIdFromFile(keepFile)
-			seenPopgmmIds[idBase] = seenPopgmmIds[idBase] + 1
-			def id = seenPopgmmIds[idBase] == 1 ? idBase : "${idBase}_${seenPopgmmIds[idBase]}"
-			tuple(id, file(keepFile.absolutePath, checkIfExists: true))
-		}
-
-		log.info "[PopGMM] Found ${popgmm_entries.size()} keep list(s)."
-		popgmm_entries.each { entry ->
-			log.info "[PopGMM] keep-id=${entry[0]} file=${entry[1]}"
-		}
-
+		log.info "[model-inputs] ${popgmm_entries.size()} sample set(s): ${popgmm_entries.collect { it[0] }.join(', ')}"
 		ch_popgmm_keep = channel.fromList(popgmm_entries)
 
-		// 11. PopGMM subset on variant-QC genotype + PopGMM-filtered replot from existing projection sscore
+		// (a) Subset variant-QC genotype by set + bbj_pc (full-BBJ) projection replot restricted to the set
 		ch_step11_in = ch_popgmm_keep
 			.combine(ch_variant_qc_plink)
 			.map { id, keep, vqc_bed, vqc_bim, vqc_fam -> tuple(id, keep, vqc_bed, vqc_bim, vqc_fam) }
@@ -1214,7 +1428,7 @@ workflow {
 		ch_popgmm_plink = ch_popgmm_primary.map { id, bed, bim, fam, _sscore -> tuple(id, bed, bim, fam) }
 		ch_popgmm_subset_sscore = ch_popgmm_primary.map { id, _bed, _bim, _fam, sscore -> tuple(id, sscore) }
 
-		// 12. Intersect PopGMM with PI_HAT selected-for-removal samples, then perform base PCA and projection
+		// (b) geno_pc: relatedness-aware in-sample PCA of the set, project all set samples back
 		ch_step12_in = ch_popgmm_plink
 			.join(ch_popgmm_keep)
 			.map { id, bed, bim, fam, keep -> tuple(id, bed, bim, fam, keep) }
@@ -1224,30 +1438,46 @@ workflow {
 		ch_pihat_proj_all = POPGMM_PIHAT_INTERSECTION_PROJECTION(ch_step12_in)
 		ch_popgmm_pihat_sscore = ch_pihat_proj_all[0]
 
-		// 13. Prepare fixed-model genotype from PopGMM genotype:
-		//     remove PI_HAT selected samples, drop monomorphic variants,
-		//     and split by MAF threshold using ctrl/case/all reference group
+		// (c) Fixed-model genotype: remove PI_HAT-related samples, drop mac=0, split by MAF threshold
 		ch_step13_in = ch_popgmm_plink
 			.combine(ch_pihat_vertex)
 			.map { id, bed, bim, fam, pihat -> tuple(id, bed, bim, fam, pihat) }
 
 		ch_fixed_model_all = PREPARE_FIXED_MODEL_GENOTYPE(ch_step13_in)
 		ch_maf_ge_variants = ch_fixed_model_all[0]
+		ch_fixed_summary = ch_fixed_model_all[9]
 
-		// 14. Prepare random model genotype from PopGMM genotype:
-		//     extract variants with MAF >= threshold for random effects model
+		// (d) Random-model genotype: all set samples x common (MAF>=thr) variants (same list as fixed common)
 		ch_step14_in = ch_popgmm_plink
 			.join(ch_maf_ge_variants)
 			.map { id, bed, bim, fam, maf_ge -> tuple(id, bed, bim, fam, maf_ge) }
 
-		PREPARE_RANDOM_MODEL_GENOTYPE(ch_step14_in)
+		ch_random_all = PREPARE_RANDOM_MODEL_GENOTYPE(ch_step14_in)
+		ch_random_summary = ch_random_all[2]
 
-		// 15. Build pheno/cov files from two PopGMM-related projection sscore files
+		// (e) Covariates (3 PC sources x sex|sex_age) + phenotype + per-set bbj_mainland figure.
+		//     mainland sscore/eigenval are singletons (one projection of full_mainland) fanned out by combine.
 		ch_step15_in = ch_popgmm_subset_sscore
 			.join(ch_popgmm_pihat_sscore)
-			.map { id, subset_sscore, pihat_sscore -> tuple(id, subset_sscore, pihat_sscore) }
+			.map { id, bbj_sscore, geno_sscore -> tuple(id, bbj_sscore, geno_sscore) }
+			.combine(ch_mainland[4])
+			.map { id, bbj_sscore, geno_sscore, mainland_sscore -> tuple(id, bbj_sscore, geno_sscore, mainland_sscore) }
+			.combine(ch_mainland[1])
+			.map { id, bbj_sscore, geno_sscore, mainland_sscore, mainland_eval -> tuple(id, bbj_sscore, geno_sscore, mainland_sscore, mainland_eval) }
+			.join(ch_popgmm_keep)
+			.map { id, bbj_sscore, geno_sscore, mainland_sscore, mainland_eval, keep -> tuple(id, bbj_sscore, geno_sscore, mainland_sscore, mainland_eval, keep) }
 
-		PREPARE_POPGMM_COV_PHENO_FILES(ch_step15_in)
+		ch_covpheno_all = PREPARE_POPGMM_COV_PHENO_FILES(ch_step15_in)
+		ch_covpheno_summary = ch_covpheno_all[0]
+
+		// (f) Consolidated per-set manifest + summary (joins the small artifacts of each step by id)
+		ch_base_summary = ch_popgmm_plink.map { id, _bed, bim, fam -> tuple(id, fam, bim) }
+		ch_manifest_in = ch_base_summary
+			.join(ch_fixed_summary)
+			.join(ch_random_summary)
+			.join(ch_covpheno_summary)
+
+		SUMMARIZE_MODEL_INPUTS(ch_manifest_in)
 	}
 }
 

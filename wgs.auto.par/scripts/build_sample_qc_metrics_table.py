@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# =============================================================================
+# build_sample_qc_metrics_table.py
+# -----------------------------------------------------------------------------
+# Purpose : Assemble the sample-level QC metrics table (Het_F, DP robust-Z, SMISS, platform).
+# Project : cteph_agp3k.v6 WGS pipeline (wgs.auto.par/select.auto.par.v6.nf)
+# Used by : BUILD_SAMPLE_QC_TABLE
+# =============================================================================
 
 import argparse
 import csv

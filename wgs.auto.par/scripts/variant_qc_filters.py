@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+# =============================================================================
+# variant_qc_filters.py
+# -----------------------------------------------------------------------------
+# Purpose : Variant-QC filtering & visualization utilities (VMISS/HWE pass-lists, plots).
+# Project : cteph_agp3k.v6 WGS pipeline (wgs.auto.par/select.auto.par.v6.nf)
+# Used by : imported by variant_qc_pipeline.py (RUN_VARIANT_QC)
+# =============================================================================
 """Filtering and visualization utilities for variant-level QC.
 
 This module provides:
