@@ -10,7 +10,7 @@
   "p_genomewide": 5E-8,
   "p_suggestive": 0.00001,
   "peak_flank_bp": 250000,
-  "label_suggestive": 10,
+  "max_suggestive": 10,
   "anno_style": "auto",
   "repel_force": 0.03,
   "susie": {"L": 10, "coverage": 0.95, "min_abs_corr": 0.5},

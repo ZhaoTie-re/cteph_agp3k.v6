@@ -16,7 +16,7 @@ the component elsewhere, and nothing here should be copied into a different stud
 | `PcLabel` / `NPcs` | `bbj_mainland` / 10 — projections onto a mainland-restricted BBJ PCA space |
 | `CovarLabel` | `SEX + 10 bbj_mainland PCs` (11 terms) |
 | `FirthMode` | `no-firth` |
-| thresholds | `PGenomeWide = 5e-8`, `PSuggestive = 1e-5`, `PeakFlank = 250 kb` |
+| thresholds | `PGenomeWide = 5e-8`, `PSuggestive = 1e-5`, `MaxSuggestive = 10`, `PeakFlank = 250 kb` |
 | phenotype | CTEPH case/control |
 
 The PCs describe ancestry structure only. They are **not** sequencing-batch or depth covariates.
@@ -87,15 +87,33 @@ and the risk-direction skew confined to low MAF.
 
 ## 3. Peaks called
 
-| cohort | additive genome-wide | additive suggestive |
-|---|---|---|
-| `narrow_mainland` | 0 | 40 |
-| `intermediate_mainland` | 1 | 37 |
-| `full_mainland` | 2 | 51 |
+| cohort | additive genome-wide | additive suggestive | suggestive *variants* |
+|---|---|---|---|
+| `narrow_mainland` | 0 | 40 | — |
+| `intermediate_mainland` | 1 | 37 | — |
+| `full_mainland` | 2 | 51 | — |
 
-Over M ≈ 5.11 M analysed variants a 1 × 10⁻⁵ threshold yields ≈ 51 variants by chance alone; the
-observed counts run ~4× that, consistent with λ_ADD ≈ 1.12 rather than with 40–50 real loci. This is
-why the suggestive tier receives no per-peak follow-up.
+(Peak counts at `PSuggestive = 1e-5`; the exact per-cohort numbers are in
+`_comparison/tables/scan_qc_all.tsv` after each run.)
+
+**The threshold defines the tier; a separate cap defines the follow-up.** Over M ≈ 5.11 M
+analysed variants, 1 × 10⁻⁵ yields ≈ 51 variants by chance alone, and the observed tier is the
+same order. The suggestive tier is therefore a **description of the scan's shape, not a list of
+findings** — λ_ADD ≈ 1.12 accounts for part of it and there is no way to say which part.
+
+An earlier revision handled this by moving the threshold to 1 × 10⁻⁶. That shrank the tier but
+also made it non-standard and silently changed what the dashed line on every figure meant. The
+threshold is now back at the conventional 1 × 10⁻⁵ and the *follow-up* is capped instead:
+`params.MaxSuggestive = 10` per cohort, chosen by smallest *P*.
+
+**The invariant that buys**: a suggestive locus named on a scan figure always has regional,
+fine-mapping and conditional figures, and one that is not named never does — because the same
+parameter drives both. `peaks.tsv` still carries the whole tier, so `cross_cohort.py` and the
+QC counts describe all of it; only `lead_variants.tsv` and the per-peak sumstats are capped.
+Those two tables differ in length **on purpose**.
+
+Follow-up volume: 3 genome-wide + 30 suggestive loci across the three cohorts, against 131 had
+the tier been followed up entirely.
 
 ### Additive genome-wide loci
 

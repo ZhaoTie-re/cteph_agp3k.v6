@@ -14,7 +14,7 @@ Peaks come in two tiers, treated differently on purpose:
 | tier | threshold | gets |
 |---|---|---|
 | `genome_wide` | `params.PGenomeWide` | annotation · cross-cohort table · conditional analysis · SuSiE · three-source regional plot |
-| `suggestive` | `params.PSuggestive` | annotation · cross-cohort table · one landscape figure — **no per-peak follow-up** |
+| `suggestive` | `params.PSuggestive` | annotation · cross-cohort table · scan figure; the `params.MaxSuggestive` **strongest** also get the full per-peak follow-up |
 
 The suggestive tier describes the shape of the scan; it is not a list of findings. Over *M* analysed
 variants a threshold α yields ≈ *M*α crossings by chance alone, and an inflated scan yields a multiple
@@ -72,6 +72,7 @@ use this order top to bottom, and the cross-cohort logic assumes an estimate exi
 | covariates | `SEX` + `PC1_AVG–PCn_AVG` | `params.NPcs`, `params.PcLabel`, `params.CovarLabel` |
 | Firth | `no-firth` | `params.FirthMode` |
 | thresholds | 5 × 10⁻⁸ / 1 × 10⁻⁵ | `params.PGenomeWide`, `params.PSuggestive` |
+| suggestive follow-up | the 10 strongest | `params.MaxSuggestive` |
 | peak merging | distance, ±250 kb, no LD clumping | `params.PeakFlank` |
 | fine-mapping | `susie_rss`, L = 10, coverage 0.95, in-sample LD | `params.Susie*` |
 | LD panel names | shown on the regional figure | `params.LdPanelLabels` |
@@ -118,27 +119,32 @@ shared axes over all cohorts, so none can be processed until every cohort has fi
 ## Layout
 
 [docs/OUTPUTS.md](docs/OUTPUTS.md) has the full tree and every column definition.
-[docs/FIGURES.md](docs/FIGURES.md) covers the shared visual grammar; **every PNG has a companion
-`.md`** with the numbers behind that rendering and how to read it.
+[_shared/docs/FIGURES.md](../_shared/docs/FIGURES.md) covers the shared visual grammar. A **standalone**
+figure has a companion `.md` with the numbers behind that rendering and how to read it. The
+**per-locus** families do not: their prose is identical for every locus, so it is written once as
+`<figure-dir>/README.md` with the loci as rows of one table.
 
 ```
-scripts/
+../_shared/scripts/        shared with the other association components
   plot_style.py          shared style, LD colour scale, symbol glossary, layout helpers
-  figure_doc.py          writes the sidecar .md beside every figure
+  figure_doc.py          writes a standalone figure's .md, and each locus figure's stats.json
+  figure_catalogue.py    one document per figure family per cohort, loci as table rows
   call_peaks.py          scan QC + peak calling, 2 tiers, every model
   annotate_leads.py      the lead-variant table + every model's peaks
+  variant_annot.py       ONE implementation of rsID / gene / snpEff / genotype lookups
   gene_utils.R           ONE definition of "an informative gene" + representative transcript
   gene_annotate.R        nearest/overlapping gene per lead
   region_tracks.R        exon structure + recombination for one window
   ld_sources.py          three LD sources + the signed r matrix SuSiE uses
   susie_finemap.R        SuSiE on summary statistics + in-sample LD
-  conditional_stepwise.py
-  variant_annot.py       ONE implementation of rsID / gene / snpEff / genotype lookups
   cs_variants.py         per-variant credible-set table
   cross_cohort.py        every peak lead, in every cohort
   plot_manhattan_qq.py   the per-scan figure (Manhattan + peaks + QQ + effect/MAF)
   plot_regional.py · plot_finemap.py · plot_conditional.py
   plot_cohort_compare.py · plot_cohort_manhattan.py
+
+scripts/                   engine-specific to this component
+  conditional_stepwise.py  stepwise conditioning via plink2 --glm --condition-list
 ```
 
 ## Environments
@@ -198,8 +204,12 @@ awk -F'\t' 'NR>1{n[$3]++} END{for(k in n) print k, n[k]}' results/_comparison/ta
 # the annotation table
 head -1 results/_comparison/tables/lead_annotation_all.tsv | tr '\t' '\n' | nl
 
-# every figure has its sidecar, and none is stale
-find results -name '*.png' | while read p; do [ -f "${p%.png}.md" ] || echo "MISSING $p"; done
+# every standalone figure has its sidecar; every fan-out family has its catalogue
+find results -name '*.png' | while read p; do
+  d=$(dirname "$p")
+  case "$d" in */genome_wide|*/suggestive) [ -f "$d/../README.md" ] || echo "NO CATALOGUE $p" ;;
+                *) [ -f "${p%.png}.md" ] || echo "MISSING $p" ;; esac
+done
 ```
 
 A project running this component should record its own sanity anchors — the loci, credible-set sizes

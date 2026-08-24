@@ -1,0 +1,13 @@
+{
+  "cohort": "intermediate_mainland",
+  "locus_id": "sg015_5_66174098",
+  "lead_id": "chr5:66174098:A:G",
+  "n_gwas": 2480,
+  "n_variants": 843,
+  "L": 10,
+  "coverage": 0.95,
+  "min_abs_corr": 0.5,
+  "converged": true,
+  "n_credible_sets": 0,
+  "susieR_version": "0.14.2"
+}

@@ -10,12 +10,13 @@ results/
     02.scan/                 scan_qc.tsv — cohort size, calibration, exclusions, all 3 models
     03.peaks/                peaks.tsv · lead_variants.tsv · lead_annotation.tsv
                              model_peaks.tsv · model_peaks_annotation.tsv  (all 3 models)
-      <peak_id>/             genome-wide peaks only: LD, SuSiE, conditional
+      <tier>/<peak_id>/      per-peak follow-up: LD, SuSiE, conditional rounds
+                             <tier> = genome_wide | suggestive
     figures/
       01.scan/               scan.<model>.png + .md                  (3)
-      02.regional/           regional.<peak_id>.png + .md            (genome-wide peaks)
-      03.finemap/            finemap.<peak_id>.png + .md             (genome-wide peaks)
-      04.conditional/        conditional.<peak_id>.png + .md         (genome-wide peaks)
+      02.regional/<tier>/   regional.<peak_id>.png + .md   (both tiers)
+      03.finemap/<tier>/   finemap.<peak_id>.png + .md   (both tiers)
+      04.conditional/<tier>/   conditional.<peak_id>.png + .md   (both tiers)
   _comparison/
     tables/                  scan_qc_all.tsv · peaks_all.tsv · lead_annotation_all.tsv
                              model_peaks_all.tsv · cs_variants_all.tsv
@@ -25,7 +26,7 @@ results/
   _run_info/                 trace · report · timeline · dag · run_manifest
 ```
 
-**Every PNG has a companion `.md` of the same name**, written by `scripts/figure_doc.py`: what the
+**Every PNG has a companion `.md` of the same name**, written by `_shared/scripts/figure_doc.py`: what the
 figure shows, each panel's statistic and how it is computed, axis and colour semantics, the concrete
 numbers behind that particular rendering, how to read it in order, and what it cannot establish.
 
@@ -87,7 +88,8 @@ One row per peak lead, **both tiers**.
 
 | column | how it is derived |
 |---|---|
-| `rsID` | `params.rsid_vcf`, matched on `chr:pos:REF:ALT`; `.` if absent from that VCF |
+| `rsID` | `params.rsid_vcf`, matched on `chr:pos:REF:ALT`; `.` if absent from that VCF **or if the accession is not resolved to this allele** — see `rsID_unresolved` |
+| `rsID_unresolved` | the accessions the VCF carried when they could NOT be attributed to this allele, else `.`. The source VCF is `norm`ed, and splitting a multi-allelic record **copies the whole ID field onto every split allele** instead of distributing the accessions. When the copied string holds **more than one** accession it is a union over the pre-split alleles, at most one of which names this variant — those go here and `rsID` stays `.`. A **single** accession shared across alleles is not a defect (RS numbers are site-level) and stays in `rsID`, as does a genuine dbSNP merge. METHODS §8 has the four cases |
 | `Gene`, `Gene_Biotype`, `Gene_Distance_bp` | EnsDb v86 — overlapping gene, else nearest. `Gene_Distance_bp` is 0 inside a gene, negative when the variant lies before the gene, positive after |
 | `EA` / `OA` | plink2's `A1` / the other of REF, ALT |
 | `Beta`, `SE` | `log(OR)` and `LOG(OR)_SE` |
@@ -103,7 +105,7 @@ One row per peak lead, **both tiers**.
 Genotype counts, EAF, missing rate and HWE come from two plink2 calls per cohort (`--keep` the case
 list / the control list, `--extract` the leads, `--geno-counts --hardy`).
 
-### `03.peaks/<peak_id>/` — genome-wide peaks only
+### `03.peaks/<tier>/<peak_id>/` — per-peak follow-up, both tiers
 
 | file | content |
 |---|---|
@@ -159,7 +161,7 @@ variant falls in, the second is the nearest or overlapping gene by position.
 One row per (model × peak), with the **same field set** as `lead_annotation.tsv` so the two stack.
 Prefix columns: `cohort, model, peak_id, tier, n_sig_variants, n_genomewide_variants`.
 
-Peaks are formed exactly as the additive ones are (METHODS §8b): usable rows, *P* < 10⁻⁵, merged within
+Peaks are formed exactly as the additive ones are (METHODS §8b): usable rows, *P* < `PSuggestive`, merged within
 250 kb, then tiered by whether the lead clears 5 × 10⁻⁸. Roughly 29–53 peaks per model per cohort.
 
 `peak_id` is `<add|dom|rec><NNN>_<chrom>_<pos>`. **Nothing fans out from this file** — it exists so each

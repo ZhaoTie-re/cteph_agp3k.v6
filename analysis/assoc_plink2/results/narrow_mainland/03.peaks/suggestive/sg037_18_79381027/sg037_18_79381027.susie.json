@@ -1,0 +1,13 @@
+{
+  "cohort": "narrow_mainland",
+  "locus_id": "sg037_18_79381027",
+  "lead_id": "chr18:79381027:G:T",
+  "n_gwas": 2168,
+  "n_variants": 988,
+  "L": 10,
+  "coverage": 0.95,
+  "min_abs_corr": 0.5,
+  "converged": true,
+  "n_credible_sets": 0,
+  "susieR_version": "0.14.2"
+}

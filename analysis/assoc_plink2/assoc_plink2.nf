@@ -11,8 +11,10 @@ nextflow.enable.dsl = 2
 //
 // Peaks come in two tiers, called once at the suggestive threshold and then
 // labelled, because the thresholds are nested:
-//     genome_wide   lead P < 5e-8   -> full follow-up (ADDITIVE only)
-//     suggestive    lead P < 1e-5   -> annotation table + display only
+//     genome_wide   lead P < PGenomeWide   -> full per-peak follow-up
+//     suggestive    lead P < PSuggestive   -> the same, judged against PSuggestive
+// Both tiers fan out; outputs are separated under <tier>/ so they never mix.
+// Only the PEAK MODEL defines peaks at all — that restriction is unchanged.
 //
 // Peaks are called for ALL THREE models so every scan figure can draw its own,
 // but only the ADDITIVE peaks drive the fan-out below.
@@ -49,7 +51,12 @@ nextflow.enable.dsl = 2
 // -----------------------------------------------------------------------------
 params.project_dir   = '/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6'
 params.base_dir      = "${params.project_dir}/analysis/assoc_plink2"
+// Engine-specific scripts (this component only).
 params.script_dir    = "${params.base_dir}/scripts"
+// Scripts shared with the other association components — peak calling, annotation, LD,
+// fine-mapping and every figure. They are about association RESULTS, not about which engine
+// produced them, so they live once at analysis/_shared and both pipelines point here.
+params.shared_script_dir = "${params.project_dir}/analysis/_shared/scripts"
 params.out_dir       = "${params.base_dir}/results"
 params.model_inputs  = "${params.project_dir}/wgs.auto.par/results/12_model_inputs"
 
@@ -94,11 +101,18 @@ params.PGenomeWide   = 5e-8
 params.PSuggestive   = 1e-5
 params.PeakFlank     = 250000                // half-width for distance-based merging
 params.MaxCondRounds = 5
-// How many suggestive peak leads a scan figure labels, smallest P first. All
-// genome-wide leads are always labelled; a full suggestive tier does not fit a
-// 7.2 in genomic axis, so the cap is stated in the caption rather than left for
-// the reader to infer from a crowded panel.
-params.LabelSuggestive = 10
+// How many suggestive peaks the scan figure NAMES *and* the fan-out FOLLOWS UP,
+// smallest P first. Genome-wide peaks are always both. One parameter, not two,
+// because the two must agree: at 1e-5 the suggestive tier holds 40-51 peaks per
+// cohort against ~51 expected by chance, so the tier is a description of the
+// scan's shape rather than a list of findings, and only its strongest members
+// earn a regional / fine-map / conditional figure.
+//
+// THE INVARIANT this buys: a suggestive locus named on a scan figure always has
+// downstream figures, and one that is not named never does. Splitting this into
+// separate label and follow-up counts breaks that silently, which is why it is
+// passed to call_peaks.py and plot_manhattan_qq.py from the same place.
+params.MaxSuggestive = 10
 // gwaslab annotation style for the scan figures. 'expand' repels label
 // positions symmetrically and sets the text vertical; 'right' is gwaslab's own
 // default greedy sweep at 40 degrees. RepelForce is the minimum separation as a
@@ -150,8 +164,33 @@ def covarTag() {
     return "sex_pc1_${params.NPcs}_${params.PcLabel}"
 }
 
+// Figure family -> its directory under figures/. The catalogue publishes beside
+// the figures it documents, so the two must agree.
+params.FigureDirs = ['regional': '02.regional', 'finemap': '03.finemap',
+                     'conditional': '04.conditional']
+
 def panelLabelArgs() {
     return params.LdPanelLabels.collect { k, v -> "--panel-label '${k}=${v}'" }.join(' ')
+}
+
+// The tier a peak belongs to, derived from its id. call_peaks.py builds peak ids
+// as `gw###_<chrom>_<pos>` / `sg###_<chrom>_<pos>`, and that prefix is the only
+// tier information reachable INSIDE a process: a publishDir closure sees process
+// inputs, and adding `tier` as an input would change every task hash and re-run
+// the entire existing fan-out purely to name a directory. Asserts rather than
+// guessing, so a change to the id convention fails loudly here.
+def tierOf(String peak_id) {
+    if (peak_id.startsWith('gw')) return 'genome_wide'
+    if (peak_id.startsWith('sg')) return 'suggestive'
+    error "cannot determine the tier of peak '${peak_id}' — expected the gw/sg prefix call_peaks.py writes"
+}
+
+// Conditional analysis is judged against the threshold that DEFINED the peak.
+// Judging a suggestive peak against the genome-wide line would make round 0 fail
+// for every one of them, and the table would report zero signals everywhere —
+// meaningless rather than empty.
+def peakThreshold(String peak_id) {
+    return tierOf(peak_id) == 'genome_wide' ? params.PGenomeWide : params.PSuggestive
 }
 
 // plink2 --glm keyword for a model ('' = additive, plink2's default).
@@ -235,12 +274,13 @@ process SCAN_PEAKS {
     def pairs = [models, glms].transpose().collect { m, f -> "--glm ${m}=${f}" }.join(' ')
     """
     source activate ${params.conda_env}
-    python3 ${params.script_dir}/call_peaks.py \
+    python3 ${params.shared_script_dir}/call_peaks.py \
         ${pairs} \
         --cohort ${cohort} --fam ${fam} \
         --peak-model ${params.PeakModel} \
         --p-genomewide ${params.PGenomeWide} \
         --p-suggestive ${params.PSuggestive} \
+        --max-suggestive-followup ${params.MaxSuggestive} \
         --peak-flank ${params.PeakFlank} \
         --out-dir .
     """
@@ -263,13 +303,14 @@ process PLOT_SCAN {
     script:
     """
     source activate ${params.conda_env}
-    python3 ${params.script_dir}/plot_manhattan_qq.py \
+    python3 ${params.shared_script_dir}/plot_manhattan_qq.py \
         --glm ${glm} --cohort ${cohort} --model ${model} \
         --model-peaks ${model_peaks} \
-        --label-suggestive ${params.LabelSuggestive} \
+        --label-suggestive ${params.MaxSuggestive} \
         --anno-style ${params.AnnoStyle} --repel-force ${params.RepelForce} \
         --covar-label '${params.CovarLabel}' --pc-label '${params.PcLabel}' --n-pcs ${params.NPcs} \
         --alpha ${params.PGenomeWide} --suggestive ${params.PSuggestive} \
+        --peak-flank ${params.PeakFlank} \
         --out-png scan.${model}.png
     """
 }
@@ -293,12 +334,13 @@ process ANNOTATE_LEADS {
     """
     export PATH=${params.tool_dir}:\$PATH
     source activate ${params.conda_env}
-    python3 ${params.script_dir}/annotate_leads.py \
+    python3 ${params.shared_script_dir}/annotate_leads.py \
         --peaks ${peaks} --model-peaks ${model_peaks} \
         --bfile ${bed.baseName} --cohort ${cohort} \
+        --p-genomewide ${params.PGenomeWide} --p-suggestive ${params.PSuggestive} \
         --plink2 ${params.plink2} --tabix ${params.tabix} \
         --rsid-vcf ${params.rsid_vcf} \
-        --rscript ${params.rscript} --gene-script ${params.script_dir}/gene_annotate.R \
+        --rscript ${params.rscript} --gene-script ${params.shared_script_dir}/gene_annotate.R \
         --snpeff-index ${params.snpeff_index_dir} \
         --threads ${task.ext.threads ?: 1} \
         --out lead_annotation.tsv --out-model-peaks model_peaks_annotation.tsv
@@ -311,7 +353,7 @@ process CONDITIONAL {
     time '6h'
     tag "${cohort}:${peak_id}"
 
-    publishDir { "${params.out_dir}/${cohort}/03.peaks/${peak_id}" }, mode: 'copy'
+    publishDir { "${params.out_dir}/${cohort}/03.peaks/${tierOf(peak_id)}/${peak_id}" }, mode: 'copy'
 
     input:
     tuple val(cohort), val(peak_id), val(chrom), val(start), val(end), val(lead_id),
@@ -333,7 +375,7 @@ process CONDITIONAL {
         --model ${params.PeakModel} --firth-mode ${params.FirthMode} \
         --cohort ${cohort} --locus-id ${peak_id} \
         --chrom ${chrom} --start ${start} --end ${end} --lead-id ${lead_id} \
-        --p-threshold ${params.PGenomeWide} --max-rounds ${params.MaxCondRounds} \
+        --p-threshold ${peakThreshold(peak_id)} --max-rounds ${params.MaxCondRounds} \
         --threads ${task.ext.threads ?: 1} \
         --out-dir .
     """
@@ -345,7 +387,7 @@ process LD_SOURCES {
     time '8h'
     tag "${cohort}:${peak_id}"
 
-    publishDir { "${params.out_dir}/${cohort}/03.peaks/${peak_id}" }, mode: 'copy'
+    publishDir { "${params.out_dir}/${cohort}/03.peaks/${tierOf(peak_id)}/${peak_id}" }, mode: 'copy'
 
     input:
     tuple val(cohort), val(peak_id), val(chrom), val(start), val(end), val(lead_id),
@@ -362,7 +404,7 @@ process LD_SOURCES {
     """
     export PATH=${params.tool_dir}:\$PATH
     source activate ${params.conda_env}
-    python3 ${params.script_dir}/ld_sources.py \
+    python3 ${params.shared_script_dir}/ld_sources.py \
         --plink ${params.plink19} --plink2 ${params.plink2} --tabix ${params.tabix} \
         --bfile ${bed.baseName} --ref-panel-bfile ${params.RefPanelBfile} \
         --pop-r2-template '${params.PopR2Template}' \
@@ -373,7 +415,7 @@ process LD_SOURCES {
         --memory-mb 16000 --threads ${task.ext.threads ?: 1} \
         --out-dir .
 
-    ${params.rscript} ${params.script_dir}/region_tracks.R \
+    ${params.rscript} ${params.shared_script_dir}/region_tracks.R \
         --chrom ${chrom} --start ${start} --end ${end} \
         --recomb-bw ${params.recomb_bw} \
         --out-exons ${peak_id}.exons.tsv \
@@ -387,7 +429,7 @@ process SUSIE {
     time '4h'
     tag "${cohort}:${peak_id}"
 
-    publishDir { "${params.out_dir}/${cohort}/03.peaks/${peak_id}" }, mode: 'copy'
+    publishDir { "${params.out_dir}/${cohort}/03.peaks/${tierOf(peak_id)}/${peak_id}" }, mode: 'copy'
 
     input:
     tuple val(cohort), val(peak_id), val(lead_id), path(sumstat),
@@ -400,7 +442,7 @@ process SUSIE {
 
     script:
     """
-    ${params.rscript} ${params.script_dir}/susie_finemap.R \
+    ${params.rscript} ${params.shared_script_dir}/susie_finemap.R \
         --sumstat ${sumstat} \
         --ld-matrix ${ld_matrix} --ld-vars ${ld_vars} \
         --cohort ${cohort} --locus-id ${peak_id} --lead-id ${lead_id} \
@@ -418,7 +460,7 @@ process CS_VARIANTS {
     time '2h'
     tag "${cohort}:${peak_id}"
 
-    publishDir { "${params.out_dir}/${cohort}/03.peaks/${peak_id}" }, mode: 'copy'
+    publishDir { "${params.out_dir}/${cohort}/03.peaks/${tierOf(peak_id)}/${peak_id}" }, mode: 'copy'
 
     input:
     tuple val(cohort), val(peak_id), val(lead_id), path(pip), path(cs), path(json), path(sumstat)
@@ -430,12 +472,12 @@ process CS_VARIANTS {
     """
     export PATH=${params.tool_dir}:\$PATH
     source activate ${params.conda_env}
-    python3 ${params.script_dir}/cs_variants.py \
+    python3 ${params.shared_script_dir}/cs_variants.py \
         --pip ${pip} --cs ${cs} --sumstat ${sumstat} \
         --cohort ${cohort} --peak-id ${peak_id} --lead-id ${lead_id} \
         --tabix ${params.tabix} --rsid-vcf ${params.rsid_vcf} \
         --snpeff-index ${params.snpeff_index_dir} \
-        --rscript ${params.rscript} --gene-script ${params.script_dir}/gene_annotate.R \
+        --rscript ${params.rscript} --gene-script ${params.shared_script_dir}/gene_annotate.R \
         --out ${peak_id}.cs_variants.tsv
     """
 }
@@ -474,24 +516,28 @@ process PLOT_REGIONAL {
     time '2h'
     tag "${cohort}:${peak_id}"
 
-    publishDir { "${params.out_dir}/${cohort}/figures/02.regional" }, mode: 'copy'
+    publishDir { "${params.out_dir}/${cohort}/figures/02.regional/${tierOf(peak_id)}" }, mode: 'copy', pattern: '*.png'
 
     input:
     tuple val(cohort), val(peak_id), val(lead_id), path(sumstat),
-          path(ld_cohort), path(ld_tommo), path(ld_eas), path(exons), path(recomb)
+          path(ld_cohort), path(ld_tommo), path(ld_eas), path(exons), path(recomb),
+          path(lead_annotation)
 
     output:
-    path("regional.${peak_id}.*")
+    path("regional.${peak_id}.png"), emit: png
+    tuple val(cohort), path("regional.${peak_id}.stats.json"), emit: stats
 
     script:
     """
     source activate ${params.conda_env}
     mkdir -p ld && cp ${ld_cohort} ${ld_tommo} ${ld_eas} ld/
-    python3 ${params.script_dir}/plot_regional.py \
+    python3 ${params.shared_script_dir}/plot_regional.py \
         --sumstat ${sumstat} --ld-dir ld \
         --cohort ${cohort} --locus-id ${peak_id} --lead-id ${lead_id} \
         --exons ${exons} --recomb ${recomb} --alpha ${params.PGenomeWide} \
+        --alpha-suggestive ${params.PSuggestive} \
         ${panelLabelArgs()} \
+        --lead-annotation ${lead_annotation} \
         --out-png regional.${peak_id}.png
     """
 }
@@ -502,20 +548,25 @@ process PLOT_FINEMAP {
     time '2h'
     tag "${cohort}:${peak_id}"
 
-    publishDir { "${params.out_dir}/${cohort}/figures/03.finemap" }, mode: 'copy'
+    publishDir { "${params.out_dir}/${cohort}/figures/03.finemap/${tierOf(peak_id)}" }, mode: 'copy', pattern: '*.png'
 
     input:
-    tuple val(cohort), val(peak_id), val(lead_id), path(pip), path(cs), path(json), path(ld_cohort)
+    tuple val(cohort), val(peak_id), val(lead_id), path(pip), path(cs), path(json), path(ld_cohort),
+          path(lead_annotation)
 
     output:
-    path("finemap.${peak_id}.*")
+    path("finemap.${peak_id}.png"), emit: png
+    tuple val(cohort), path("finemap.${peak_id}.stats.json"), emit: stats
 
     script:
     """
     source activate ${params.conda_env}
-    python3 ${params.script_dir}/plot_finemap.py \
+    python3 ${params.shared_script_dir}/plot_finemap.py \
         --pip ${pip} --cs ${cs} --json ${json} --ld-cohort ${ld_cohort} \
         --cohort ${cohort} --locus-id ${peak_id} --lead-id ${lead_id} \
+        --alpha ${params.PGenomeWide} \
+        --alpha-suggestive ${params.PSuggestive} \
+        --lead-annotation ${lead_annotation} \
         --out-png finemap.${peak_id}.png
     """
 }
@@ -526,23 +577,59 @@ process PLOT_CONDITIONAL {
     time '2h'
     tag "${cohort}:${peak_id}"
 
-    publishDir { "${params.out_dir}/${cohort}/figures/04.conditional" }, mode: 'copy'
+    publishDir { "${params.out_dir}/${cohort}/figures/04.conditional/${tierOf(peak_id)}" }, mode: 'copy', pattern: '*.png'
 
     input:
-    tuple val(cohort), val(peak_id), val(lead_id), path(rounds), path(signals), path(round_files)
+    tuple val(cohort), val(peak_id), val(lead_id), path(rounds), path(signals), path(round_files),
+          path(lead_annotation)
 
     output:
-    path("conditional.${peak_id}.*")
+    path("conditional.${peak_id}.png"), emit: png
+    tuple val(cohort), path("conditional.${peak_id}.stats.json"), emit: stats
 
     script:
     """
     source activate ${params.conda_env}
-    python3 ${params.script_dir}/plot_conditional.py \
+    python3 ${params.shared_script_dir}/plot_conditional.py \
         --cond-dir . --rounds ${rounds} \
         --cohort ${cohort} --locus-id ${peak_id} --lead-id ${lead_id} \
         --covar-label '${params.CovarLabel}' --pc-label '${params.PcLabel}' --n-pcs ${params.NPcs} \
         --alpha ${params.PGenomeWide} \
+        --alpha-suggestive ${params.PSuggestive} \
+        --tier ${tierOf(peak_id)} \
+        --lead-annotation ${lead_annotation} \
         --out-png conditional.${peak_id}.png
+    """
+}
+
+// One document per figure family per cohort, replacing the per-locus sidecars.
+// A fan-out over N peaks produced 3N figures; a sidecar each meant 3N documents
+// whose prose was identical and whose numbers were six lines apart. The prose is
+// a property of the family, so it is written once and the numbers become rows.
+process CATALOGUE_FIGURES {
+    executor 'slurm'
+    queue 'gr10478b'
+    time '1h'
+    tag "${cohort}:${family}"
+
+    publishDir { "${params.out_dir}/${cohort}/figures/${params.FigureDirs[family]}" }, mode: 'copy'
+
+    input:
+    tuple val(cohort), val(family), path(stats)
+
+    output:
+    path('README.md')
+
+    script:
+    """
+    source activate ${params.conda_env}
+    python3 ${params.shared_script_dir}/figure_catalogue.py \
+        --family ${family} --cohort ${cohort} \
+        --stats-dir . --figure-dir ${params.FigureDirs[family]} \
+        --alpha ${params.PGenomeWide} --alpha-suggestive ${params.PSuggestive} \
+        --pc-label '${params.PcLabel}' --n-pcs ${params.NPcs} \
+        ${panelLabelArgs()} \
+        --out README.md
     """
 }
 
@@ -564,6 +651,10 @@ process CROSS_COHORT {
           path(beds,  stageAs: 'geno_*.bed'),
           path(bims,  stageAs: 'geno_*.bim'),
           path(fams,  stageAs: 'geno_*.fam')
+    // A SEPARATE input, not part of the tuple: `combine` flattens a collected
+    // list into the tuple element-wise, so the paths arrived as N elements and
+    // the declaration no longer matched.
+    path(signals, stageAs: 'sig_*.tsv')
 
     output:
     path('lead_crosscohort.tsv'), emit: table
@@ -575,12 +666,15 @@ process CROSS_COHORT {
     """
     export PATH=${params.tool_dir}:\$PATH
     source activate ${params.conda_env}
-    python3 ${params.script_dir}/cross_cohort.py \
+    python3 ${params.shared_script_dir}/cross_cohort.py \
         ${pk} ${gl} ${bf} \
         --cohort-order ${params.Cohorts.join(',')} \
+        --p-genomewide ${params.PGenomeWide} --p-suggestive ${params.PSuggestive} \
+        --peak-flank ${params.PeakFlank} \
+        --signals ${signals} \
         --plink2 ${params.plink2} --tabix ${params.tabix} \
         --rsid-vcf ${params.rsid_vcf} \
-        --rscript ${params.rscript} --gene-script ${params.script_dir}/gene_annotate.R \
+        --rscript ${params.rscript} --gene-script ${params.shared_script_dir}/gene_annotate.R \
         --snpeff-index ${params.snpeff_index_dir} \
         --threads ${task.ext.threads ?: 1} \
         --out lead_crosscohort.tsv
@@ -615,7 +709,7 @@ process COMPARE_COHORTS {
     def h = [cohorts, mpk].transpose().collect   { c, f -> "--model-peaks ${c}=${f}" }.join(' ')
     """
     source activate ${params.conda_env}
-    python3 ${params.script_dir}/plot_cohort_compare.py \
+    python3 ${params.shared_script_dir}/plot_cohort_compare.py \
         ${q} ${p} ${a} ${h} \
         --crosscohort ${crosscohort} \
         --cohort-order ${params.Cohorts.join(',')} \
@@ -655,7 +749,7 @@ process COMPARE_MANHATTAN {
     def h = [cohorts, mpk].transpose().collect  { c, f -> "--model-peaks ${c}=${f}" }.join(' ')
     """
     source activate ${params.conda_env}
-    python3 ${params.script_dir}/plot_cohort_manhattan.py \
+    python3 ${params.shared_script_dir}/plot_cohort_manhattan.py \
         ${g} ${q} ${h} \
         --cohort-order ${params.Cohorts.join(',')} \
         --model ${params.PeakModel} \
@@ -693,7 +787,7 @@ process WRITE_RUN_MANIFEST {
   "p_genomewide": ${params.PGenomeWide},
   "p_suggestive": ${params.PSuggestive},
   "peak_flank_bp": ${params.PeakFlank},
-  "label_suggestive": ${params.LabelSuggestive},
+  "max_suggestive": ${params.MaxSuggestive},
   "anno_style": "${params.AnnoStyle}",
   "repel_force": ${params.RepelForce},
   "susie": {"L": ${params.SusieL}, "coverage": ${params.SusieCoverage}, "min_abs_corr": ${params.SusieMinAbsCorr}},
@@ -751,8 +845,27 @@ workflow {
     // downstream process needs to know about tiers.
     ch_peak = SCAN_PEAKS.out.leads
         .splitCsv(header: true, sep: '\t', elem: 1)
-        .filter { _c, r -> r.tier == 'genome_wide' }
         .map { c, r -> tuple(c, r.peak_id, r.chrom, r.start as long, r.end as long, r.lead_id) }
+
+    // EVERY peak is computed; only the marked ones are drawn. The split exists
+    // because conditional analysis is what decides whether two nearby leads are
+    // one locus or two (cross_cohort.py), and that judgement must be available
+    // for every peak — otherwise it would depend on whether the peak happened to
+    // be followed up, which is circular. `figure` is call_peaks.py's flag.
+    ch_drawn = SCAN_PEAKS.out.leads
+        .splitCsv(header: true, sep: '\t', elem: 1)
+        .map { c, r ->
+            // call_peaks.py is invoked by absolute path, so editing it does NOT
+            // invalidate SCAN_PEAKS. A stale cached lead_variants.tsv would leave
+            // `figure` null, every plot channel empty, and no error — fail here.
+            if (!r.containsKey('figure')) {
+                error "lead_variants.tsv has no `figure` column — SCAN_PEAKS is cached from an " +
+                      "older call_peaks.py. Remove its work dirs to force it."
+            }
+            tuple(c, r.peak_id, (r.figure as Integer))
+        }
+        .filter { _c, _p, f -> f == 1 }
+        .map { c, pid, _f -> tuple(c, pid) }
 
     CONDITIONAL(ch_peak.combine(ch_cohort, by: 0))
 
@@ -781,23 +894,51 @@ workflow {
     CS_VARIANTS(SUSIE.out.susie.combine(ch_sumstat_by_peak, by: [0, 1]))
     COLLECT_CS(CS_VARIANTS.out.table.collect(sort: true))
 
+    // The lead annotation is per COHORT while these channels are per (cohort, peak),
+    // so `by: 0` is the join. combine APPENDS, which is why `path(lead_annotation)`
+    // is last in each input tuple. The locus figures now depend on ANNOTATE_LEADS,
+    // which already runs and takes about a minute.
+    ch_ann = ANNOTATE_LEADS.out.annotation
+
     PLOT_REGIONAL(LD_SOURCES.out.ld
         .map { c, pid, lead, ss, _mat, _vars, ldc, ldt, lde, _cov, ex, rec ->
-               tuple(c, pid, lead, ss, ldc, ldt, lde, ex, rec) })
+               tuple(c, pid, lead, ss, ldc, ldt, lde, ex, rec) }
+        .combine(ch_drawn, by: [0, 1])
+        .combine(ch_ann, by: 0))
 
     ch_ldc = LD_SOURCES.out.ld
         .map { c, pid, _lead, _ss, _mat, _vars, ldc, _ldt, _lde, _cov, _ex, _rec ->
                tuple(c, pid, ldc) }
-    PLOT_FINEMAP(SUSIE.out.susie.combine(ch_ldc, by: [0, 1]))
+    PLOT_FINEMAP(SUSIE.out.susie.combine(ch_ldc, by: [0, 1]).combine(ch_drawn, by: [0, 1])
+        .combine(ch_ann, by: 0))
 
     PLOT_CONDITIONAL(CONDITIONAL.out.cond
         .combine(ch_peak.map { c, pid, _ch, _s, _e, lead -> tuple(c, pid, lead) }, by: [0, 1])
+        .combine(ch_drawn, by: [0, 1])
         .map { c, pid, rounds, signals, rfiles, lead ->
-               tuple(c, pid, lead, rounds, signals, rfiles) })
+               tuple(c, pid, lead, rounds, signals, rfiles) }
+        .combine(ch_ann, by: 0))
+
+    // ── one document per figure family per cohort ─────────────────────────
+    // groupTuple(by: [0, 1]) with two PLAIN STRING keys. A tuple used as the key
+    // matches nothing and the channel silently never emits, which is how this
+    // pattern fails: no error, just an empty downstream.
+    CATALOGUE_FIGURES(
+        PLOT_REGIONAL.out.stats.map { c, s -> tuple(c, 'regional', s) }
+            .mix(PLOT_FINEMAP.out.stats.map { c, s -> tuple(c, 'finemap', s) })
+            .mix(PLOT_CONDITIONAL.out.stats.map { c, s -> tuple(c, 'conditional', s) })
+            .groupTuple(by: [0, 1]))
 
     // ── every peak lead of every cohort, reported in EVERY cohort ──────────
     // A barrier, deliberately: the variant list is the UNION over cohorts, so no
     // cohort can be processed until all of them have called their peaks.
+    // Every peak's independent-signal list, from EVERY cohort. This is what makes
+    // the locus definition data-driven: two leads within a peak half-width are
+    // one locus unless some cohort's conditional analysis lists both as distinct
+    // signals. A barrier by necessity — no locus can be named until every peak
+    // has been conditioned.
+    ch_signals = CONDITIONAL.out.cond.map { _c, _pid, _r, sig, _rf -> sig }.collect()
+
     ch_cross = SCAN_PEAKS.out.peaks
         .combine(ch_glm.filter { _c, m, _f -> m == params.PeakModel }
                        .map { c, _m, f -> tuple(c, f) }, by: 0)
@@ -808,7 +949,7 @@ workflow {
             tuple(o.collect { it[0] }, o.collect { it[1] }, o.collect { it[2] },
                   o.collect { it[3] }, o.collect { it[4] }, o.collect { it[5] })
         }
-    CROSS_COHORT(ch_cross)
+    CROSS_COHORT(ch_cross, ch_signals)
 
     // ── one cross-cohort comparison figure, additive only ──────────────────
     ch_all = SCAN_PEAKS.out.qc

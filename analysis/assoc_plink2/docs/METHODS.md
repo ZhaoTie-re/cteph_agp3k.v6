@@ -16,8 +16,8 @@ gives the calibration read-out. It is **not** a definitive association analysis 
 
 ## 2. Symbols and notation
 
-Defined once in `scripts/plot_style.py` (`SYMBOL_DEFS` / `FORMULAS`) and reused verbatim in every
-figure caption, every sidecar `.md`, and this table.
+Defined once in `_shared/scripts/plot_style.py` (`SYMBOL_DEFS` / `FORMULAS`) and reused verbatim in every
+figure caption, every figure document, and this table.
 
 | symbol | meaning |
 |---|---|
@@ -51,7 +51,7 @@ plink2 --bfile <cohort genotypes>
 
 **Covariates are SEX + the first `params.NPcs` principal components**, and the covariate set is fixed
 across cohorts and models so the nine scans are comparable. `params.PcLabel` names the space the PCs
-were computed in; `params.CovarLabel` is the human-readable form printed on every figure and sidecar,
+were computed in; `params.CovarLabel` is the human-readable form printed on every figure and document,
 so a figure can never describe covariates the run did not fit.
 
 **Firth.** `no-firth` is the default. Firth penalisation would stabilise variants near complete
@@ -81,7 +81,7 @@ alongside the primary results.
 
 ## 5. Which rows count as a result
 
-Two conditions, both necessary (`usable_mask()` in `scripts/call_peaks.py`, applied identically to the
+Two conditions, both necessary (`usable_mask()` in `_shared/scripts/call_peaks.py`, applied identically to the
 QC summary, the lead pick and the per-peak statistics):
 
 1. `ERRCODE == '.'` — plink2 itself reports a clean fit.
@@ -114,9 +114,19 @@ calling twice would count the same physical peak in both tiers.
 | annotation table (§8) | ✔ | ✔ |
 | cross-cohort table (§12) | ✔ | ✔ |
 | landscape figure | ✔ | ✔ |
-| conditional analysis | ✔ | ✘ |
-| SuSiE fine-mapping | ✔ | ✘ |
-| three-source regional plot | ✔ | ✘ |
+| conditional analysis | ✔ | ✔ — against the **suggestive** threshold |
+| SuSiE fine-mapping | ✔ | ✔ |
+| three-source regional plot | ✔ | ✔ |
+
+Both tiers now receive the full per-peak follow-up, and their outputs are separated by tier
+(`03.peaks/<tier>/`, `figures/0{2,3,4}.*/<tier>/`) so the two are never mixed. **The conditional
+analysis is judged against the threshold that defined the peak**: a suggestive peak tested against
+5 × 10⁻⁸ would fail at round 0 every time, and the table would report zero signals everywhere —
+meaningless rather than empty.
+
+What separates the tiers is now interpretation, not machinery. A suggestive peak is still a
+description of the scan's shape rather than a finding, and the follow-up exists so that shape can be
+inspected — not so that 128 loci can be reported as results.
 
 **The suggestive tier describes the scan's shape; it is not a list of findings.** Over *M* analysed
 variants a threshold α yields ≈ *M*α crossings by chance alone, and an inflated scan yields a multiple
@@ -158,6 +168,24 @@ One row per peak lead, both tiers, in `03.peaks/lead_annotation.tsv`.
   count when plink2 tested REF.
 - **rsID** from `params.rsid_vcf`: any tabix-indexed VCF on the same genome build whose ID column
   carries the rsID, looked up by `chr:pos:REF:ALT`. Variants absent from it keep `.`.
+
+  Full-key matching finds the right *record*, which is necessary but not sufficient. A `norm`ed VCF
+  splits multi-allelic records by **copying the whole ID field onto every split allele** instead of
+  distributing the accessions, so one ID string can end up stamped on several alleles at one
+  position. That is only a defect when the string holds **more than one accession**, because RS
+  numbers are site-level:
+
+  | at one position | example | reading |
+  |---|---|---|
+  | one accession, several alleles | `rs790041` on `C>T` and `C>G` | the RS names the site; it holds for whichever ALT we took. **Resolved** |
+  | one accession, one indel written from two anchors | `rs75682226` on `GGGCTT>G` and `G>GGGCTT` | same variant, two representations. **Resolved** |
+  | several accessions, one allele | a dbSNP merge | both name our allele. **Resolved**, both reported |
+  | several accessions, several alleles | `rs1347066655;rs1564211184` on `CGTG>C` and `C>T` | the ID field is the UNION over the pre-split record's alleles. At most one names ours and the file no longer says which. **Unresolved** |
+
+  The key rule therefore extends to the **accession**: several accessions are attributed to a variant
+  only when no other allele at that position carries the same ID string. When another does, `rsID`
+  stays `.` and the candidates are kept in `rsID_unresolved`, so nothing downstream — a table, a
+  Manhattan label, a forest label — can present an accession that may belong to a different allele.
 - **Gene** from the Ensembl gene models via `gene_annotate.R`: the overlapping gene if there is one
   (preferring protein-coding, then the longest model), else the nearest, with `Gene_Distance_bp`.
   The same "informative gene" rule as the regional plot (§9) — a variant is never labelled with a
@@ -188,7 +216,7 @@ it is not left to this document alone.
 
 ## 9. Gene models
 
-`scripts/gene_utils.R` is the single definition, shared by the regional-plot gene track and the `Gene`
+`_shared/scripts/gene_utils.R` is the single definition, shared by the regional-plot gene track and the `Gene`
 column, so the two can never disagree.
 
 - **Exon/intron structure**, one row per gene, drawn from a **representative transcript**: the
@@ -203,15 +231,28 @@ column, so the two can never disagree.
   with bare `ENSG` names, `TEC` and pseudogene biotypes. HGNC-approved non-coding symbols (`LINC…`,
   `MIR…`, `SNOR…`) are **kept** — they are real names, not clone accessions.
 
-## 10. Per-peak follow-up (genome-wide tier only)
+## 10. Per-peak follow-up (every peak, both tiers)
+
+Conditional analysis, SuSiE and the three LD sources run for **every peak in both tiers** — 131 peaks
+here (40 / 38 / 53 across the three cohorts), not the 3 genome-wide ones. What `params.MaxSuggestive`
+caps is the number of suggestive peaks that get **figures**, not the number that get computed: the
+tables are complete, and `lead_variants.tsv` marks the drawn subset with its `figure` column.
+
+The distinction matters because the cross-cohort locus rule reads the conditional analysis of every
+peak (§12a) — capping the computation would have made locus identity depend on which peaks happened
+to be plotted.
 
 ### 10a. Conditional analysis
 Stepwise inside the peak window, with the same samples, model and covariates as the genome-wide scan.
 Round 0 is the unconditioned fit restricted to the window; each later round adds the previous round's
 top variant to `--condition-list` and re-fits. The loop stops when nothing in the window still clears
-`params.PGenomeWide`, or after `params.MaxCondRounds`. The number of rounds that yielded a signal is
-the number of independent signals. If plink2 produces no association file for a round, that is recorded
-as an outcome — every variant collinear with the conditioning set — not treated as a crash.
+**the peak's own tier threshold** — `params.PGenomeWide` for a genome-wide peak, `params.PSuggestive`
+for a suggestive one (`peakThreshold(peak_id)` in the workflow) — or after `params.MaxCondRounds`.
+Judging a suggestive peak against 5 × 10⁻⁸ would have ended every one of them at round 0.
+
+The number of rounds that yielded a signal is the number of independent signals. If plink2 produces no
+association file for a round, that is recorded as an outcome — every variant collinear with the
+conditioning set — not treated as a crash.
 
 ### 10b. SuSiE fine-mapping
 `susie_rss(bhat, shat, R, n, L = params.SusieL)`, credible sets at `params.SusieCoverage`,
@@ -286,6 +327,35 @@ support is reading how one estimate behaves as the sample grows: an interval tha
 point estimate holds is a variant gaining sample size, and an estimate that drifts toward 1 as a filter
 is relaxed is what a structure-driven signal does. Neither is evidence of replication.
 
+### 12a. Locus identity — what counts as "the same signal"
+
+The union of peak leads is not a list of loci. Three cohorts scan overlapping samples, so the same
+signal is often led by a *different* variant in each of them, and a naive union counts one signal two
+or three times. `lead_crosscohort.tsv` therefore carries `locus_id` and `locus_rep`, assigned in
+`cross_cohort.py` in two steps:
+
+1. **Group by proximity.** Leads on one chromosome within `params.PeakFlank` (250 kb) of the previous
+   one become a candidate group.
+2. **Split only on evidence.** A candidate group is split back into individual loci **only when some
+   cohort's conditional analysis reported two of its members as separate independent signals of one
+   peak** (`<peak>.signals.tsv`, §10a). Otherwise the group is one locus.
+
+The representative is the group's smallest-*P* member across cohorts, and it is the variant the
+figures draw — `cohort_compare` and `model_compare` plot one row-group per locus, at its
+representative, so all three rows compare the *same* variant.
+
+Measured here: **84 lead variants → 75 loci** (9 merged; conditional analysis split 0 candidate
+groups) for the fixed-effects component, and **52 → 47** (5 merged) for SAIGE.
+
+Two consequences worth stating:
+
+- **Proximity alone would have been wrong, and so would splitting alone.** *HLA-DQA1* had two leads
+  137 bp apart, each the lead in a different cohort; conditioning on either left the window's best
+  residual at 5.6 × 10⁻³, so they are one signal and are now drawn once. Conversely a gene *may*
+  legitimately appear twice — it just requires conditional evidence, which no group in this data has.
+- **`panel` is decided once per locus, on its representative,** then stamped on every member. Without
+  that a locus could reach panel (b) through one of its leads and panel (c) through another.
+
 `_comparison/figures/cohort_manhattan.png` reports the same sample sets at scan level: one row per
 cohort, Manhattan and QQ on the same 2.5 : 1 grid the scan figure uses, so each Manhattan occupies the
 identical 4.08 × 1.77 in box as `scan.<model>.png` panel (a) and a peak has the same shape on both.
@@ -298,10 +368,17 @@ called the locus themselves, which is what separates "genome-wide here" from "pr
 
 ## 13. Figures
 
-All figures go through `scripts/plot_style.py`, a collision check, and a visual pass. Every PNG has a
-companion `.md` written by `scripts/figure_doc.py` giving the full panel-by-panel explanation, the
+All figures go through `_shared/scripts/plot_style.py`, a collision check, and a visual pass. Every PNG has a
+companion `.md` written by `_shared/scripts/figure_doc.py` giving the full panel-by-panel explanation, the
 concrete numbers behind that rendering, how to read it, and what it cannot answer.
 
+- **A per-locus figure names its variant above the crop line.** `regional`, `finemap` and
+  `conditional` open with `Gene · CHROM:POS:REF:ALT · rsID` for the lead. The caption names the
+  cohort and the locus, but the caption sits *below* `plot_h` — crop the publication figure out and
+  it goes too, leaving a locus plot that no longer says which locus it is. The rsID appears only
+  when it is resolved to this allele (§8); otherwise the line reads `rsID unresolved` and the
+  variant id above it is the identifier that holds. Details in
+  [../../_shared/docs/FIGURES.md](../../_shared/docs/FIGURES.md).
 - **Nothing about the run is written into the figure code.** The covariate set, the LD panel names and
   the cohort names all arrive as parameters, so a figure describes the run that produced it.
 - **No downsampling.** Manhattan and QQ draw every analysed variant; the scatter is rasterised so the
@@ -314,7 +391,7 @@ concrete numbers behind that rendering, how to read it, and what it cannot answe
   Manhattan and shares its x-axis, so a peak can be traced up into the column it came from; that
   adjacency is the reason to merge them rather than merely co-locate them.
 - **Gene labels are capped, and the cap is stated.** Every genome-wide lead is labelled; only the
-  `params.LabelSuggestive` smallest-*P* suggestive leads are, because a full suggestive tier needs more
+  `params.MaxSuggestive` smallest-*P* suggestive leads are, because a full suggestive tier needs more
   text than a 6.5 in axis holds. Labels follow the **gwaslab** idiom at `params.AnnoStyle = auto`
   (`expand` and the other gwaslab styles remain selectable): one band, italic text at the least
   intrusive rotation that fits, an L-shaped leader arm whose vertical segment marks the peak, and
@@ -322,11 +399,12 @@ concrete numbers behind that rendering, how to read it, and what it cannot answe
 - **The label band is outside the data area, and there is one band per panel.** The axes box is shrunk
   to make the strip, so the data limits are never inflated for text. Genome-wide and suggestive names
   share one band and one rotation, distinguished by colour and weight.
-- **The regional figure states its LD coverage in the sidecar, not in the panels.** The per-source
+- **The regional figure states its LD coverage in its document, not in the panels.** The per-source
   counts (`measured` / `below_threshold` / `not_in_panel`) are provenance rather than a finding, and
-  in-panel they sat over the data in all three LD panels.
+  in-panel they sat over the data in all three LD panels. They go to the family catalogue as
+  columns, one row per locus, which also makes them comparable across loci.
 - **The caption carries three things: the finding, one line per panel, one data line.** The
-  interpretation, the symbol glossary and the estimator live in the sidecar `.md`. These figures are
+  interpretation, the symbol glossary and the estimator live in the figure's document. These are
   laid out as slides, and a caption that fills most of the canvas makes the plot the smaller half.
 - **One regional figure per peak**, three LD panels on a shared x-axis, because LD concordance across
   sources is the point of the figure.

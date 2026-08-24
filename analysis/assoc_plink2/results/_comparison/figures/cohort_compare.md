@@ -10,11 +10,15 @@ How do calibration and effect size move as the ancestry filter is relaxed from n
 
 **(a) Calibration against effective size**
 
-lambda_GC (y) against N_eff (x), one marker per scan: colour = cohort, shape = model. A grey line joins each model's three cohorts in nesting order. This replaces a dual-axis stem plot, where lambda sat on the left axis and N_eff on the right and the reader had to align two series by eye; plotting one against the other makes the trade-off a direction on the page, and leaves room for all nine scans rather than the additive three.
+lambda_GC (y) against N_eff (x), one marker per scan: colour = cohort, shape = model. A grey line joins each model's three cohorts in nesting order. This replaces a dual-axis stem plot, where lambda sat on the left axis and N_eff on the right and the reader had to align two series by eye; plotting one against the other makes the trade-off a direction on the page, and leaves room for all nine scans rather than the one model's scans alone.
 
 **(b) Effect concordance across all three cohorts**
 
 A forest plot over (genome-wide lead variant) x (cohort). Every variant that reached genome-wide significance in *any* cohort is shown in *all three*, because a nested design always has an estimate in the larger sets. Three states are distinguished, not two: filled diamond = genome-wide in that cohort, filled circle = suggestive there, open circle = not significant there. A row with no estimate at all is annotated "not in this cohort's call set". A blank would have been indistinguishable from a missing estimate, which is why the earliest version of this panel was misleading.
+
+**(c) Leads that hold across every cohort**
+
+The same forest, for leads called SUGGESTIVE in all three cohorts and genome-wide in none. Membership of (b) and (c) is assigned once, in cross_cohort.py, and written to the `panel` column of lead_crosscohort.tsv, so the two panels cannot share a variant and model_compare can draw exactly the same loci. There is no top-N cap: the definition itself bounds the panel, because the variant has to clear the suggestive threshold in every cohort to appear. Each group is labelled with its gene symbol, the representative variant as CHROM:POS:REF:ALT, and that variant's rsID — the three rows are one variant measured three times, and the label says which one. What this panel does NOT show is replication. The cohorts are nested — narrow within intermediate within full — and share every case, so a lead present in all three has survived the ancestry filter, not been confirmed by independent data. An earlier version of this figure carried a fourth panel counting cohorts per lead; it is gone because this panel answers the same question directly and its axis label invited exactly the reading the design forbids.
 
 ## Interpretation
 
@@ -40,10 +44,11 @@ The cohorts are nested — narrow within intermediate within full — so they sh
 | suggestive additive peaks, narrow | 40 |
 | suggestive additive peaks, intermediate | 37 |
 | suggestive additive peaks, full | 51 |
-| distinct genome-wide lead variants | 2 |
-| forest rows | 6 |
-| lead variants reported in every cohort | 84 |
-| rows in lead_crosscohort.tsv | 252 |
+| distinct genome-wide lead variants (b) | 2 |
+| leads suggestive in every cohort (c) | 16 |
+| forest rows in (b) | 6 |
+| lead variants reported in every cohort | 75 |
+| rows in lead_crosscohort.tsv | 225 |
 
 ## Full statistics
 
@@ -52,8 +57,8 @@ The cohorts are nested — narrow within intermediate within full — so they sh
 | cohort | model | n_case | n_ctrl | n_eff | n_analysed | lambda_gc | n_genomewide | n_suggestive |
 |---|---|---|---|---|---|---|---|---|
 | narrow_mainland | additive | 419 | 1,749 | 1,352 | 5,113,526 | 1.12 | 0 | 130 |
-| narrow_mainland | dominant | 419 | 1,749 | 1,352 | 5,092,286 | 1.059 | 0 | 131 |
 | narrow_mainland | recessive | 419 | 1,749 | 1,352 | 4,675,710 | 0.6699 | 0 | 162 |
+| narrow_mainland | dominant | 419 | 1,749 | 1,352 | 5,092,286 | 1.059 | 0 | 131 |
 | intermediate_mainland | additive | 429 | 2,051 | 1,419 | 5,113,902 | 1.121 | 4 | 216 |
 | intermediate_mainland | dominant | 429 | 2,051 | 1,419 | 5,095,406 | 1.06 | 1 | 191 |
 | intermediate_mainland | recessive | 429 | 2,051 | 1,419 | 4,725,886 | 0.665 | 1 | 198 |
@@ -84,7 +89,7 @@ The cohorts are nested — narrow within intermediate within full — so they sh
 
 - It cannot adjudicate between the cohorts. Choosing one requires a model that absorbs fine-scale structure, which this fixed-effects scan is not.
 - It is not a replication analysis and no cohort here is independent of another. The component has no external cohort available.
-- Panel (b) covers the additive model only. Dominant and recessive peaks are in each cohort's `03.peaks/model_peaks_annotation.tsv` and on their own scan figures.
+- Panel (b) covers the additive model only. Any other model's peaks are in each cohort's `03.peaks/model_peaks_annotation.tsv` and on their own scan figures.
 - lambda_GC in (a) cannot separate confounding from polygenicity; see METHODS §7.
 
 ## Symbols
