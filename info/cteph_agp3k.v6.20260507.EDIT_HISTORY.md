@@ -7,7 +7,8 @@ state **just before** that day's edit.
 |---|---|
 | `…xlsx.bak-20260716` | original (2026-05-07 data), before any edit |
 | `…xlsx.bak-20260729` | after edit 1, before edit 2 |
-| `…xlsx` (current) | after edit 2 |
+| `…xlsx.bak-20260824` | after edit 2, before edit 3 |
+| `…xlsx` (current) | after edit 3 |
 
 All edits touch data only; no rows added or removed (3,655 rows throughout).
 
@@ -51,6 +52,66 @@ and finds ~150 bp for T7 against its true 100 bp, ~150 bp elsewhere.
 
 ---
 
+## Edit 3 — 2026-08-24 · rebuild `Cram_Path` from the current CRAM directories
+
+`Cram_Path` column, 3,620 rows changed. It had stopped describing where the CRAMs are:
+
+- **3,135 rows held `/mnt/ngs8_disc1/pub/ngs/WGS/cram/hg38/`** — a bare directory, not a
+  file. That mount is gone, and the value was never a usable path to begin with.
+- **457 rows** pointed into `/LARGE1/gr10478/workspace/pipeline/output/2020070…/`, the old
+  per-sample pipeline output tree.
+
+Rebuilt in two steps. The column was **cleared outright**, every row; then every
+`Flag_JHRPv6 = True` row was filled by matching `ID_JHRPv6` exactly against the CRAM
+basename in the two directories the CRAMs now live in:
+
+```
+/LARGE1/gr10478/pub/WGS/cram/Pulmonary_Hypertension       712 *.cram
+/LARGE1/gr10478/pub/WGS/cram/AGP3K                      3,148 *.cram
+```
+
+The written value is `<dir>/<ID_JHRPv6>.cram`.
+
+| | |
+|---|---|
+| `Flag_JHRPv6 = True` rows | 3,592 (`ID_JHRPv6` missing on 0) |
+| resolved to exactly one CRAM | **3,592** |
+| basename found in *both* directories (ambiguous) | 0 |
+| **not found** | **0** |
+
+Split **3,135** `AGP3K` + **457** `Pulmonary_Hypertension`. Every written path exists on
+disk and its basename equals the row's `ID_JHRPv6`. The 268 CRAMs in those directories that
+no row uses are samples outside JHRPv6.
+
+The 3,620 changed rows are the 3,592 filled plus **28 `Flag_JHRPv6 = False` rows whose stale
+value was cleared and deliberately not refilled** — only `Flag_JHRPv6 = True` carries a path
+now, and all 63 `False` rows are blank. The other 35 rows were already blank. Nothing else
+changed: all 36 other columns are identical to `.bak-20260824`.
+
+`tmp/cram.v6/cram.v6.summary.csv` answers the same question against an older directory
+layout and resolves the symlinks to their targets. **It is stale and was not used as a
+source here.**
+
+### Known consequence: the index is not beside the path
+
+All 3,135 `AGP3K` entries are **symlinks** into `Control_Nagahama`, `Control_BBJ`, `HTLV1`,
+`Control_ACC`, `Lung_cancer` and `cram4temporary`. The `.crai` sits next to the *real* file,
+not next to the symlink, so `<Cram_Path>.crai` exists for **457 of 3,592** rows.
+
+That matters to any consumer that derives the index by appending — as
+`check/down_sampling/down_sampling.nf:798` does:
+
+```groovy
+file("${row[params.cram_path_col]}.crai")
+```
+
+That pipeline is not affected today because it reads its own `cram_info` CSV rather than this
+workbook. A future consumer reading `Cram_Path` directly needs `samtools -X`, its own index
+map, or `.crai` symlinks placed alongside. Recorded here rather than worked around, because
+the path convention is the deliberate choice: the two directories above are the authority.
+
+---
+
 ## Reproduce any comparison
 
 ```python
@@ -66,6 +127,11 @@ for col in bak.columns:
 
 ## Note on file size
 
-`.bak-20260716` is 460 KB; the later files are ~288 KB. That is not a data
-difference — rewriting the workbook drops redundant style caches. The only
-data-level differences are the cells listed above.
+`.bak-20260716` is 460 KB; `.bak-20260729` and `.bak-20260824` are ~288 KB. That
+drop is not a data difference — rewriting the workbook drops redundant style
+caches.
+
+The current file is **468 KB**, and that jump *is* data. Before edit 3, 3,135 of
+the `Cram_Path` cells held the same short string (`/mnt/…/cram/hg38/`), which the
+workbook stores once in its shared-string table. They now hold 3,135 distinct
+full paths. Nothing else grew.
