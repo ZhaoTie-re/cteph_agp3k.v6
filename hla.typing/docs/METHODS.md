@@ -240,21 +240,36 @@ Every other QC output here measures whether a call was **made** and how deeply i
 None of them can see a call that was made confidently and is wrong.
 
 `allele_freq_check.py` is the one check that can. The controls are an unselected Japanese
-population sample, and the 1000 Genomes panel publishes 2-field types for **JPT**, the only
-Japanese population in it — 105 samples over A, B, C, DQB1 and DRB1. Comparing the two
-frequency spectra costs nothing and would move visibly if the typing were systematically
-mis-assigning alleles.
+population sample, and ToMMo's **jMorp 61KJPN-HLA** panel publishes allele frequencies for
+**61,424 Japanese individuals over 13 loci**. Comparing the two frequency spectra costs nothing
+and would move visibly if the typing were systematically mis-assigning alleles. Measured, eleven
+of the thirteen loci agree at Pearson *r* = 0.986–1.000; see [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) §2
+for the per-locus table and for the two that do not.
 
-Three things about it are load-bearing:
+Four things about it are load-bearing:
 
-- **The reference is the 1KG panel, not HLA-HD's `freq_data/`.** The latter is the obvious
-  candidate and is wrong twice: it is a *global* registry count (`A*01:01` = 326,922), not
-  a Japanese one, and HLA-HD uses it to break its own ties.
+- **The reference is a Japanese population panel, not HLA-HD's `freq_data/`.** The latter is the
+  obvious candidate and is wrong twice: it is a *global* registry count (`A*01:01` = 326,922),
+  not a Japanese one, and HLA-HD uses it to break its own ties — comparing a caller against the
+  table it consulted measures nothing.
+- **Alleles are matched on IPD-IMGT P groups, and only here.** jMorp names alleles by P group
+  (`A*01:01P`, the alleles identical over the antigen recognition domain) and HLA-HD does not.
+  The join without that translation is wrong rather than coarse: `DRB4*01:03` is 76 % of our
+  DRB4 chromosomes and belongs to `DRB4*01:01P`, so untranslated it reads as absent from a
+  61,424-person panel. `hla_nom_p.txt` is pinned to the **same IPD-IMGT/HLA 3.64.0 release** as
+  the protein alignments, and the mapping is asserted single-valued at 2 fields (0 of 25,290
+  names span two groups) because the whole comparison rests on that. It is applied to both
+  sides here and **nowhere else** — see §13.
 - **The controls are compared, not the cases.** Cases are a disease series, and the MHC is
   the last place a disease series should be expected to match a population reference. Their
   frequencies are in the table beside, never as the comparison.
-- **DQB1's reference denominator is 186 of 210 chromosomes**, in the reference itself. It
-  is reported per locus rather than assumed to be 2*n*.
+- **Denominators are read per locus, never assumed to be 2*n*.** jMorp's are uniform at
+  122,848; the 1000 Genomes panel's are not (its DQB1 is typed on 186 of 210). And jMorp
+  encodes gene absence as a **null allele** — `DRB4*03:01N`, 0.5430 of all chromosomes, meaning
+  the haplotype carries no functional DRB4, which is what this component records as
+  `not_typed`. Nulls are dropped and the rest renormalised, or the two sides are not the same
+  quantity: that single entry is the whole DRB4 gap, and removing it moves DRB4 from
+  *r* = 0.625 to 0.991.
 
 **This is not an accuracy measurement.** It compares population frequencies; it cannot say
 a given sample was typed correctly, and a set of errors preserving the spectrum is
@@ -263,3 +278,71 @@ invisible to it. Only typing samples with known types measures accuracy. That wa
 [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) §2 for the cost and the decision. Truncating 150 bp
 samples to 100 bp and re-typing the same individuals, which would give the read-length cost
 directly and with no confounding, is recorded there too.
+
+## 12. Separating the technical gradient from the phenotype
+
+§11's frequency check is a cohort-level comparison. Resolving it per sample turns the same
+reference into a crude per-sample quality signal — the share of a sample's typed chromosomes
+carrying an allele the JPT panel never reports — and that signal is what
+`plot_typing_confound.py` stratifies.
+
+**It is not an error rate.** A real Japanese allele that a 105-sample panel happened not to
+sample counts as unconfirmed here, so the absolute level is meaningless. Only the *contrast*
+between strata is read, and only strata typed identically apart from the technical variable.
+
+Three choices are load-bearing:
+
+- **Measured depth, not the label.** `15x` and `30x` in a platform name are sequencing
+  *targets*. The depth actually achieved is in the manifest, and on this cohort the two
+  disagree: measured depth does not differ between cases and controls (median 18.68× vs
+  19.03×, Mann-Whitney *P* = 0.784) despite every case being labelled `30x` and every control
+  `15x`. Anything reasoned from the labels would have been reasoned from a fiction.
+- **A matched window, because the marginal comparison cannot separate the two.** Platform is
+  fully confounded with phenotype, so a case/control difference has no attributable cause on
+  its own. Restricting to samples measured at 17–21× — where the two largest platforms have
+  median 18.64× and 18.55×, 2,047 of 3,569 samples — holds depth fixed and lets platform vary.
+  The gap persists there (4.71 % vs 3.13 %, Fisher *P* = 9.6 × 10⁻¹⁰), so it is not depth.
+  The window is fixed in the script, not tuned to the result.
+- **Fisher on chromosome counts, not a *t*-test on per-sample shares.** The quantity is a
+  proportion over ~10 chromosomes per sample; the per-sample share is coarse and its variance
+  depends on how many genes a sample resolved. The counts are pooled and tested directly.
+
+Depth does act *within* a platform — the tail runs 10.7 % at a median 14.2× down to 1.5 % at
+30.9× — which is why the per-platform panel is plotted against measured depth rather than
+against the platform name. What it does not do is differ between the phenotype groups, which
+is why re-typing cases at reduced depth was scoped and then dropped: only 95 of 452 cases
+exceed 25×, so downsampling would push them toward the 10.7 % regime and manufacture a worse
+artefact than the one it set out to measure. See [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) §3.
+
+## 13. Why the P-group translation stops at the QC boundary
+
+§11 matches alleles on IPD-IMGT P groups so the frequencies can be compared with jMorp at all.
+The obvious next step — make the P group the canonical unit everywhere — is **wrong**, and the
+reason is measurable rather than stylistic.
+
+A P group collects alleles whose protein sequence is identical over the **antigen recognition
+domain**: exons 2 + 3 for class I, exon 2 for class II. It says nothing about the rest of the
+molecule, and §6 reads the **full protein** — leader peptide, α3, transmembrane, cytoplasmic
+tail. Measured on this component's own reference tables, counting only alleles already trimmed
+to `AlleleFieldDepth` fields as `allele_dosage.tsv` encodes them:
+
+- **461 P groups contain more than one 2-field allele, and in 460 of them (99.8 %) the members
+  differ somewhere in the residue vector.**
+- Those 22,572 differences fall **96.2 % outside the ARD** (21,717 against 855 inside), which is
+  exactly what the P-group definition predicts and is the check that the mapping behaves as
+  documented.
+
+Collapsing to P groups would therefore delete ~21,700 real residue differences from
+`residue_dosage.tsv` and cut `allele_dosage.tsv` from 2,544 columns to 1,984 — a 22 % smaller
+multiple-testing burden bought by discarding testable variation. So:
+
+| key | built from | used by | reaches the association? |
+|---|---|---|---|
+| 2-field allele | `AlleleFieldDepth` | `allele_dosage.tsv`, `residue_dosage.tsv` | **yes** |
+| P group | `hla_nom_p.txt` | `allele_freq_check.py` only | **never** |
+
+`ALLELE_FREQ_CHECK` is also where the crosswalk `05.qc/allele_pgroup_map.tsv` is written, rather
+than `RESIDUE_MATRIX`, for the same reason in operational form: editing `residue_matrix.py`
+would change its script hash and regenerate the two dosage tables, and those are the
+association's inputs. They must not move because a QC reference changed. The run that
+introduced jMorp verified this by checksum — both files byte-identical before and after.

@@ -59,6 +59,21 @@ cost paid by everyone on it, not only by this run.
 study's conclusions are all in the copied files — but re-typing with a newer IMGT release, or
 validating against a second tool, would start again from the CRAMs.
 
+## READ `sample_id` AS A STRING, ALWAYS
+
+**107 of the 3,569 sample ids carry leading zeros** — `0000063134`, not `63134`. Every file in
+this tree preserves them, but `pandas.read_csv` without `dtype` coerces the column to an integer
+and silently drops the zeros. A join keyed on it then loses those 107 samples with no error and
+no warning: an inner merge simply returns 3,462 rows.
+
+```python
+pd.read_csv(path, sep='\t', dtype={'sample_id': str})          # tables
+pd.read_csv(path, sep='\t', dtype={'sample_id': str}).set_index('sample_id')   # matrices
+```
+
+This bit the audit of 2026-08-26 before it bit anyone else: two independently computed allele
+counts appeared to disagree on 201 of 1,543 alleles, and the disagreement was entirely this.
+
 ## `sample_manifest.tsv`
 
 | column | meaning |
@@ -138,8 +153,18 @@ one copy of the gene, which is the common case for these three haplotype-depende
 [OPEN_QUESTIONS.md §1](OPEN_QUESTIONS.md). The allele calls are unaffected, and so are the
 other 16 genes.
 
-Both carry only positions polymorphic in this cohort. In the dosage matrix the columns for
-one position sum to 2 in every sample with a call, which is worth asserting after a run.
+Both carry only positions polymorphic in this cohort.
+
+**The columns for one position do NOT always sum to 2.** They sum to 2 for 98.4 % of
+(sample, position) pairs, to 1 for 1.4 % and to 0 for 0.16 %. IMGT's protein alignment writes
+`*` for an unsequenced residue and `.` for an alignment gap, and an allele carrying either
+contributes no residue at that position — HLA-A position -22 is `*` for 2,703 of the alignment's
+alleles. So a residue dosage is the count among chromosomes with a DETERMINED residue there, not
+among all typed chromosomes.
+
+Over the 1,115 positions at the 16 genes with usable dosages the median undetermined rate is
+0.03 %, but **157 positions exceed 5 %** and DQA1:56 reaches 24.8 %. `assoc_hla` carries this as
+a per-position QC column and holds low-determination positions out of its omnibus test.
 
 ## `residue_sites.tsv`
 
@@ -151,8 +176,9 @@ one position sum to 2 in every sample with a call, which is worth asserting afte
 
 ## `allele_frequency_check.tsv` and `allele_frequency_summary.tsv`
 
-The external check: control allele frequencies against the published 1000 Genomes **JPT**
-panel, at A, B, C, DQB1 and DRB1 — the five loci the panel carries, at two fields.
+The external check: control allele frequencies against **jMorp 61KJPN-HLA** — 61,424 Japanese
+individuals over 13 loci. Alleles are matched on IPD-IMGT P groups, which is how the reference
+names them; see [METHODS.md](METHODS.md) §11.
 
 `allele_frequency_check.tsv`, one row per *(gene, allele)* seen in either source:
 
@@ -161,9 +187,9 @@ panel, at A, B, C, DQB1 and DRB1 — the five loci the panel carries, at two fie
 | `count_ctrl`, `n_chr_ctrl`, `freq_ctrl` | observed in the control group (`params.ControlGroup`) |
 | `ci_lo_ctrl`, `ci_hi_ctrl` | 95 % Wilson interval — a normal approximation goes below zero for the rare alleles that are most of an HLA table |
 | `count_case`, `n_chr_case`, `freq_case` | the cases, reported beside and **not** compared |
-| `count_ref`, `n_chr_ref`, `freq_ref` | the JPT reference |
+| `count_ref`, `n_chr_ref`, `freq_ref` | the reference. Null (N) alleles are dropped and the rest renormalised, because a null means the gene is absent from the haplotype — what this pipeline calls `not_typed` |
 | `diff_ctrl_ref` | `freq_ctrl − freq_ref` |
-| `fisher_p_ctrl_ref` | Fisher exact against the reference **counts**, unadjusted. The reference is itself an estimate from 105 samples; treating it as known would make every difference look significant |
+| `fisher_p_ctrl_ref` | Fisher exact against the reference **counts**, unadjusted. The reference is an estimate too, and is treated as one — at 61,424 individuals its own interval is narrow, but the test still uses counts on both sides rather than a known *p* |
 | `in_ref_only`, `in_obs_only` | present in one source and absent from the other |
 
 `allele_frequency_summary.tsv`, one row per locus: `n_alleles`, both denominators,
@@ -173,8 +199,71 @@ and `ρ` weights every allele equally**, so the two disagreeing localises the di
 to the tail.
 
 This compares **population frequencies**, not genotypes. It cannot say a given sample was
-typed correctly. See [METHODS.md](METHODS.md) §11 and
-[OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) §2.
+typed correctly. Eleven of the thirteen loci agree at *r* = 0.986–1.000; DRB4 needs the null
+allele removed to get there, and DRB3 does not reconcile at all and is flagged rather than
+explained. See [METHODS.md](METHODS.md) §11 and [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) §2.
+
+## `allele_pgroup_map.tsv`
+
+The crosswalk the association reads. One row per allele this cohort actually carries — all
+2,544 of them, over all 33 typed genes, not only the 13 the reference covers:
+
+| column | meaning |
+|---|---|
+| `gene`, `allele` | as they appear in `allele_dosage.tsv`'s column names |
+| `p_group` | the IPD-IMGT P group, which is how the reference names the same allele |
+| `in_reference` | 1 if the reference carries that P group, 0 if it has never observed it |
+| `freq_reference` | its frequency in the reference, blank when `in_reference = 0` |
+
+Two uses, both at reporting time and both one join away:
+
+- an allele hit gets a **Japanese population frequency from 61,424 individuals** attached, in
+  place of the 105 the previous reference could offer;
+- **`in_reference = 0` is an artefact flag.** A hit on an allele that a 61,424-person Japanese
+  panel has never observed is far more likely a typing error than a finding. 1,490 of the 2,544
+  distinct alleles are flagged, but they are rare — chromosome-weighted the figure is 4.6 %, and
+  that is the number to quote.
+
+It is written by `ALLELE_FREQ_CHECK`, not `RESIDUE_MATRIX`, deliberately: see
+[METHODS.md](METHODS.md) §13.
+
+## `allele_frequency_sample.tsv`
+
+One row per sample, the per-sample form of the same tail metric `typing_confound.tsv`
+aggregates: `n_chr` typed chromosomes, `n_unconfirmed` of them carrying an allele absent
+from the reference allele set, the resulting `frac_unconfirmed`, and `group`, `platform` and
+`observed_depth` carried across from the manifest so the tail can be stratified any way.
+
+A chromosome counts as unconfirmed when its call is `called` or `hemizygous` and its **P group**
+is not in the reference set for that gene. It is **not** an error count: a real Japanese allele
+that even a 61,424-person panel never sampled lands here too. It is only ever read as a
+*relative* quantity, one stratum against another.
+
+The cohort-wide figure fell from 10.8 % to **4.6 %** when the reference changed from 1000
+Genomes JPT to jMorp on 2026-08-26. The typing did not change; the previous reference was small
+enough that much of the apparent tail was simply an allele it had never seen.
+
+`allele_frequency_check.tsv` **cannot** be used to derive this. It lists only alleles seen in
+the CONTROLS or in the reference, so an allele seen only in cases is absent from it entirely
+and reading the tail off that table silently undercounts the cases. This file, and
+`typing_confound.tsv`, are computed against the reference allele set directly.
+
+## `typing_confound.tsv`
+
+The technical-artefact table, one row per stratum: the two phenotype groups, each platform,
+and the depth-matched 17–21× window. Columns are `n`, `median_depth`, `n_chr`,
+`n_unconfirmed`, `share_unconfirmed`, plus two tests filled in only where they apply —
+`fisher_p_matched` on the matched window and `mannwhitney_p_depth` on cases against controls.
+
+The point of the matched window: the `15x` / `30x` in a platform label is a **target**, not a
+measurement. Measured depth does not differ between cases and controls (18.68× vs 19.03×,
+Mann-Whitney *P* = 0.784), so the case/control gap in the tail cannot be attributed to depth.
+Restricted to samples measured at 17–21×, where the two medians are ~18.6×, the gap persists
+(4.71 % vs 3.13 %, Fisher *P* = 9.6 × 10⁻¹⁰) — it tracks the platform, not the coverage.
+
+Depth still matters *within* a platform: the tail runs 10.7 % at a median 14.2× down to 1.5 %
+at 30.9×. There is simply no case/control depth difference to act on. See
+[OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) §3.
 
 ## `typing_qc_platform.tsv` and `typing_qc_group.tsv`
 

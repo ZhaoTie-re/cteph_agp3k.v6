@@ -15,6 +15,7 @@
 # Component: hla.typing
 # ---------------------------------------------------------------------------
 import argparse
+import string
 import sys
 from pathlib import Path
 
@@ -28,7 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'analysis' / '_shar
 import plot_style as S                   # noqa: E402
 import figure_doc                        # noqa: E402
 
-PLOT_H = 5.4          # two rows of square-ish panels at COL_DOUBLE
+PANEL_H = 2.7         # per grid ROW at COL_DOUBLE; the grid follows the locus count
 # Three labels, not six. An HLA frequency table is a handful of common alleles and a
 # long tail at the origin, so naming more than the top few piles the text on top of
 # itself exactly where the points are densest. An allele off the line is named too,
@@ -50,7 +51,16 @@ def parse_args():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--check', required=True, help='allele_frequency_check.tsv')
     p.add_argument('--summary', required=True, help='allele_frequency_summary.tsv')
-    p.add_argument('--population', default='JPT')
+    p.add_argument('--population', default='JPT',
+                   help='1kg_wide only; ignored when --reference-name is given')
+    p.add_argument('--reference-name', default='jMorp 61KJPN-HLA',
+                   help='what the reference is called on the figure')
+    p.add_argument('--reference-cite', default='ToMMo jMorp; Tadaka et al. 2023',
+                   help='the citation printed in the notes')
+    p.add_argument('--flag-genes', default='DRB3',
+                   help='loci whose comparison does not reconcile and must be marked on '
+                        'the figure rather than left to a footnote. See '
+                        'docs/OPEN_QUESTIONS.md.')
     p.add_argument('--out-png', required=True)
     return p.parse_args()
 
@@ -65,7 +75,7 @@ def to_label(rows):
     return named | set(out.allele)
 
 
-def panel(ax, rows, gene, pop, letter, xlab=False, ylab=False):
+def panel(ax, rows, gene, pop, letter, xlab=False, ylab=False, flag=False):
     """One locus: observed control frequency against the reference, with the line."""
     n_chr = int(rows.n_chr_ctrl.max()) if len(rows) else 0
     if n_chr < MIN_CHR:
@@ -74,7 +84,7 @@ def panel(ax, rows, gene, pop, letter, xlab=False, ylab=False):
         ax.text(0.5, 0.5, msg, ha='center', va='center',
                 transform=ax.transAxes, color=S.INK_SOFT, fontsize=8)
         ax.set_xticks([]); ax.set_yticks([])
-        S.panel_tag(ax, letter, title=f'HLA-{gene}')
+        S.panel_tag(ax, letter, title=f'{gene}' + (' †' if flag else ''))
         return
 
     x, y = rows.freq_ref.to_numpy(float), rows.freq_ctrl.to_numpy(float)
@@ -103,10 +113,12 @@ def panel(ax, rows, gene, pop, letter, xlab=False, ylab=False):
     if annots:
         S.spread_labels(ax, annots, axis='y')
     if xlab:
-        ax.set_xlabel(f'{pop} frequency')
+        # The reference is named in the title and again in the notes; repeating
+        # it on four x axes only makes them collide.
+        ax.set_xlabel('reference')
     if ylab:
         ax.set_ylabel('observed frequency')
-    S.panel_tag(ax, letter, title=f'HLA-{gene}')
+    S.panel_tag(ax, letter, title=f'{gene}' + (' †' if flag else ''))
     S.despine(ax)
 
 
@@ -120,19 +132,32 @@ def main():
     if not genes:
         raise SystemExit(f'ABORT: {args.check} names no gene')
 
-    fig, axes = plt.subplots(2, 3, figsize=(S.COL_DOUBLE, PLOT_H))
+    # The grid follows the locus count. It was 2x3 when the reference carried five
+    # loci; jMorp carries thirteen, and a hard-coded grid silently drops the rest.
+    n_cell = len(genes) + 1                     # + the concordance panel
+    ncol = 3 if n_cell <= 6 else 4
+    nrow = -(-n_cell // ncol)
+    plot_h = PANEL_H * nrow
+    fig, axes = plt.subplots(nrow, ncol, figsize=(S.COL_DOUBLE, plot_h), squeeze=False)
     flat = axes.ravel()
-    ncol = axes.shape[1]
+    # Loci whose comparison is known not to reconcile are marked ON the panel, so a
+    # reader cannot take the scatter at face value and find the caveat only later.
+    flag_set = {g.strip() for g in args.flag_genes.split(',') if g.strip()} & set(genes)
+    flagged = ' and '.join(f'HLA-{g}' for g in sorted(flag_set))
     for i, (ax, g) in enumerate(zip(flat, genes)):
-        panel(ax, chk[chk.gene == g].copy(), g, args.population, chr(ord('a') + i),
+        panel(ax, chk[chk.gene == g].copy(), g, args.reference_name, chr(ord('a') + i),
               xlab=(i + ncol >= len(genes)),      # nothing plotted below it
-              ylab=(i % ncol == 0))               # leftmost column
-    for ax in flat[len(genes):-1]:
+              ylab=(i % ncol == 0),               # leftmost column
+              flag=(g in flag_set))
+    # Immediately after the last locus, not in the grid's final cell: with 13 loci in a
+    # 4-wide grid the final cell is two columns away from anything, and the blank gap
+    # reads as a missing panel.
+    ax_s = flat[len(genes)]
+    for ax in flat[len(genes) + 1:]:
         ax.axis('off')
 
     # The last cell is the per-locus concordance, which is the number a reader wants
     # after looking at five scatters.
-    ax_s = flat[-1]
     have = (summ[pd.to_numeric(summ.pearson_r, errors='coerce').notna()
                  & (pd.to_numeric(summ.n_chr_ctrl, errors='coerce') >= MIN_CHR)]
             if len(summ) else summ)
@@ -146,37 +171,55 @@ def main():
         # The bars run to 1.0 when the typing agrees, so there is no free corner
         # inside the panel, and above it is the panel title. Below is the only space
         # left, and this panel has no x label to compete with.
-        ax_s.set_xlim(0, 1.02)
+        # rho can be negative here — it weights every allele equally and an HLA
+        # table is mostly a tail of ties — so the axis has to admit that rather
+        # than clip it to zero and make the bar look absent.
+        lo = min(0.0, float(pd.to_numeric(have.spearman_rho, errors='coerce').min()))
+        ax_s.set_xlim(min(-0.05, lo * 1.1), 1.02)
+        ax_s.axvline(0, color=S.INK_SOFT, lw=0.6, zorder=0)
         ax_s.invert_yaxis()
-        ax_s.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2,
-                    frameon=False, handlelength=1.1, columnspacing=1.0,
+        ax_s.tick_params(axis='y', labelsize=plt.rcParams['ytick.labelsize'] - 2)
+        ax_s.legend(loc='upper center', bbox_to_anchor=(0.5, -0.13), ncol=1,
+                    frameon=False, handlelength=1.1, labelspacing=0.3,
                     fontsize=plt.rcParams['legend.fontsize'] - 2)
     else:
         ax_s.text(0.5, 0.5, f'fewer than {MIN_CHR} control\nchromosomes — nothing\nto compare',
                   ha='center', va='center',
                   transform=ax_s.transAxes, color=S.INK_SOFT, fontsize=8)
         ax_s.set_xticks([]); ax_s.set_yticks([])
-    S.panel_tag(ax_s, chr(ord('a') + len(genes)), title='concordance')
+    # No centred title: at a quarter of COL_DOUBLE this panel is under the width
+    # panel_tag documents as the limit, and 'concordance' runs into the letter.
+    S.panel_tag(ax_s, chr(ord('a') + len(genes)))
     S.despine(ax_s)
 
     n_ctrl = int(chk.n_chr_ctrl.max()) if len(chk) else 0
     n_ref = int(chk.n_chr_ref.max()) if len(chk) else 0
     S.caption_block(
-        fig, plot_h=PLOT_H,
-        title=(f'Control allele frequencies against the published {args.population} '
-               f'reference at {len(genes)} loci: one point per 2-field allele, '
-               f'observed against reference, and points on the dashed line agree.'),
+        fig, plot_h=plot_h,
+        # plot_style's default is 'abcdefgh' — eight. Thirteen loci plus the
+        # concordance panel is fourteen, and the default truncates rather than
+        # warning. Passed explicitly here instead of widening the shared default,
+        # which would invalidate every other component's figure cache.
+        letters=string.ascii_lowercase,
+        title=(f'Control allele frequencies against {args.reference_name} at '
+               f'{len(genes)} loci: one point per allele, observed against reference, '
+               f'and points on the dashed line agree.'),
         panels=[f'HLA-{g}.' for g in genes]
                + [r'Per-locus concordance: Pearson $r$ and Spearman $\rho$.'],
         notes=(f'Error bars are 95 % Wilson intervals on the observed frequency; '
                f'alleles named in red are the commonest plus any differing by '
                f'{MIN_DIFF_TO_NAME:.2f} or more. '
                f'Observed: {n_ctrl // 2} control samples typed by HLA-HD against '
-               f'IPD-IMGT/HLA 3.64.0. Reference: 1000 Genomes '
-               f'{args.population} ({n_ref // 2} samples, 2-field; '
-               f'Abi-Rached et al. 2018). This compares POPULATION FREQUENCIES and '
-               f'is not a measurement of per-sample accuracy; the reference is small '
-               f'enough that it bounds gross error only.'),
+               f'IPD-IMGT/HLA 3.64.0. Reference: {args.reference_name}, up to '
+               f'{n_ref // 2:,} individuals ({args.reference_cite}); alleles are matched '
+               f'on IPD-IMGT P groups, which is how the reference names them. '
+               + (f'† {flagged}: marked because its comparison does not reconcile — the '
+                  f'reference assigns every chromosome an allele there and we do not, and '
+                  f'no mechanism tested explains the rest of the gap; see OPEN_QUESTIONS. '
+                  if flagged else '')
+               + f'This compares POPULATION FREQUENCIES and is not a measurement of '
+                 f'per-sample accuracy: a set of errors that preserves the spectrum is '
+                 f'invisible to it.'),
         top_pad=0.34, wspace=0.42, hspace=0.46,
         left='auto', right=0.965, margin_axes=list(flat))
     fig.savefig(args.out_png)
@@ -184,7 +227,7 @@ def main():
 
     figure_doc.write_doc(
         args.out_png,
-        title=f'HLA allele frequencies against the 1000 Genomes {args.population} panel',
+        title=f'HLA allele frequencies against {args.reference_name}',
         question='Do the alleles this component calls occur at the frequencies published '
                  'for a Japanese population — or has the typing moved the spectrum?',
         panels=([(chr(ord('a') + i), f'HLA-{g}',

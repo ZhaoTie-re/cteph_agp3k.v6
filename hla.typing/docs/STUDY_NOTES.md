@@ -16,7 +16,7 @@ This study's configuration and its measured numbers. Method and rationale are in
 | dictionary | pinned IPD-IMGT/HLA **3.64.0**, 46,005 alleles, `_N150` |
 | residues | pinned IMGT protein alignments, **same release**, 19 genes |
 | gene list | pinned `HLA_gene.split.3.50.0.txt`, 33 genes |
-| frequency reference | pinned 1000 Genomes HLA panel, **JPT** — 105 samples, 210 chromosomes per locus (DQB1 186), A/B/C/DQB1/DRB1 at 2 fields |
+| frequency reference | pinned **jMorp 61KJPN-HLA** — 61,424 Japanese individuals, 122,848 chromosomes per locus, 13 loci, matched on IPD-IMGT P groups. The 1000 Genomes JPT panel (105 samples, 5 loci) is kept as an independent second reference |
 
 ## Sanity anchors — a refactor must not move these
 
@@ -32,7 +32,7 @@ The residue numbering is IMGT's, and these are how that is known:
 | JPT reference frequencies | `A*24:02` 0.390 · `B*52:01` 0.124 · `C*07:02` 0.152 · `DRB1*09:01` 0.143 · `DQB1*06:01` 0.188 |
 | the frequency check against itself | feeding the JPT panel in as if it were the calls gives `r = ρ = 1.000` and `max\|diff\| = 0.000` at all five loci |
 
-Reference sizes: A 9,175 alleles × 390 positions (−30..360) · B 11,103 × 392 ·
+Reference sizes: A 9,175 alleles × 390 positions (−30..360) · B 11,103 × 483 ·
 DRB1 3,977 × 290 (−30..236) · DQB1 3,068 × 274 (−40..234).
 
 ## Measured on this data
@@ -56,25 +56,30 @@ cleaned** — see [OUTPUTS.md](OUTPUTS.md).
 
 ## The confounding this component sits on
 
-Platform is **perfectly separated from phenotype**: every control is HiSeqX 15x, every case
+Platform is **perfectly separated from phenotype**: every control is HiSeqX, every case
 is DNBSeq or NovaSeq. Nothing in this component can fix that, and no covariate can.
 
 The two axes that could plausibly bias typing were checked before the component was built:
 
 **Read length — measured, and the answer is no effect.** DNBSeq-T7 is a **100 bp** library
-(331 of 457 cases) against 150 bp everywhere else. A 50-sample pilot, ten per platform:
+(327 of 452 cases) against 150 bp everywhere else. On the **full 3,569-sample run**:
 
-| platform | read length | call rate | field depth |
-|---|---|---|---|
-| DNBSeq-G400RS 30x | 150 bp | 0.9263 | 2.9263 |
-| **DNBSeq-T7 30x** | **100 bp** | **0.9263** | **2.9711** |
-| DNBseq-G400RS 15x | 150 bp | 0.8895 | 2.8037 |
-| HiSeqX 15x (controls) | 150 bp | 0.9052 | 2.9415 |
-| NovaSeq 30x | 151 bp | 0.9158 | 2.9826 |
+| platform | read length | *n* | call rate | field depth | measured depth |
+|---|---|---|---|---|---|
+| DNBSeq-G400RS 30x | 150 bp | 43 | 0.9204 | 2.9255 | 36.4× |
+| **DNBSeq-T7 30x** | **100 bp** | **327** | **0.9182** | **2.9310** | **18.4×** |
+| DNBseq-G400RS 15x | 150 bp | 31 | 0.9015 | 2.8404 | 14.2× |
+| HiSeqX 15x (controls) | 150 bp | 3,117 | 0.9162 | 2.9135 | 19.0× |
+| NovaSeq 30x | 151 bp | 51 | 0.9174 | 2.9514 | 30.9× |
 
-100 bp against 150 bp: call rate *P* = 0.137, field depth *P* = 0.059 — and the direction is
-**in T7's favour**. Case against control: *P* = 0.248 and *P* = 0.821. The informational
-worry (30 matching bases discriminate less than 45) does not show up at this depth.
+The 100 bp T7 library reaches a **higher** call rate and field depth than the 150 bp controls
+at essentially the same measured depth. The informational worry (30 matching bases discriminate
+less than 45) does not show up at this depth.
+
+**Call rate and field depth are nearly saturated and nearly flat**, which is why they are weak
+quality metrics here: call rate takes **five distinct values** across 3,569 samples (it is
+*k*/19) and 97 % of samples sit on just two of them. What actually varies between platforms is
+accuracy, and only the frequency check of §3 sees it.
 
 Consistent with that, the fraction of reads surviving `-m 100` over `chr6:29.54–33.42 Mb` is
 T7 **99.622 %** against HiSeqX **99.628 %** — these CRAMs are fixed-length and untrimmed, so
@@ -92,10 +97,22 @@ NovaSeq 30.9× · HiSeqX 24.5×/22.7× · T7 19.9×/21.1× · G400RS-15x 12.0×.
 **20 % more reads** than the controls despite lower coverage, because HLA-HD counts reads and
 T7's are shorter.
 
-So the residual risk is a **depth** gradient, not a read-length one, and it runs along
-platform rather than along phenotype. The 31 DNBseq-G400RS 15x cases are the group to watch;
-they are 7 % of cases and worth a sensitivity analysis. `05.qc/typing_qc_platform.tsv` and
-`figures/` carry the numbers.
+**This depth-aligned reading was right, and OPEN_QUESTIONS §3 originally contradicted it.**
+That section attributed the accuracy gap to depth by reading the `15x`/`30x` labels as
+measurements; it has been corrected. Restricted to the 17–21× window where HiSeqX and T7 both
+sit at a median of 18.6×, the unconfirmed share is **4.71 % against 3.13 %**, Fisher
+*P* = 9.6 × 10⁻¹⁰ — the gap is **platform and cohort, at matched depth**, and it is not
+separable from phenotype in these data.
+
+Depth still matters where phenotype is held fixed. Within cases only: G400RS 14.2× → **10.7 %**
+unconfirmed, T7 18.4× → 3.4 %, NovaSeq 30.9× → 1.5 %. The 31 DNBseq-G400RS 15x cases are the
+group to watch — 7 % of cases, and by a wide margin the worst-typed group in the study.
+`05.qc/typing_confound.tsv` and `figures/typing_confound.png` carry the numbers.
+
+All of these fell on 2026-08-26 when the reference changed from 1000 Genomes JPT (105 people,
+5 loci) to jMorp 61KJPN (61,424 people, 13 loci). **The typing did not change and neither did
+the conclusion** — a better reference simply recognises more of what we called, so less of the
+tail is a reference gap. OPEN_QUESTIONS §3 records the before-and-after.
 
 ## Known limitations, in order of how much they should worry a reader
 

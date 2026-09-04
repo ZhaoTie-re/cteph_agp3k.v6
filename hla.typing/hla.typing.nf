@@ -126,12 +126,41 @@ params.AlleleFieldDepth  = 2        // the depth allele dosage is encoded at, an
                                     // the depth the external reference carries
 
 // ---- External frequency reference ----
-// The one external check this component can afford. See 1KG_HLA_types/README.md and
+// The one external check this component can afford. See jMorp_HLA_types/README.md and
 // docs/OPEN_QUESTIONS.md §2 for what it does and does not establish.
+//
+// jMorp 61KJPN-HLA: 61,424 Japanese individuals over 13 loci. It replaced the 1000
+// Genomes JPT panel, which is 105 individuals over 5 loci -- too small to bound
+// anything finer than gross error, and missing DPB1, DQA1 and DRB3/4/5, which are the
+// loci this component types least reliably. Set TruthPanel/TruthFormat/RefLoci back to
+// the 1KG triple to run the old comparison; it is kept as an independent second
+// reference and the two agree at r = 0.94-0.98 where they overlap.
+params.hla_truth_jmorp   = "${params.project_dir}/../jMorp_HLA_types/HLA_allele_frequencies_61K.txt"
 params.hla_truth_1kg     = "${params.project_dir}/../1KG_HLA_types/20181129_HLA_types_full_1000_Genomes_Project_panel.txt"
-params.TruthPopulation   = 'JPT'    // the only Japanese population in the panel
+params.TruthPanel        = params.hla_truth_jmorp
+params.TruthFormat       = 'jmorp_long'   // or '1kg_wide' for the panel above it
+
+// IPD-IMGT/HLA P-group definitions, pinned to the SAME 3.64.0 release as
+// params.imgt_alignments so the alignments and the groupings cannot drift apart.
+// jMorp names alleles by P group and HLA-HD does not; without this, DRB4*01:03 -- 76 %
+// of our DRB4 chromosomes -- reads as absent from a 61,424-person panel. Used ONLY by
+// ALLELE_FREQ_CHECK. It never reaches allele_dosage.tsv or residue_dosage.tsv, which
+// the association reads: P groups merge alleles that differ outside the antigen
+// recognition domain, and the residue analysis reads the full protein.
+params.hla_pgroups       = "${params.project_dir}/../jMorp_HLA_types/hla_nom_p.txt"
+
+// How the reference is named on the figure, and which loci carry a caveat that has to
+// be visible ON the panel rather than only in the document beside it. DRB3 is flagged
+// because its comparison does not reconcile: jMorp assigns every chromosome a DRB3
+// allele and this pipeline does not, and neither the P-group translation, nor dropping
+// null alleles, nor the OPEN_QUESTIONS §1 defect accounts for the rest of the gap.
+params.TruthName         = 'jMorp 61KJPN-HLA'
+params.TruthCite         = 'ToMMo jMorp; Tadaka et al. 2023'
+params.FlagLoci          = 'DRB3'
+
+params.TruthPopulation   = 'JPT'    // 1kg_wide only; the only Japanese population there
 params.ControlGroup      = 'AGP3K'  // the `group` value that is a population sample
-params.RefLoci           = 'A,B,C,DQB1,DRB1'   // the five the panel carries
+params.RefLoci           = 'A,B,C,DPA1,DPB1,DQA1,DQB1,DRB1,DRB3,DRB4,E,F,G'  // the 13 jMorp carries
 
 // ---- Environment ----
 params.conda_env         = 'cteph_geno_pro'
@@ -154,7 +183,16 @@ def script_file(String name) {
 // =============================================================================
 
 /* STEP 1 · BUILD_MANIFEST  -> 00.manifest/ — the sample set, with every CRAM and index resolved
- * and verified before a single job is submitted. Aborts naming the samples. */
+ * and verified before a single job is submitted. Aborts naming the samples.
+ *
+ * IT DOES NOT LOOK IN 00.manifest/crai/, AND THAT IS DELIBERATE. build_manifest.py can
+ * (--crai-dir), and wiring it here was tried: it lets a run whose work/ was lost reuse the
+ * 111 indexes INDEX_CRAM already built, saving about 24 CPU-hours. The cost is worse than
+ * the saving — the manifest then depends on this pipeline's OWN previous output, so it is
+ * not idempotent, and the second run writes a different `crai` column for those 111 samples,
+ * which re-runs their extraction and their typing. Measured: a -resume that should have been
+ * free instead re-ran 111 of 3,569 EXTRACT_READS and HLAHD tasks. The manifest describes the
+ * INPUTS, and it has to be a function of the inputs alone. */
 process BUILD_MANIFEST {
     executor 'local'
     tag 'manifest'
@@ -178,7 +216,6 @@ process BUILD_MANIFEST {
         --group-col ${params.GroupCol} --sex-col ${params.SexCol} \\
         --depth-col ${params.DepthCol} \\
         --keep-id ${keep_id} \\
-        --crai-dir ${params.out_dir}/00.manifest/crai \\
         --max-samples ${params.MaxSamples} \\
         --out sample_manifest.tsv
     """
@@ -486,7 +523,14 @@ process TYPING_QC {
 
 /* STEP 10 · ALLELE_FREQ_CHECK  -> 05.qc/ — the only external check here: do the
  * control allele frequencies reproduce the published Japanese ones? Everything else
- * in 05.qc measures whether a call was MADE. */
+ * in 05.qc measures whether a call was MADE, and none of that can see a call that was
+ * made confidently and is wrong.
+ *
+ * Also emits allele_pgroup_map.tsv, the crosswalk the association reads: every allele
+ * this cohort carries, its P group, and the reference frequency behind it. It is
+ * emitted HERE and not from RESIDUE_MATRIX on purpose — touching that process would
+ * regenerate allele_dosage.tsv and residue_dosage.tsv, which the association reads and
+ * which must not move because a QC reference changed. */
 process ALLELE_FREQ_CHECK {
     executor 'slurm'
     queue    'gr10478b'
@@ -498,10 +542,13 @@ process ALLELE_FREQ_CHECK {
     tuple path(calls), path(manifest)
     path script
     path truth
+    path pgroups
 
     output:
     path('allele_frequency_check.tsv'),   emit: check
     path('allele_frequency_summary.tsv'), emit: summary
+    path('allele_frequency_sample.tsv'),  emit: sample
+    path('allele_pgroup_map.tsv'),        emit: pgroup_map
 
     script:
     """
@@ -510,12 +557,16 @@ process ALLELE_FREQ_CHECK {
     python3 ${script} \\
         --calls ${calls} --manifest ${manifest} \\
         --truth ${truth} \\
+        --truth-format ${params.TruthFormat} \\
+        --p-groups ${pgroups} \\
         --population ${params.TruthPopulation} \\
         --control-group ${params.ControlGroup} \\
         --genes ${params.RefLoci} \\
         --field-depth ${params.AlleleFieldDepth} \\
         --out allele_frequency_check.tsv \\
-        --out-summary allele_frequency_summary.tsv
+        --out-summary allele_frequency_summary.tsv \\
+        --out-sample allele_frequency_sample.tsv \\
+        --out-pgroup-map allele_pgroup_map.tsv
     """
 }
 
@@ -571,11 +622,48 @@ process PLOT_ALLELE_FREQ {
     python3 ${script} \\
         --check ${check} --summary ${summary} \\
         --population ${params.TruthPopulation} \\
+        --reference-name '${params.TruthName}' \\
+        --reference-cite '${params.TruthCite}' \\
+        --flag-genes '${params.FlagLoci}' \\
         --out-png allele_frequency.png
     """
 }
 
-/* STEP 13 · WRITE_RUN_MANIFEST  -> _run_info/ — what actually ran. */
+/* STEP 13 · PLOT_TYPING_CONFOUND  -> figures/ — the one quality problem this
+ * component has, drawn. typing_qc.png measures completeness, which is saturated
+ * here; this measures whether the two groups are typed EQUALLY WELL, which they
+ * are not, and answers the obvious follow-up (is it depth?) with the data. */
+process PLOT_TYPING_CONFOUND {
+    executor 'slurm'
+    queue    'gr10478b'
+    time     '1h'
+    tag      'confound-figure'
+    publishDir "${params.out_dir}/figures", mode: 'copy', pattern: '*.png'
+    publishDir "${params.out_dir}/figures", mode: 'copy', pattern: '*.md'
+    publishDir "${params.out_dir}/05.qc",   mode: 'copy', pattern: '*.tsv'
+
+    input:
+    tuple path(sample), path(summary)
+    path script
+
+    output:
+    path('typing_confound.png'), emit: png
+    path('typing_confound.md')
+    path('typing_confound.tsv')
+
+    script:
+    """
+    set -euo pipefail
+    source activate ${params.conda_env}
+    python3 ${script} \\
+        --sample ${sample} --summary ${summary} \\
+        --control-group ${params.ControlGroup} \\
+        --population ${params.TruthPopulation} \\
+        --out-png typing_confound.png --out-table typing_confound.tsv
+    """
+}
+
+/* STEP 14 · WRITE_RUN_MANIFEST  -> _run_info/ — what actually ran. */
 process WRITE_RUN_MANIFEST {
     executor 'local'
     tag 'manifest'
@@ -673,7 +761,8 @@ workflow {
     ALLELE_FREQ_CHECK(COLLECT_ALLELES.out.calls
                           .combine(BUILD_MANIFEST.out.manifest),
                       script_file('allele_freq_check.py'),
-                      file(params.hla_truth_1kg, checkIfExists: true))
+                      file(params.TruthPanel, checkIfExists: true),
+                      file(params.hla_pgroups, checkIfExists: true))
 
     // -- [11,12] figures --------------------------------------------------------
     PLOT_TYPING_QC(TYPING_QC.out.sample_qc
@@ -686,7 +775,12 @@ workflow {
                          .combine(ALLELE_FREQ_CHECK.out.summary),
                      script_file('plot_allele_freq.py'))
 
-    // -- [13] manifest ---------------------------------------------------------
+    // -- [13] the confound, drawn -----------------------------------------------
+    PLOT_TYPING_CONFOUND(ALLELE_FREQ_CHECK.out.sample
+                             .combine(ALLELE_FREQ_CHECK.out.summary),
+                         script_file('plot_typing_confound.py'))
+
+    // -- [14] manifest ---------------------------------------------------------
     def manifest = """{
   "component": "hla.typing",
   "sample_info": "${params.sample_info}",
@@ -698,7 +792,9 @@ workflow {
   "hlahd_dictionary": "${params.hlahd_dict}",
   "hlahd_gene_split": "${params.hlahd_split}",
   "imgt_alignments": "${params.imgt_alignments}",
-  "hla_truth_1kg": "${params.hla_truth_1kg}",
+  "truth_panel": "${params.TruthPanel}",
+  "truth_format": "${params.TruthFormat}",
+  "hla_pgroups": "${params.hla_pgroups}",
   "truth_population": "${params.TruthPopulation}",
   "control_group": "${params.ControlGroup}",
   "reference_loci": ${groovy.json.JsonOutput.toJson(params.RefLoci.split(',') as List)},

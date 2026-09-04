@@ -10,10 +10,13 @@
 #           does not exist and samtools fails with
 #           `[E::cram_index_load] Could not retrieve index file`.
 #
-#           A third place is searched last: the run's own crai/ directory. 111 CRAMs
-#           have no index anywhere, INDEX_CRAM builds one for each — ~30 minutes of
-#           CRAM reading apiece — and publishes it there. Without looking, a run that
-#           lost work/ rebuilds all 111 from scratch.
+#           --crai-dir searches a third place last: a directory of indexes this
+#           pipeline built earlier. IT IS NOT WIRED UP, deliberately — see the note
+#           on BUILD_MANIFEST in hla.typing.nf. Pointing it at the run's own output
+#           makes the manifest a function of the previous run rather than of the
+#           inputs, and the second run then re-extracts and re-types the 111 samples
+#           whose crai column changed. The option stays for a caller who has an
+#           index directory that is genuinely an INPUT.
 #
 #           Failing here is the point. A sample dropped silently at this stage is
 #           a sample missing from the cohort with nothing in the logs to say so.

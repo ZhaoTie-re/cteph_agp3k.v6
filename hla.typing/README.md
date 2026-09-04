@@ -16,11 +16,15 @@ Shared visual grammar: **[../analysis/_shared/docs/FIGURES.md](../analysis/_shar
 **Read [docs/OPEN_QUESTIONS.md](docs/OPEN_QUESTIONS.md) before using the output.** Two
 things there change how a result should be read:
 
-- **§3** — on the full cohort, **13–18 % of A/B/C chromosomes are called as alleles the
-  1000 Genomes JPT panel never carries**, and that mass comes straight out of the common
-  alleles (`A*24:02` 0.309 against a published 0.391). Rare rows of `allele_dosage.tsv`
-  should be checked against `05.qc/allele_frequency_check.tsv` before being tested. Residue
-  tests are affected least. It is not differential between cases and controls.
+- **§3** — **4.6 % of typed chromosomes carry an allele that a 61,424-person Japanese panel
+  has never observed**, and that mass comes out of the common alleles (`A*24:02P` at 0.315
+  here against a published 0.339). It **is** differential: controls sit at 4.74 % against
+  cases at 3.57 %, and the gap survives matching on measured depth (4.71 % vs 3.13 %, Fisher
+  *P* = 9.6 × 10⁻¹⁰), so it tracks platform-and-cohort, which is perfectly confounded with
+  phenotype. A common allele depleted more in controls reads as enrichment in cases — a false
+  risk association from the typing alone. Check rare rows of `allele_dosage.tsv` against
+  `05.qc/allele_pgroup_map.tsv` (`in_reference = 0`) before testing them. Residue tests are
+  affected least.
 - **§1** — the DRB3, DRB4 and DRB5 columns of `allele_dosage.tsv` and `residue_dosage.tsv`
   encode hemizygotes as homozygotes, so those three genes' dosages are not trustworthy. The
   other 16 genes are unaffected.
@@ -48,7 +52,8 @@ reported per platform first.
 | allele dictionary | pinned `software/hlahd.dictionary/IMGT-HLA-3.64.0_N150` | IPD-IMGT/HLA 3.64.0, 46,005 alleles |
 | residue alignments | pinned `software/hlahd.dictionary/IMGT-alignments-3.64.0` | the same release, 19 usable genes |
 | gene list | pinned `software/hlahd.dictionary/HLA_gene.split.3.50.0.txt` | 33 genes; defines what every result is validated against |
-| frequency reference | pinned `../1KG_HLA_types/20181129_HLA_types_full_1000_Genomes_Project_panel.txt` | 1000 Genomes JPT, 105 samples, 5 loci at 2 fields |
+| frequency reference | pinned `../jMorp_HLA_types/HLA_allele_frequencies_61K.txt` | ToMMo jMorp 61KJPN-HLA, 61,424 Japanese individuals, 13 loci |
+| P-group definitions | pinned `../jMorp_HLA_types/hla_nom_p.txt` | IPD-IMGT/HLA 3.64.0, the allele-name translation the reference needs |
 
 All four are **pinned copies**. The directories they came from belong to other users or
 to a public FTP server and change without notice; a reference that moves under a study
@@ -84,11 +89,13 @@ the resource ladder and the QC gate before committing it.
 | `ResidueGenes` | 19 genes | those with an IMGT protein alignment |
 | `MinResidueCount` | 1 | drop a residue or allele seen on fewer chromosomes |
 | `AlleleFieldDepth` | 2 | resolution of `allele_dosage.tsv`, and of the frequency check |
-| `TruthPopulation` | `JPT` | the 1000 Genomes population the frequencies are compared to |
+| `TruthPanel` | jMorp 61KJPN-HLA | the reference the frequencies are compared to |
+| `TruthFormat` | `jmorp_long` | `1kg_wide` switches back to the 1000 Genomes panel |
+| `TruthPopulation` | `JPT` | `1kg_wide` only: the population within that panel |
 | `ControlGroup` | `AGP3K` | the `group` value treated as a population sample |
 | `maxForksExtract` | 48 | concurrent CRAM readers; the only concurrency limit |
 
-## The thirteen steps
+## The fourteen steps
 
 | # | process | writes to |
 |---|---|---|
@@ -101,10 +108,11 @@ the resource ladder and the QC gate before committing it.
 | 7 | `BUILD_RESIDUE_REF` | `04.residues/` — IMGT alignments to a residue reference |
 | 8 | `RESIDUE_MATRIX` | `04.residues/` — allele dosage, residue diplotype, residue dosage |
 | 9 | `TYPING_QC` | `05.qc/` — per sample, platform, group and gene |
-| 10 | `ALLELE_FREQ_CHECK` | `05.qc/` — control frequencies against the 1000 Genomes JPT panel |
+| 10 | `ALLELE_FREQ_CHECK` | `05.qc/` — control frequencies against jMorp 61KJPN-HLA, plus `allele_pgroup_map.tsv` for the association |
 | 11 | `PLOT_TYPING_QC` | `figures/typing_qc.png` |
 | 12 | `PLOT_ALLELE_FREQ` | `figures/allele_frequency.png` |
-| 13 | `WRITE_RUN_MANIFEST` | `_run_info/` |
+| 13 | `PLOT_TYPING_CONFOUND` | `figures/typing_confound.png` |
+| 14 | `WRITE_RUN_MANIFEST` | `_run_info/` |
 
 **Validation is the last line of step 5, and that placement is the point.** HLA-HD exits 0
 whatever happens inside it, so a truncated result is a silent success. `validate_typing.py`
@@ -135,8 +143,13 @@ scripts/
                          0/1/2 residue dosage, plus the allele -> reference match map
   typing_qc.py           call rate, resolution, ambiguity and failure per platform,
                          per case/control group and per gene
-  allele_freq_check.py   control allele frequencies vs the 1000 Genomes JPT panel
-  plot_typing_qc.py      the QC figure
+  allele_freq_check.py   control allele frequencies vs jMorp 61KJPN-HLA (61,424
+                         Japanese), matched on IPD-IMGT P groups. Also writes the
+                         allele -> P group -> reference frequency crosswalk
+  plot_typing_qc.py      the COMPLETENESS figure: field resolution, ambiguity and
+                         the four per-gene outcomes, each as a composition
+  plot_typing_confound.py  the CONFOUNDING figure: unconfirmed-allele share against
+                         measured depth and platform, incl. the depth-matched window
   plot_allele_freq.py    the frequency-check figure
 ```
 
@@ -160,7 +173,7 @@ grep -rc $'N\tX\tN\tE' results/04.residues/residue_reference/ | grep -v ':0' || 
 # no allele failed to match the reference at any depth (the map is the successes)
 awk 'END{print NR-1" allele(s) with no match at all"}' results/04.residues/allele_unmatched.tsv
 
-# the external check: control frequencies against 1000 Genomes JPT
+# the external check: control frequencies against jMorp 61KJPN-HLA
 column -t results/05.qc/allele_frequency_summary.tsv
 
 # what is copied stays small; what is symlinked is large and lives in work/
