@@ -1,0 +1,22 @@
+{
+  "component": "assoc_hla",
+  "cohorts": ["narrow_mainland","intermediate_mainland","full_mainland"],
+  "models": ["fixed","random"],
+  "marker_classes": ["allele","residue"],
+  "covariates": "SEX,PC1_AVG,PC2_AVG,PC3_AVG,PC4_AVG,PC5_AVG,PC6_AVG,PC7_AVG,PC8_AVG,PC9_AVG,PC10_AVG",
+  "pc_label": "bbj_mainland",
+  "n_pcs": 10,
+  "drop_genes": "DRB3,DRB4,DRB5",
+  "min_mac": 20,
+  "min_maf": 0.0,
+  "min_call_rate": 0.95,
+  "min_determined": 0.95,
+  "alpha": 0.05,
+  "p_genome_wide": 5E-8,
+  "saige_p_value": "spa",
+  "max_conditional_rounds": 5,
+  "hla_dir": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing/results",
+  "model_inputs": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/wgs.auto.par/results/12_model_inputs",
+  "sample_sheet": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/info/cteph_agp3k.v6.20260507.xlsx",
+  "prior_reports": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla/info/prior_reports.tsv"
+}

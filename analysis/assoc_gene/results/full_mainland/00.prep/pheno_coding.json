@@ -1,0 +1,12 @@
+{
+  "cohort": "full_mainland",
+  "n_samples": 3068,
+  "n_case": 438,
+  "n_control": 2630,
+  "input_coding": "0/1, unchanged",
+  "rvtest_coding": "1/2 (1=control, 2=case)",
+  "pheno_col_rvtest": "pheno1",
+  "source_pheno": "pheno.tsv",
+  "source_covar": "bbj_mainland_pc.sex.tsv",
+  "source_fam": "filtered.fam"
+}

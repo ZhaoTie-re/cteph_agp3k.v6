@@ -1,0 +1,166 @@
+# Amino-acid omnibus — narrow_mainland, HLA SEX + 10 bbj_mainland PCs, relatives removed model
+
+**Figure file:** `omnibus.fixed.png`
+
+## The question this figure answers
+
+At which amino-acid POSITIONS does the residue content of the HLA molecule associate with disease — as opposed to which single residue does — and do those positions fall in the peptide-binding domain, where a functional explanation exists?
+
+## Panels
+
+**(a) HLA-F**
+
+3 position(s) of HLA-F entered the omnibus, 3 with a usable fit; x is the IMGT residue position, y the -log10 P of the m-1 df deviance test. The strongest is F:48 (deviance 0.78 on 1 df, P = 0.377), and 0 position(s) clear 6e-4. The shaded band is the class I peptide-binding domain, mature residues 1-180.
+
+**(b) HLA-G**
+
+3 position(s) of HLA-G entered the omnibus, 3 with a usable fit; x is the IMGT residue position, y the -log10 P of the m-1 df deviance test. The strongest is G:258 (deviance 0.97 on 1 df, P = 0.324), and 0 position(s) clear 6e-4. The shaded band is the class I peptide-binding domain, mature residues 1-180.
+
+**(c) HLA-A**
+
+41 position(s) of HLA-A entered the omnibus, 41 with a usable fit; x is the IMGT residue position, y the -log10 P of the m-1 df deviance test. The strongest is A:56 (deviance 4.86 on 1 df, P = 0.0275), and 0 position(s) clear 6e-4. The shaded band is the class I peptide-binding domain, mature residues 1-180.
+
+**(d) HLA-E**
+
+2 position(s) of HLA-E entered the omnibus, 2 with a usable fit; x is the IMGT residue position, y the -log10 P of the m-1 df deviance test. The strongest is E:276 (deviance 0.59 on 1 df, P = 0.444), and 0 position(s) clear 6e-4. The shaded band is the class I peptide-binding domain, mature residues 1-180.
+
+**(e) HLA-C**
+
+37 position(s) of HLA-C entered the omnibus, 37 with a usable fit; x is the IMGT residue position, y the -log10 P of the m-1 df deviance test. The strongest is C:95 (deviance 10.74 on 2 df, P = 0.00466), and 0 position(s) clear 6e-4. The shaded band is the class I peptide-binding domain, mature residues 1-180.
+
+**(f) HLA-B**
+
+48 position(s) of HLA-B entered the omnibus, 48 with a usable fit; x is the IMGT residue position, y the -log10 P of the m-1 df deviance test. The strongest is B:114 (deviance 12.35 on 1 df, P = 0.000442), and 1 position(s) clear 6e-4. The shaded band is the class I peptide-binding domain, mature residues 1-180.
+
+**(g) HLA-DRA**
+
+3 position(s) of HLA-DRA entered the omnibus, 3 with a usable fit; x is the IMGT residue position, y the -log10 P of the m-1 df deviance test. The strongest is DRA:217 (deviance 2.10 on 1 df, P = 0.147), and 0 position(s) clear 6e-4. The shaded band is the class II peptide-binding domain, mature residues 1-90.
+
+**(h) HLA-DRB5**
+
+No position of HLA-DRB5 was eligible for the omnibus, so the axes is empty and says so. A position is eligible only when at least two of its residues survive marker QC and its determination rate clears the floor. The shaded band is the class II peptide-binding domain, mature residues 1-90.
+
+**(i) HLA-DRB1**
+
+43 position(s) of HLA-DRB1 entered the omnibus, 43 with a usable fit; x is the IMGT residue position, y the -log10 P of the m-1 df deviance test. The strongest is DRB1:96 (deviance 13.08 on 3 df, P = 0.00446), and 0 position(s) clear 6e-4. The shaded band is the class II peptide-binding domain, mature residues 1-90.
+
+**(j) HLA-DQA1**
+
+42 position(s) of HLA-DQA1 entered the omnibus, 42 with a usable fit; x is the IMGT residue position, y the -log10 P of the m-1 df deviance test. The strongest is DQA1:175 (deviance 12.71 on 2 df, P = 0.00174), and 0 position(s) clear 6e-4. The shaded band is the class II peptide-binding domain, mature residues 1-90.
+
+**(k) HLA-DQB1**
+
+48 position(s) of HLA-DQB1 entered the omnibus, 48 with a usable fit; x is the IMGT residue position, y the -log10 P of the m-1 df deviance test. The strongest is DQB1:57 (deviance 24.37 on 3 df, P = 2.09e-05), and 1 position(s) clear 6e-4. The shaded band is the class II peptide-binding domain, mature residues 1-90.
+
+**(l) HLA-DOB**
+
+2 position(s) of HLA-DOB entered the omnibus, 2 with a usable fit; x is the IMGT residue position, y the -log10 P of the m-1 df deviance test. The strongest is DOB:-9 (deviance 0.76 on 1 df, P = 0.382), and 0 position(s) clear 6e-4. The shaded band is the class II peptide-binding domain, mature residues 1-90.
+
+**(m) HLA-DMB**
+
+5 position(s) of HLA-DMB entered the omnibus, 5 with a usable fit; x is the IMGT residue position, y the -log10 P of the m-1 df deviance test. The strongest is DMB:144 (deviance 1.79 on 1 df, P = 0.181), and 0 position(s) clear 6e-4. The shaded band is the class II peptide-binding domain, mature residues 1-90.
+
+**(n) HLA-DMA**
+
+3 position(s) of HLA-DMA entered the omnibus, 3 with a usable fit; x is the IMGT residue position, y the -log10 P of the m-1 df deviance test. The strongest is DMA:184 (deviance 1.09 on 1 df, P = 0.297), and 0 position(s) clear 6e-4. The shaded band is the class II peptide-binding domain, mature residues 1-90.
+
+**(o) HLA-DOA**
+
+No position of HLA-DOA was eligible for the omnibus, so the axes is empty and says so. A position is eligible only when at least two of its residues survive marker QC and its determination rate clears the floor. The shaded band is the class II peptide-binding domain, mature residues 1-90.
+
+**(p) HLA-DPA1**
+
+9 position(s) of HLA-DPA1 entered the omnibus, 9 with a usable fit; x is the IMGT residue position, y the -log10 P of the m-1 df deviance test. The strongest is DPA1:228 (deviance 1.26 on 1 df, P = 0.261), and 0 position(s) clear 6e-4. The shaded band is the class II peptide-binding domain, mature residues 1-90.
+
+**(q) HLA-DPB1**
+
+19 position(s) of HLA-DPB1 entered the omnibus, 19 with a usable fit; x is the IMGT residue position, y the -log10 P of the m-1 df deviance test. The strongest is DPB1:65 (deviance 5.17 on 1 df, P = 0.0229), and 0 position(s) clear 6e-4. The shaded band is the class II peptide-binding domain, mature residues 1-90.
+
+## Interpretation
+
+The omnibus is a JOINT test over a position's residues, so it answers a different question from the residue markers in the scan figure: a position can be significant here with no single residue significant there, when several residues each carry part of the signal. 2 position(s) clear 6e-4, 2 of them inside a peptide-binding domain. The band is a PRIOR EXPECTATION drawn on the figure, not a filter and not a result: a hit inside it has a mechanism available to it, a hit outside it is not thereby refuted, and neither placement is evidence about the other. 0 position(s) were tested without a usable fit and carry no P at all; they are the rug ticks on the axis floor. Those are not null results — the m-1 df test could not be evaluated there — so any count of "positions tested" that includes them overstates what the figure actually measured. The positions within a gene are also very far from independent: neighbouring residues sit on the same haplotypes, so the number of hits in a gene is not a count of independent signals.
+
+## Values in this rendering
+
+| quantity | value |
+|---|---|
+| cohort | narrow_mainland |
+| model | fixed |
+| genes drawn | 17 |
+| grid | 5 x 4 |
+| positions in the omnibus table | 308 |
+| positions with a usable fit | 308 |
+| positions tested without a usable fit | 0 |
+| alpha | 6.494e-04 |
+| positions clearing alpha | 2 |
+| of those, inside a peptide-binding domain | 2 |
+| strongest position | DQB1:57 |
+| strongest P | 2.091e-05 |
+| strongest deviance | 24.37 |
+| strongest df | 3 |
+| gene order source | the --gene-order argument |
+| genes appended to --gene-order | none |
+| y limit | 5.381 |
+
+## Full statistics
+
+**Per gene**
+
+| gene | class | positions_tested | usable_fits | residue_markers_tested | significant | min_P | strongest_position | labelled |
+|---|---|---|---|---|---|---|---|---|
+| F | I | 3 | 3 | 6 | 0 | 0.3769 | F:48 | 0 |
+| G | I | 3 | 3 | 6 | 0 | 0.3235 | G:258 | 0 |
+| A | I | 41 | 41 | 95 | 0 | 0.02748 | A:56 | 0 |
+| E | I | 2 | 2 | 4 | 0 | 0.4437 | E:276 | 0 |
+| C | I | 37 | 37 | 85 | 0 | 0.004657 | C:95 | 0 |
+| B | I | 48 | 48 | 116 | 1 | 4.420e-04 | B:114 | 1 |
+| DRA | II | 3 | 3 | 6 | 0 | 0.1475 | DRA:217 | 0 |
+| DRB5 | II | 0 | 0 | 0 | 0 | — | — | 0 |
+| DRB1 | II | 43 | 43 | 111 | 0 | 0.004463 | DRB1:96 | 0 |
+| DQA1 | II | 42 | 42 | 91 | 0 | 0.001741 | DQA1:175 | 0 |
+| DQB1 | II | 48 | 48 | 106 | 1 | 2.091e-05 | DQB1:57 | 1 |
+| DOB | II | 2 | 2 | 4 | 0 | 0.3823 | DOB:-9 | 0 |
+| DMB | II | 5 | 5 | 10 | 0 | 0.1809 | DMB:144 | 0 |
+| DMA | II | 3 | 3 | 6 | 0 | 0.2971 | DMA:184 | 0 |
+| DOA | II | 0 | 0 | 0 | 0 | — | — | 0 |
+| DPA1 | II | 9 | 9 | 18 | 0 | 0.261 | DPA1:228 | 0 |
+| DPB1 | II | 19 | 19 | 42 | 0 | 0.02293 | DPB1:65 | 0 |
+
+**Positions clearing alpha (smallest P first)**
+
+| position | gene | n_residues | df | n | reference_residue | determined_rate | deviance | P |
+|---|---|---|---|---|---|---|---|---|
+| DQB1:57 | DQB1 | 4 | 3 | 2,195 | AA_DQB1_57_D | 1 | 24.37 | 2.091e-05 |
+| B:114 | B | 2 | 1 | 2,195 | AA_B_114_N | 1 | 12.35 | 4.420e-04 |
+
+## How to read it
+
+1. Read the grid left to right, top to bottom: that is chr6 order, the same order the MHC scan figure lays out along its x-axis.
+2. Compare heights ACROSS panels freely — every panel is on one shared y limit, so a taller point is a stronger point wherever it sits.
+3. Read each x-axis as belonging to ITS OWN gene. IMGT numbering is per gene: position 57 of DQB1 and position 57 of A are different residues of different proteins, which is why there is no single shared x-axis here.
+4. Check whether a labelled position falls inside the shaded band. Inside, a peptide-binding mechanism is available; outside, the association still stands but has no binding-site explanation from this figure.
+5. Negative positions are the leader peptide, left of the band by construction, and are numbered that way by IMGT rather than being an error.
+6. A panel carrying only the note "no position eligible" means the gene had fewer than two residues surviving marker QC at any position, or a determination rate below the omnibus floor — not that the gene was left out.
+
+## What this figure does *not* establish
+
+- It does not say WHICH residue drives a significant position. The omnibus is a joint m-1 df test; the per-residue estimates are in the scan figure and the sumstats.
+- It does not establish independence between positions, or between genes. Long-range LD across the MHC means a position can be significant purely by tagging a causal one elsewhere in the region; that is what the conditional rounds are for.
+- The peptide-binding band is drawn from the canonical domain boundaries, not from a structure fitted to these data. It is context for the reader, never a test.
+- A position with status != ok is not a null result. Its fit could not be evaluated, so the figure is silent about it beyond marking that it was tried.
+
+## Symbols
+
+- **genetic model** — the encoding of the genotype in the GLM: ADD counts alt alleles (0/1/2), DOM contrasts carriers against non-carriers, REC contrasts alt-homozygotes against the rest. Three separate genome-wide scans, not one joint test; ADD is the primary.
+
+- **genome-wide significance** — P<5x10^-8, applied identically to every cohort and model. The three cohorts are nested and the three models correlated, so these are not independent tests and no further multiplicity adjustment is made — stated, not silently assumed.
+
+## Model
+
+```
+D = 2(log L_full - log L_null) sim chi^2_m-1, m = residues at the position, one dropped as the reference level
+```
+
+---
+
+Methods and rationale: [`METHODS.md`](../docs/METHODS.md)
