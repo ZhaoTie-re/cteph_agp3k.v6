@@ -62,7 +62,7 @@ Every 2-field allele seen at HLA-G in the controls or in the reference. x is the
 
 ## Interpretation
 
-This figure is the evidence, not the argument; the argument is in allele_frequency.png. Read a panel when a locus matters to a specific question — which allele is off the line, and by how much relative to its interval. A panel whose points sit on the line at every frequency is a locus whose common haplotypes are being read correctly. † HLA-DRB3 is marked because its comparison does not reconcile.
+This figure is the evidence, not the argument; the argument is in allele_frequency.png. Read a panel when a locus matters to a specific question — which allele is off the line, and by how much relative to its interval. A panel whose points sit on the line at every frequency is a locus whose common haplotypes are being read correctly. † HLA-DRB3 is marked as not comparable: the reference assigns an allele to every chromosome and encodes no absence for that gene, so its denominator is not the same quantity as ours.
 
 ## Values in this rendering
 

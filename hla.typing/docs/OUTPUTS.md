@@ -48,7 +48,9 @@ figures/                       copied
 _run_info/                     copied
   trace.txt · report.html · timeline.html · dag.html · run_manifest.json
   facts.json                   every number this component's prose may quote,
-                               derived from the tables above by build_facts.py.
+                               derived from the tables above by build_facts.py --
+                               plus the jMorp allele list itself, which is the only
+                               way to measure what NOT harmonising would have cost.
                                verify.sh section 9 fails on any number in a .md
                                that is not in here or in docs/NUMBERS_ALLOWED.md
 _superseded.3569/              NOT AN OUTPUT — the record of what the cohort filter
@@ -224,9 +226,12 @@ HLA-E and 2 at HLA-F**, whose `r` of 0.999 and 1.000 is therefore computed on tw
 and a mass of zeros. Read `r` and `n_shared` together or neither.
 
 This compares **population frequencies**, not genotypes. It cannot say a given sample was
-typed correctly. Eleven of the thirteen loci agree at *r* = 0.986–1.000; DRB4 needs the null
-allele removed to get there, and DRB3 does not reconcile at all and is flagged rather than
-explained. See [METHODS.md](METHODS.md) §11 and [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) §2.
+typed correctly. Of the 13 loci, 12 are comparable and 11 of those agree at *r* ≥ 0.98; DRB4
+needs the null allele removed to get there. **DRB3 is excluded**, because the reference has no
+way to record "this chromosome has no DRB3" and assigns one anyway — see
+[OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) §3. The `comparable` and `note` columns of
+`allele_frequency_summary.tsv` carry that decision and its reason. See
+[METHODS.md](METHODS.md) §11.
 
 ## `allele_pgroup_map.tsv`
 

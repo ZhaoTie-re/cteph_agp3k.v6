@@ -122,11 +122,30 @@ That single entry was the entire discrepancy (`max|Δ|` = 0.5430 exactly); dropp
 renormalising moves DRB4 from *r* = 0.625 to 0.991, and the carriage rates then agree
 independently — ours 0.4018, jMorp non-null 0.4565.
 
-**DRB3 does not reconcile and has not been made to: *r* ≈ 0.64.** It carries no null alleles at
-all yet still spans all 122,848 chromosomes, and its `DRB3*01:01P` is 0.674 against our 0.180.
-Three mechanisms were tested and none accounts for it — the P-group translation, null-allele
-removal, and the §1 `-`-filling defect (which moves *r* by 0.008 here). jMorp does not document
-the rule it applies at DRB3. It is marked `†` on the figure and excluded from the headline.
+**DRB3 is NOT COMPARABLE, and the reason is now known.** Earlier versions of this section said
+three mechanisms had been tested and none accounted for the gap. That was wrong, and the
+mechanism is the denominator.
+
+jMorp carries no null allele for DRB3, yet its DRB3 counts still span all 122,848
+chromosomes — every one in the panel. That is not possible: DRB3 exists only on DR52
+haplotypes, and we call it on 47.7 % of control chromosomes. The panel is therefore assigning
+a real DRB3 allele to chromosomes that do not carry the gene, and they land on the commonest
+one: `DRB3*01:01P` is 0.674 in the reference against our 0.189. **Remove that one allele and
+renormalise both sides and *r* moves from 0.635 to 0.944** — most of the gap is that single
+absorbing allele.
+
+So our denominator is "chromosomes carrying DRB3" and the reference's is "all chromosomes".
+Those are different quantities and the correlation between them measures the mismatch, not the
+typing. `allele_freq_check.py` now decides this **mechanically** — a locus is marked
+`comparable = 0` when the reference covers essentially every chromosome while we call the gene
+on materially fewer — and DRB3 is excluded from the headline and drawn hollow. DRB4 is not
+caught by the same test and should not be: the 45.6 % of reference chromosomes it puts on
+a real DRB4 allele is an honest fraction, not a saturated
+one.
+
+The remaining 0.944 is still below every comparable locus (lowest 0.983), so one mechanism
+explains most of this and not all of it. What is settled is that the comparison at DRB3 was
+never a measurement of typing quality.
 
 ### What replaced the 1000 Genomes panel, and why
 

@@ -61,10 +61,15 @@ import re
 import sys
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 from scipy import stats
 
 USABLE = ('called', 'hemizygous')
+# A locus is NOT COMPARABLE when the reference covers essentially every chromosome
+# while we call the gene on materially fewer. See the block that applies these.
+REF_SATURATED_TOL = 0.005
+OBS_SHORT_TOL = 0.05
 
 # The reference is NOT uniformly `NN:NN`, whatever its documentation suggests. Of
 # its 453 distinct values, 39 carry a trailing '*', 63 are '/'-separated ambiguity
@@ -473,7 +478,44 @@ def main():
     scols = ['gene', 'n_alleles', 'n_chr_ctrl', 'n_chr_ref', 'pearson_r',
              'n_shared', 'max_abs_diff', 'allele_at_max', 'n_ref_only',
              'n_obs_only']
-    pd.DataFrame(summary, columns=scols).to_csv(args.out_summary, sep='\t', index=False)
+    # ── COMPARABLE? A DENOMINATOR check, not a quality one ──────────────────
+    # Two sources can only be compared if their denominators mean the same thing.
+    # For a gene that is PRESENT OR ABSENT from a haplotype -- DRB3, DRB4, DRB5 --
+    # the reference has to encode absence somehow. jMorp encodes it for DRB4 with
+    # the null allele DRB4*03:01N (0.543 of chromosomes), which is dropped above
+    # and the rest renormalised; DRB4 then reaches r = 0.99.
+    #
+    # It encodes NOTHING for DRB3, yet its DRB3 counts still sum to every
+    # chromosome in the panel. That is biologically impossible -- DRB3 exists only
+    # on DR52 haplotypes -- so the panel is assigning a real allele to chromosomes
+    # that do not carry the gene, and they land on the commonest one. Our
+    # denominator is the ~48 % that do carry it. The two are not the same
+    # quantity, and the correlation between them measures the mismatch rather than
+    # the typing: dropping DRB3*01:01P and renormalising both sides moves r from
+    # 0.635 to 0.944.
+    #
+    # The test states that mismatch generally. It is deliberately NOT a threshold
+    # on the SIZE of the gap: DRB4's gap is 0.11 and DRB4 is fine, because 0.457
+    # is an honest fraction rather than a saturated one.
+    sdf = pd.DataFrame(summary, columns=scols)
+    if len(sdf):
+        f_ref = (pd.to_numeric(sdf.n_chr_ref, errors='coerce')
+                 / pd.to_numeric(sdf.n_chr_ref, errors='coerce').max())
+        f_obs = (pd.to_numeric(sdf.n_chr_ctrl, errors='coerce')
+                 / pd.to_numeric(sdf.n_chr_ctrl, errors='coerce').max())
+        bad = (f_ref >= 1.0 - REF_SATURATED_TOL) & (f_obs <= 1.0 - OBS_SHORT_TOL)
+        sdf['frac_chr_ctrl'] = f_obs.round(4)
+        sdf['frac_chr_ref'] = f_ref.round(4)
+        sdf['comparable'] = (~bad).astype(int)
+        sdf['note'] = np.where(bad, 'reference assigns an allele to every chromosome '
+                                    'and encodes no absence for this gene; the two '
+                                    'denominators are not the same quantity', '')
+        for _, rr in sdf[bad].iterrows():
+            print(f'[allele_freq_check] {rr.gene}: NOT COMPARABLE — the reference '
+                  f'covers {rr.frac_chr_ref:.0%} of chromosomes and we call '
+                  f'{rr.frac_chr_ctrl:.0%}. r is still reported, but it measures the '
+                  f'denominator mismatch, not typing quality.')
+    sdf.to_csv(args.out_summary, sep='\t', index=False)
 
     # The reference's own denominator, reported rather than assumed: jMorp's is
     # uniform across loci, 1KG's is not (its DQB1 is typed on 186 of 210 chromosomes).

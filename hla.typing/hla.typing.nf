@@ -181,11 +181,14 @@ params.hla_truth_1kg     = "${params.project_dir}/../1KG_HLA_types/20181129_HLA_
 // recognition domain, and the residue analysis reads the full protein.
 params.hla_pgroups       = "${params.project_dir}/../jMorp_HLA_types/hla_nom_p.txt"
 
-// How the reference is named on the figure, and which loci carry a caveat that has to
-// be visible ON the panel rather than only in the document beside it. DRB3 is flagged
-// because its comparison does not reconcile: jMorp assigns every chromosome a DRB3
-// allele and this pipeline does not, and neither the P-group translation, nor dropping
-// null alleles, nor the OPEN_QUESTIONS §1 defect accounts for the rest of the gap.
+// How the reference is named on the figure, and which loci carry a caveat that has to be
+// visible ON the panel rather than only in the document beside it.
+//
+// FlagLoci is a LABEL, not the decision. Whether a locus is comparable at all is decided
+// in allele_freq_check.py from the two denominators, mechanically, and written to the
+// `comparable` column: jMorp assigns a DRB3 allele to every chromosome in the panel while
+// this pipeline calls DRB3 on about half of them, so the two are not measuring the same
+// quantity. See OPEN_QUESTIONS.md section 3.
 params.TruthName         = 'jMorp 61KJPN-HLA'
 params.TruthCite         = 'ToMMo jMorp; Tadaka et al. 2023'
 params.TruthName1kg      = '1000 Genomes JPT'
@@ -657,7 +660,7 @@ process PLOT_ALLELE_FREQ {
     publishDir "${params.out_dir}/figures", mode: 'copy'
 
     input:
-    tuple path(check), path(summary)
+    tuple path(check), path(summary), path(summary_2nd)
     path script
 
     output:
@@ -670,7 +673,9 @@ process PLOT_ALLELE_FREQ {
     source activate ${params.conda_env}
     python3 ${script} \\
         --check ${check} --summary ${summary} \\
+        --summary-secondary ${summary_2nd} \\
         --reference-name '${params.TruthName}' \\
+        --reference-name-secondary '${params.TruthName1kg}' \\
         --flag-genes '${params.FlagLoci}' \\
         --out-png allele_frequency.png \\
         --out-png-loci allele_frequency_loci.png
@@ -853,8 +858,13 @@ workflow {
                        .combine(RESIDUE_MATRIX.out.sites),
                    script_file('plot_typing_qc.py'))
 
-    PLOT_ALLELE_FREQ(ch_freq.primary.map { _m, check, summary, _sm, _pg ->
-                         tuple(check, summary) },
+    // The SECOND panel's summary goes in too. Its tables existed from the day the
+    // two-panel fan-out was written and nothing drew them; panel (d) is the whole
+    // reason both panels are run, and it was living in a TSV.
+    PLOT_ALLELE_FREQ(ch_freq.primary.map   { _m, check, summary, _sm, _pg ->
+                         tuple(check, summary) }
+                         .combine(
+                     ch_freq.secondary.map { _m, _c, summary, _sm, _pg -> summary }),
                      script_file('plot_allele_freq.py'))
 
     // -- [13] the confound, drawn, under both panels ----------------------------

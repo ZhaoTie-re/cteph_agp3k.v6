@@ -49,6 +49,8 @@ LOCI_NCOL = 5         # the record grid. 4 columns leaves THREE empty cells in t
                       # at the end of a row, which reads as "that is all of them".
 LOCI_PANEL_IN = 1.42  # per grid ROW of the record
 FS_SMALL = 7.0        # every in-axes annotation in these figures
+FS_AXIS = 10.0        # every axis label. The 14 pt 'slide' default is wider than
+                      # the narrow panels here, so labels ran off the canvas.
 LABEL_PAD_PT = 3.5
 # Three labels, not six. An HLA frequency table is a handful of common alleles and a
 # long tail at the origin, so naming more than the top few piles the text on top of
@@ -64,10 +66,17 @@ def parse_args():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--check', required=True, help='allele_frequency_check.tsv')
     p.add_argument('--summary', required=True, help='allele_frequency_summary.tsv')
+    p.add_argument('--summary-secondary', default=None,
+                   help='the SECOND panel\'s allele_frequency_summary.tsv. Panel (d) is '
+                        'the reason both panels are run: it shows that they agree on '
+                        'concordance, and on how much evidence each reaches that on.')
+    p.add_argument('--reference-name-secondary', default='1000 Genomes JPT')
     p.add_argument('--reference-name', default='jMorp 61KJPN-HLA')
     p.add_argument('--flag-genes', default='DRB3',
-                   help='loci whose comparison does not reconcile and must be marked on '
-                        'the figure rather than left to a footnote')
+                   help='loci to mark with a dagger on the figure. This is a LABEL; '
+                        'whether a locus is comparable at all is decided from the two '
+                        'denominators in allele_freq_check.py and read from the '
+                        '`comparable` column')
     p.add_argument('--out-png', required=True, help='the summary figure')
     p.add_argument('--out-png-loci', required=True, help='the per-locus record')
     return p.parse_args()
@@ -134,43 +143,85 @@ def lay_out(fig, axes, *, plot_h, top_pad, wspace, hspace, right=0.975, title=No
                      fontsize=fs, fontweight='bold', color=S.INK)
 
 
+MARGIN_PX = 1.5  # slack between an estimated label box and the axes edge
+
+
 def place_point_labels(ax, xs, ys, texts, *, marker_pt=3.0):
     """Label each point on whichever side is clearest of the OTHER points.
 
-    Four candidates per point, scored by distance in display space to every other
-    marker and to every label already placed, with a hard penalty for leaving the
-    axes. The previous version offset every label to the upper right by a fixed
-    amount and then separated them in y only, which painted several labels across
-    their own markers -- `04:05P` rendered as `04:@5P` -- and detached others from
-    the point they name.
+    Twenty-four candidates per point -- eight directions at three distances --
+    scored against the BOXES of the other markers and of the labels already
+    placed, with leaving the axes weighted far above any overlap and a final
+    slide back inside so no label can be clipped. The first version offset every
+    label to the upper right by a fixed amount and separated them in y only,
+    which painted several across their own markers (`04:05P` rendered as
+    `04:@5P`); the second scored eight directions at one distance against marker
+    CENTRES, which still let `03:03P` land on `06:01P` and pushed `02:02P` out of
+    its panel because a crowded origin left no good direction at that one radius.
     """
     fig = ax.figure
     fig.canvas.draw()
     pts = ax.transData.transform(np.column_stack([xs, ys]))
     r = (marker_pt + LABEL_PAD_PT) * fig.dpi / 72.0
     box = ax.get_window_extent()
+    px2 = fig.dpi / 72.0
+
+    def overlap(a, b):
+        """Area two boxes share, 0 if they do not touch."""
+        return (max(0.0, min(a[2], b[2]) - max(a[0], b[0]))
+                * max(0.0, min(a[3], b[3]) - max(a[1], b[1])))
+
+    # Eight directions at three distances. One radius is not enough: where the
+    # points crowd the origin every direction at that radius is occupied, and the
+    # best of eight bad candidates is still bad. Stepping out gives the crowded
+    # panels somewhere to go without detaching the label from its point, which
+    # the tie-break below keeps it from doing gratuitously.
+    dirs = []
+    for mult in (1.0, 1.7, 2.5):
+        for k in range(8):
+            a = k * np.pi / 4.0
+            dx, dy = r * mult * np.cos(a), r * mult * np.sin(a)
+            ha = 'left' if dx > 1e-9 else ('right' if dx < -1e-9 else 'center')
+            va = 'bottom' if dy > 1e-9 else ('top' if dy < -1e-9 else 'center')
+            dirs.append((dx, dy, ha, va, mult))
+
+    mboxes = [(x - marker_pt * px2, y - marker_pt * px2,
+               x + marker_pt * px2, y + marker_pt * px2) for x, y in pts]
     placed, out = [], []
-    for i, (px, py) in enumerate(pts):
-        w = len(texts[i]) * FS_SMALL * 0.60 * fig.dpi / 72.0
-        h = FS_SMALL * 1.2 * fig.dpi / 72.0
+    for i, (ppx, ppy) in enumerate(pts):
+        # A margin, because the width is estimated from the character count while
+        # the geometry check in verify.sh measures what was actually rendered.
+        w = len(texts[i]) * FS_SMALL * 0.62 * px2 + 2 * MARGIN_PX
+        h = FS_SMALL * 1.25 * px2 + 2 * MARGIN_PX
         best, best_score = None, -1e18
-        for dx, dy, ha, va in ((r, 0, 'left', 'center'), (-r, 0, 'right', 'center'),
-                               (0, r, 'center', 'bottom'), (0, -r, 'center', 'top')):
-            cx, cy = px + dx, py + dy
+        for dx, dy, ha, va, mult in dirs:
+            cx, cy = ppx + dx, ppy + dy
             x0 = cx if ha == 'left' else (cx - w if ha == 'right' else cx - w / 2)
             y0 = cy if va == 'bottom' else (cy - h if va == 'top' else cy - h / 2)
-            outside = (max(0.0, box.x0 - x0) + max(0.0, (x0 + w) - box.x1)
-                       + max(0.0, box.y0 - y0) + max(0.0, (y0 + h) - box.y1))
-            d = [np.hypot(cx - pts[j][0], cy - pts[j][1])
-                 for j in range(len(pts)) if j != i]
-            d += [np.hypot(cx - qx, cy - qy) for qx, qy in placed]
-            score = (min(d) if d else 1e9) - 10.0 * outside
+            cand = (x0, y0, x0 + w, y0 + h)
+            outside = (max(0.0, box.x0 - x0) + max(0.0, cand[2] - box.x1)
+                       + max(0.0, box.y0 - y0) + max(0.0, cand[3] - box.y1))
+            hit = sum(overlap(cand, m) for j, m in enumerate(mboxes) if j != i)
+            hit += sum(overlap(cand, q) for q in placed)
+            # own marker last: a label may not sit on the point it names either
+            hit += overlap(cand, mboxes[i])
+            # Leaving the axes outweighs any overlap: a clipped label is drawn
+            # into the neighbouring panel, which is worse than being crowded.
+            # The last term is the tie-break that keeps a label near its point.
+            score = (-(hit / (w * h)) * 1000.0 - outside * 5000.0
+                     - (mult - 1.0) * 60.0)
             if score > best_score:
-                best, best_score = (dx, dy, ha, va, cx, cy), score
-        dx, dy, ha, va, cx, cy = best
-        placed.append((cx, cy))
+                best, best_score = (dx, dy, ha, va, cand), score
+        dx, dy, ha, va, cand = best
+        # Even the best candidate can cross an edge where the axes are narrower
+        # than the label is wide. Slide it back in rather than let it be clipped.
+        sx = max(0.0, box.x0 - cand[0]) - max(0.0, cand[2] - box.x1)
+        sy = max(0.0, box.y0 - cand[1]) - max(0.0, cand[3] - box.y1)
+        dx, dy = dx + sx, dy + sy
+        cand = (cand[0] + sx, cand[1] + sy, cand[2] + sx, cand[3] + sy)
+        placed.append(cand)
         out.append(ax.annotate(texts[i], (xs[i], ys[i]), textcoords='offset points',
-                               xytext=(dx / fig.dpi * 72.0, dy / fig.dpi * 72.0),
+                               xytext=(dx / px2, dy / px2),
                                ha=ha, va=va, fontsize=FS_SMALL, color=S.INK_SOFT))
     return out
 
@@ -266,15 +317,32 @@ def main():
                  & (pd.to_numeric(summ.n_chr_ctrl, errors='coerce') >= MIN_CHR)]
             if len(summ) else summ)
     r_all = pd.to_numeric(summ.pearson_r, errors='coerce')
-    n_good = int((r_all >= R_GOOD).sum())
+    # A locus whose two denominators mean different things is not counted toward
+    # the headline, however good or bad its r looks -- see allele_freq_check.py.
+    ok_cmp = (summ['comparable'] == 1 if 'comparable' in summ.columns
+              else pd.Series(True, index=summ.index))
+    n_cmp = int(ok_cmp.sum())
+    n_good = int(((r_all >= R_GOOD) & ok_cmp).sum())
+    not_cmp = sorted(summ.loc[~ok_cmp, 'gene'])
 
     # =====================================================================
     # FIGURE 1 -- the answer
     # =====================================================================
+    sec = (pd.read_csv(args.summary_secondary, sep='\t')
+           if args.summary_secondary and Path(args.summary_secondary).is_file() else None)
+    shared_loci = ([g for g in have.gene if g in set(sec.gene)] if sec is not None else [])
+
     bar_h = max(1.5, len(have) * ROW_IN)
-    plot_h = bar_h + 1.05
+    cmp_h = max(1.10, len(shared_loci) * ROW_IN * 1.15) if shared_loci else 0.0
+    plot_h = bar_h + 1.05 + (cmp_h + 0.75 if shared_loci else 0.0)
     fig = plt.figure(figsize=(S.COL_DOUBLE, plot_h))
-    gs = fig.add_gridspec(1, 3, width_ratios=[1.25, 1.0, 0.85])
+    if shared_loci:
+        gs = fig.add_gridspec(2, 3, width_ratios=[1.25, 1.0, 0.85],
+                              height_ratios=[bar_h, cmp_h])
+        ax_d = fig.add_subplot(gs[1, :])
+    else:
+        gs = fig.add_gridspec(1, 3, width_ratios=[1.25, 1.0, 0.85])
+        ax_d = None
     ax_p, ax_r, ax_u = (fig.add_subplot(gs[0, i]) for i in range(3))
 
     # (a) every allele at every locus on one axis.
@@ -285,23 +353,32 @@ def main():
     # panel's width, which keeps the identity line near 45 degrees anyway.
     pooled = chk[chk.n_chr_ctrl >= MIN_CHR].copy()
     scatter(ax_p, pooled, s_pt=9, n_label=2, n_out=3, keep_gene=True)
-    ax_p.set_xlabel('reference frequency')
-    ax_p.set_ylabel('observed frequency')
+    ax_p.set_xlabel('reference frequency', fontsize=FS_AXIS)
+    ax_p.set_ylabel('observed frequency', fontsize=FS_AXIS)
     ax_p.tick_params(labelsize=FS_SMALL + 2)
     panel_head(ax_p, 'a', 'all loci pooled')
     S.despine(ax_p)
 
     if len(have):
         idx = np.arange(len(have))
-        ax_r.barh(idx, have.pearson_r.astype(float), height=0.66, color=S.DATA_DARK)
+        hv_cmp = ((have['comparable'] == 1).to_numpy() if 'comparable' in have.columns
+                  else np.ones(len(have), bool))
+        # A non-comparable locus is drawn hollow: the bar is still there, because
+        # hiding it would leave a reader wondering where the locus went, but it
+        # cannot be read as a concordance.
+        ax_r.barh(idx, have.pearson_r.astype(float), height=0.66,
+                  color=np.where(hv_cmp, S.DATA_DARK, 'white'),
+                  edgecolor=np.where(hv_cmp, S.DATA_DARK, S.NEUTRAL_D),
+                  hatch=None, linewidth=0.9)
         ax_r.set_yticks(idx)
-        ax_r.set_yticklabels([g + (' †' if g in flag_set else '') for g in have.gene],
+        ax_r.set_yticklabels([g + (' †' if not c else '')
+                              for g, c in zip(have.gene, hv_cmp)],
                              fontstyle='italic', fontsize=FS_SMALL)
         ax_r.set_xlim(0, 1.02)
         ax_r.set_xticks([0, 0.5, R_GOOD])
         ax_r.axvline(R_GOOD, color=S.ACCENT, lw=0.8, ls=':', zorder=0)
         ax_r.invert_yaxis()
-        ax_r.set_xlabel('Pearson $r$')
+        ax_r.set_xlabel('Pearson $r$', fontsize=FS_AXIS)
         ax_r.tick_params(axis='x', labelsize=FS_SMALL + 1)
 
         u = unc.reindex(have.gene)
@@ -314,7 +391,7 @@ def main():
         ax_u.tick_params(axis='x', labelsize=FS_SMALL + 1)
         # Named in full: `unconfirmed` alone says nothing about what the share is
         # of, and the axis is a percentage of control chromosomes.
-        ax_u.set_xlabel('unconfirmed\nchromosomes', fontsize=FS_SMALL + 3)
+        ax_u.set_xlabel('% of chromosomes', fontsize=FS_AXIS)
     else:
         for ax in (ax_r, ax_u):
             ax.text(0.5, 0.5, 'too few control\nchromosomes', ha='center', va='center',
@@ -324,8 +401,53 @@ def main():
     panel_head(ax_u, 'c', 'unconfirmed')
     S.despine(ax_r); S.despine(ax_u)
 
-    lay_out(fig, [ax_p, ax_r, ax_u], plot_h=plot_h, top_pad=0.34,
-            wspace=0.28, hspace=0.30,
+    # ── (d) the same concordance under BOTH reference panels ────────────────
+    # The tables for the second panel have existed since it was wired up and
+    # nothing drew them: a reader was asked to accept that the two panels agree
+    # without being shown it. The shared-allele count is printed on each bar
+    # because that is what the agreement costs -- the smaller panel reaches the
+    # same r on roughly a seventh of the evidence.
+    axes_all = [ax_p, ax_r, ax_u]
+    if ax_d is not None:
+        sh = sec.set_index('gene')
+        pr = have.set_index('gene')
+        x = np.arange(len(shared_loci))
+        wb = 0.36
+        r1 = [float(pr.loc[g, 'pearson_r']) for g in shared_loci]
+        r2 = [float(sh.loc[g, 'pearson_r']) for g in shared_loci]
+        n1 = [int(pr.loc[g, 'n_shared']) for g in shared_loci]
+        n2 = [int(sh.loc[g, 'n_shared']) for g in shared_loci]
+        for xi, (v1, v2) in enumerate(zip(r1, r2)):
+            ax_d.plot([xi, xi], [v1, v2], color=S.NEUTRAL_D, lw=1.0, zorder=1)
+        ax_d.scatter(x, r1, s=110, color=S.DATA_DARK, zorder=3,
+                     label=args.reference_name)
+        ax_d.scatter(x, r2, s=42, color=S.DATA, zorder=4,
+                     label=args.reference_name_secondary)
+        for xi, (v1, v2, c1, c2) in enumerate(zip(r1, r2, n1, n2)):
+            ax_d.annotate(f'{c1}', (xi, v1), textcoords='offset points',
+                          xytext=(0, 7 if v1 >= v2 else -7), ha='center',
+                          va='bottom' if v1 >= v2 else 'top',
+                          fontsize=FS_SMALL, color=S.INK_SOFT)
+            ax_d.annotate(f'{c2}', (xi, v2), textcoords='offset points',
+                          xytext=(0, 7 if v2 > v1 else -7), ha='center',
+                          va='bottom' if v2 > v1 else 'top',
+                          fontsize=FS_SMALL, color=S.INK_SOFT)
+        ax_d.set_xticks(x)
+        ax_d.set_xticklabels(shared_loci, fontstyle='italic')
+        lo_ = min(r1 + r2 + [R_GOOD])
+        ax_d.set_ylim(lo_ - (1.0 - lo_) * 0.55, 1.0 + (1.0 - lo_) * 0.55)
+        ax_d.set_xlim(-0.5, len(shared_loci) - 0.5)
+        ax_d.axhline(R_GOOD, color=S.ACCENT, lw=0.8, ls=':', zorder=0)
+        ax_d.set_ylabel('Pearson $r$', fontsize=FS_AXIS)
+        ax_d.tick_params(labelsize=FS_SMALL + 1)
+        S.legend_inside(ax_d, ax_d.get_legend_handles_labels()[0], loc='lower left',
+                        fontsize=FS_SMALL + 1)
+        panel_head(ax_d, 'd', 'the same loci under both panels')
+        S.despine(ax_d)
+        axes_all.append(ax_d)
+
+    lay_out(fig, axes_all, plot_h=plot_h, top_pad=0.34,
+            wspace=0.28, hspace=0.62,
             title=f'Do our control allele frequencies reproduce {args.reference_name}?')
     fig.savefig(args.out_png)
     plt.close(fig)
@@ -410,8 +532,14 @@ def main():
     fig2, axes2 = plt.subplots(nrow, ncol, figsize=(S.COL_DOUBLE, loci_h), squeeze=False)
     flat = axes2.ravel()
     for i, (ax, g) in enumerate(zip(flat, genes)):
+        # The x label goes on every panel in the LAST OCCUPIED ROW OF ITS COLUMN.
+        # `i + ncol >= len(genes)` is the same thing, but it made panels (i) and
+        # (j) carry a label while (f), (g) and (h) beside them did not, because
+        # the final row is short. Reading it by column removes the asymmetry.
+        last_in_col = (i + ncol >= len(genes))
         locus_panel(ax, chk[chk.gene == g].copy(), g, string.ascii_lowercase[i],
-                    xlab=(i + ncol >= len(genes)),   # nothing plotted below it
+                    xlab=last_in_col or (i // ncol == nrow - 2 and i % ncol >= len(genes) % ncol
+                                         and len(genes) % ncol),
                     ylab=(i % ncol == 0),            # leftmost column
                     flag=(g in flag_set))
     for ax in flat[len(genes):]:
@@ -446,8 +574,9 @@ def main():
             'question — which allele is off the line, and by how much relative to its '
             'interval. A panel whose points sit on the line at every frequency is a '
             'locus whose common haplotypes are being read correctly.'
-            + (f' † {flagged} is marked because its comparison does not reconcile.'
-               if flagged else '')),
+            + (f' † {flagged} is marked as not comparable: the reference assigns an '
+               f'allele to every chromosome and encodes no absence for that gene, so its '
+               f'denominator is not the same quantity as ours.' if flagged else '')),
         limits=[
             'Each panel is scaled to its own locus, so panel-to-panel comparison by eye '
             'is not meaningful. Use the concordance panel for that.',

@@ -557,6 +557,38 @@ sys.exit(bad)
 PY
 ck "confound table reproduces the per-sample table" $?
 
+echo "═══ 16b. every compared locus has a comparable denominator ═══"
+python3 - <<'PY'
+import pandas as pd, pathlib, sys
+# The mechanical form of the defect that hid at DRB3: two sources can only be
+# compared when their denominators mean the same thing. A reference that covers
+# essentially every chromosome while we call the gene on materially fewer is not
+# reporting a quality problem, it is a category error, and the correlation
+# between them measures that mismatch rather than the typing.
+bad = 0
+for suf in ('', '.1kg'):
+    f = pathlib.Path(f'results/05.qc/allele_frequency_summary{suf}.tsv')
+    if not f.is_file():
+        continue
+    d = pd.read_csv(f, sep='\t')
+    missing = [c for c in ('comparable', 'frac_chr_ctrl', 'frac_chr_ref', 'note')
+               if c not in d.columns]
+    if missing:
+        print(f'    x {f.name} has no {missing}'); bad = 1; continue
+    recomputed = ~((d.frac_chr_ref >= 0.995) & (d.frac_chr_ctrl <= 0.95))
+    if not (recomputed.astype(int) == d.comparable).all():
+        print(f'    x {f.name}: the comparable column does not reproduce'); bad = 1
+    n_bad = int((d.comparable == 0).sum())
+    excl = ', '.join(d.loc[d.comparable == 0, 'gene'])
+    print(f'    {f.name}: {len(d) - n_bad}/{len(d)} comparable'
+          + (f'  ({excl} excluded)' if n_bad else ''))
+    for _, r in d[d.comparable == 0].iterrows():
+        if not str(r['note']).strip():
+            print(f'    x {r.gene} excluded with no reason recorded'); bad = 1
+sys.exit(bad)
+PY
+ck "comparability recorded and reproducible" $?
+
 echo "═══ 17. both reference panels, each with its own locus list ═══"
 python3 - <<'PY'
 import sys, pandas as pd
@@ -654,6 +686,90 @@ for p in sorted(pathlib.Path('results/figures').glob('*.png')):
 sys.exit(bad)
 PY
 ck "every figure is 7.20 in wide" $?
+
+echo "═══ 21a. figure geometry, measured ═══"
+python3 - <<'PY'
+import importlib.util, itertools, pathlib, sys, tempfile
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+# Every text artist the figures draw, measured at save time: nothing may overlap
+# another text box and nothing may leave the axes it belongs to. Six rounds of
+# collisions were found by eye before this check existed. savefig is wrapped
+# because every script closes its figure immediately after writing it.
+BAD = []
+CUR = ['']
+_real = Figure.savefig
+
+def _checked(self, *a, **kw):
+    try:
+        r = self.canvas.get_renderer()
+    except Exception:
+        r = None
+    if r is not None:
+        for ax in self.axes:
+            ab = ax.get_window_extent()
+            boxes = []
+            for t in ax.texts:
+                if not t.get_text().strip() or not t.get_visible():
+                    continue
+                bb = t.get_window_extent(r)
+                if bb.width <= 0 or bb.height <= 0:
+                    continue
+                boxes.append((t.get_text().replace('\n', ' ')[:24], bb))
+                if (bb.x0 < ab.x0 - 3 or bb.x1 > ab.x1 + 3
+                        or bb.y0 < ab.y0 - 3 or bb.y1 > ab.y1 + 3):
+                    BAD.append(f'{CUR[0]}: {t.get_text()[:24]!r} leaves its axes')
+            for (n1, b1), (n2, b2) in itertools.combinations(boxes, 2):
+                ov = (max(0.0, min(b1.x1, b2.x1) - max(b1.x0, b2.x0))
+                      * max(0.0, min(b1.y1, b2.y1) - max(b1.y0, b2.y0)))
+                if ov > 6:
+                    BAD.append(f'{CUR[0]}: {n1!r} overlaps {n2!r}')
+    return _real(self, *a, **kw)
+
+Figure.savefig = _checked
+R = 'results'
+with tempfile.TemporaryDirectory() as td:
+    SPECS = [
+        ('plot_typing_qc.py',
+         ['--sample-qc', f'{R}/05.qc/typing_qc_sample.tsv',
+          '--gene-qc', f'{R}/05.qc/typing_qc_gene.tsv',
+          '--sites', f'{R}/04.residues/residue_sites.tsv',
+          '--out-png', f'{td}/qc.png']),
+        ('plot_typing_confound.py',
+         ['--sample', f'{R}/05.qc/allele_frequency_sample.tsv',
+          '--reference-name', 'jMorp 61KJPN-HLA',
+          '--sample-secondary', f'{R}/05.qc/allele_frequency_sample.1kg.tsv',
+          '--reference-name-secondary', '1000 Genomes JPT',
+          '--control-group', 'AGP3K',
+          '--out-png', f'{td}/confound.png', '--out-table', f'{td}/confound.tsv']),
+        ('plot_allele_freq.py',
+         ['--check', f'{R}/05.qc/allele_frequency_check.tsv',
+          '--summary', f'{R}/05.qc/allele_frequency_summary.tsv',
+          '--summary-secondary', f'{R}/05.qc/allele_frequency_summary.1kg.tsv',
+          '--reference-name', 'jMorp 61KJPN-HLA',
+          '--reference-name-secondary', '1000 Genomes JPT',
+          '--flag-genes', 'DRB3',
+          '--out-png', f'{td}/freq.png', '--out-png-loci', f'{td}/loci.png']),
+    ]
+    n_fig = 0
+    for name, argv in SPECS:
+        path = pathlib.Path('scripts') / name
+        CUR[0] = name
+        spec = importlib.util.spec_from_file_location(path.stem, path)
+        mod = importlib.util.module_from_spec(spec)
+        sys.argv = [str(path)] + argv
+        spec.loader.exec_module(mod)
+        mod.main()
+        n_fig += 1
+uniq = sorted(set(BAD))
+for b in uniq:
+    print('    x ' + b)
+print(f'    {len(uniq)} collision(s) over {len(SPECS)} figure script(s)')
+sys.exit(1 if uniq else 0)
+PY
+ck "no in-axes text collides or leaves its axes" $?
 
 echo "═══ 21b. the report's figures are the published ones ═══"
 # report/figures/ holds COPIES, not symlinks: quarto cannot copy a symlink into

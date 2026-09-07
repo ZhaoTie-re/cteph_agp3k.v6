@@ -15,8 +15,10 @@ dl.panels dd { margin-left: 1.2rem; margin-bottom: 0.35rem; }
 /* Glossary: keep the term column narrow so definitions line up. */
 table.glossary td:first-child { white-space: nowrap; font-weight: 600; }
 
-/* Deterministic Chinese typography rather than whatever the OS picks first. */
-:lang(zh) body, html[lang="zh"] body {
+/* Deterministic Chinese typography rather than whatever the OS picks first.
+   `:lang(zh)` matches lang="zh-Hans", which is what Quarto emits; an exact
+   attribute selector html[lang="zh"] does NOT, and sat here doing nothing. */
+:lang(zh) body {
   font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Source Han Sans SC",
                -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   line-height: 1.75;

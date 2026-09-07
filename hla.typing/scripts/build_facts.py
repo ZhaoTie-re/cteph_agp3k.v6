@@ -31,6 +31,11 @@ import pandas as pd
 
 SAMPLE_ID = {'sample_id': str}
 
+# The level above which a locus is read at face value. It is a threshold we
+# chose, not a result, but the prose quotes it, so it is published as a fact
+# rather than typed into two report editions that could then drift apart.
+R_CONCORDANT = 0.98
+
 
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__)
@@ -47,6 +52,11 @@ def parse_args():
     p.add_argument('--cohort-name', default='full_mainland')
     p.add_argument('--cohort-pheno', nargs='*', default=[],
                    help='NAME=path/to/pheno.tsv for each downstream cohort, to record containment')
+    p.add_argument('--reference-jmorp', default=None,
+                   help='the jMorp allele-frequency CSV; with it, the cost of NOT '
+                        'translating to P groups is measured rather than asserted')
+    p.add_argument('--control-group', default='AGP3K',
+                   help="the manifest group whose frequencies are compared")
     p.add_argument('--out', required=True)
     return p.parse_args()
 
@@ -200,9 +210,35 @@ def main():
             continue
         s = pd.read_csv(path, sep='\t')
         put(f'n_loci_{tag}', num(len(s)), len(s))
+        # A locus whose two denominators mean different things is reported but not
+        # counted -- allele_freq_check.py decides that, this only reads it.
+        cmpb = (s['comparable'] == 1) if 'comparable' in s.columns else s['gene'].notna()
+        put(f'n_loci_comparable_{tag}', num(cmpb.sum()), int(cmpb.sum()))
+        put(f'n_loci_not_comparable_{tag}', num((~cmpb).sum()), int((~cmpb).sum()))
+        if (~cmpb).any():
+            put(f'locus_not_comparable_{tag}', ', '.join(sorted(s.loc[~cmpb, 'gene'])))
+            nc = s[~cmpb].iloc[0]
+            put(f'frac_chr_ctrl_not_comparable_{tag}', pct(nc['frac_chr_ctrl'], 1),
+                float(nc['frac_chr_ctrl']))
+            put(f'frac_chr_ref_not_comparable_{tag}', pct(nc['frac_chr_ref'], 0),
+                float(nc['frac_chr_ref']))
+            # The r the excluded locus would have reported. It is quoted only to
+            # be disowned -- it measures the denominator mismatch, not the typing.
+            put(f'r_not_comparable_{tag}', f"{float(nc['pearson_r']):.3f}",
+                float(nc['pearson_r']))
+        # Both denominators at every locus, comparable or not: this pair is what
+        # the comparability test reads, so the prose that explains the test has
+        # to be able to quote it rather than restate it.
+        for _, r in s.iterrows():
+            put(f"frac_chr_ctrl_{r['gene']}_{tag}", pct(r['frac_chr_ctrl'], 1),
+                float(r['frac_chr_ctrl']))
+            put(f"frac_chr_ref_{r['gene']}_{tag}", pct(r['frac_chr_ref'], 1),
+                float(r['frac_chr_ref']))
+        s = s[cmpb]
         put(f'r_min_{tag}', f"{s['pearson_r'].min():.4f}", float(s['pearson_r'].min()))
         put(f'r_max_{tag}', f"{s['pearson_r'].max():.4f}", float(s['pearson_r'].max()))
-        ok = s[s['pearson_r'] >= 0.98]
+        ok = s[s['pearson_r'] >= R_CONCORDANT]
+        put('r_concordant_threshold', f'{R_CONCORDANT:.2f}', R_CONCORDANT)
         put(f'n_loci_concordant_{tag}', num(len(ok)), len(ok))
         put(f'r_min_concordant_{tag}', f"{ok['pearson_r'].min():.3f}",
             float(ok['pearson_r'].min()))
@@ -280,6 +316,34 @@ def main():
             put(f'n_unconfirmed_{grp}_{tag}', num(r.unc), int(r.unc))
         put(f'n_chr_per_sample_max_{tag}', num(d.n_chr.max()), int(d.n_chr.max()))
         put(f'n_chr_per_sample_min_{tag}', num(d.n_chr.min()), int(d.n_chr.min()))
+
+    # ---- what a non-comparable locus looks like ---------------------------
+    # OPEN_QUESTIONS section 3 quotes these, so they are derived rather than
+    # measured once and pasted. For each locus the denominator test rejected:
+    # the allele that absorbs the mismatch, and the correlation once it is
+    # removed and both sides renormalised.
+    smy = R / '05.qc/allele_frequency_summary.tsv'
+    ckp = R / '05.qc/allele_frequency_check.tsv'
+    if smy.is_file() and ckp.is_file():
+        sm_ = pd.read_csv(smy, sep='\t')
+        ck_ = pd.read_csv(ckp, sep='\t')
+        if 'comparable' in sm_.columns:
+            for g in sm_.loc[sm_.comparable == 0, 'gene']:
+                d_ = ck_[ck_.gene == g].copy()
+                d_['adiff'] = (d_.freq_ctrl.astype(float)
+                               - d_.freq_ref.astype(float)).abs()
+                top = d_.loc[d_.adiff.idxmax()]
+                put(f'absorbing_allele_{g}', str(top.allele))
+                put(f'absorbing_freq_ref_{g}', f'{float(top.freq_ref):.3f}',
+                    float(top.freq_ref))
+                put(f'absorbing_freq_ctrl_{g}', f'{float(top.freq_ctrl):.3f}',
+                    float(top.freq_ctrl))
+                rest = d_[d_.allele != top.allele]
+                kc_, kr_ = rest.count_ctrl.sum(), rest.count_ref.sum()
+                if kc_ and kr_ and len(rest) > 2:
+                    rr = float(np.corrcoef(rest.count_ctrl / kc_,
+                                           rest.count_ref / kr_)[0, 1])
+                    put(f'r_without_absorbing_{g}', f'{rr:.3f}', rr)
 
     # ---- the per-locus view of the same contrast --------------------------
     # OPEN_QUESTIONS section 3 is a per-locus table, and it was hand-typed. It is
@@ -393,6 +457,63 @@ def main():
         # What collapsing allele_dosage.tsv onto P groups would cost, which
         # METHODS section 13 quotes as the reason not to.
         put('n_pgroups_carried', num(m['p_group'].nunique()), int(m['p_group'].nunique()))
+        # What the harmonisation actually costs, at the loci that are compared.
+        # An allele whose name is unchanged met the reference at the full 2-field
+        # name; one that changed was merged, and only where the reference had
+        # merged it too.
+        LOCI = set(pd.read_csv(R / '05.qc/allele_frequency_summary.tsv',
+                               sep='\t')['gene'])
+        mm = m[m.gene.isin(LOCI)]
+        unchanged = int((mm.allele == mm.p_group).sum())
+        put('n_alleles_at_compared_loci', num(len(mm)), len(mm))
+        put('n_alleles_name_unchanged', num(unchanged), unchanged)
+        put('n_alleles_merged', num(len(mm) - unchanged), len(mm) - unchanged)
+        grp = mm.groupby('p_group').allele.nunique()
+        coll = grp[grp > 1]
+        put('n_alleles_in_multi_groups', num(coll.sum()), int(coll.sum()))
+        put('n_multi_groups', num(len(coll)), len(coll))
+        put('n_names_lost_to_merging', num(int(coll.sum()) - len(coll)),
+            int(coll.sum()) - len(coll))
+
+        # The counterfactual behind "the translation is not optional": join our
+        # raw two-field names straight against the reference's own names and see
+        # what is left. The reference publishes a MIXTURE of P-group and plain
+        # names, so a raw call joins only where the reference happens to write
+        # that allele plain -- which is why this is measured and not guessed.
+        if a.reference_jmorp:
+            ref_names = set(pd.read_csv(a.reference_jmorp)['allele'].astype(str))
+            # The mixed convention itself, counted rather than described: the
+            # report opens the harmonisation section with this split, so it has
+            # to move if the panel is ever replaced.
+            n_p = sum(1 for n in ref_names if n.endswith('P'))
+            put('n_ref_names_jmorp', num(len(ref_names)), len(ref_names))
+            put('n_ref_names_pgroup_jmorp', num(n_p), n_p)
+            put('n_ref_names_plain_jmorp', num(len(ref_names) - n_p),
+                len(ref_names) - n_p)
+            # How many of OUR alleles the report's worked example collapses,
+            # so the sentence explaining a P group counts rather than asserts.
+            worked = f.get('absorbing_allele_DRB3')
+            if worked:
+                n_in = int((m.p_group == worked).sum())
+                put('n_alleles_in_worked_group', num(n_in), n_in)
+            ctrl = set(man.loc[man['group'] == a.control_group, 'sample_id'])
+            dos = pd.read_csv(R / '04.residues/allele_dosage.tsv', sep='\t',
+                              dtype=SAMPLE_ID)
+            chrom = dos[dos.sample_id.isin(ctrl)].drop(columns=['sample_id']).sum()
+            gene_of = dict(zip(m.allele, m.gene))
+            cols = [c for c in chrom.index if gene_of.get(c) in LOCI]
+            tot = float(chrom[cols].sum())
+            hit = float(chrom[[c for c in cols if c in ref_names]].sum())
+            put('unmatched_without_pgroups_jmorp', pct(1.0 - hit / tot),
+                1.0 - hit / tot)
+            dead = []
+            for g in sorted(LOCI):
+                gc = [c for c in cols if gene_of[c] == g]
+                if float(chrom[gc].sum()) and not float(
+                        chrom[[c for c in gc if c in ref_names]].sum()):
+                    dead.append(g)
+            put('n_loci_unmatched_without_pgroups_jmorp', num(len(dead)), len(dead))
+            put('loci_unmatched_without_pgroups_jmorp', ', '.join(dead))
 
     out = {'_note': 'Generated by build_facts.py. Every number this component writes into prose '
                     'comes from here; nothing is hand-typed. See verify.sh.',

@@ -183,6 +183,8 @@ scripts/
                          on IPD-IMGT P groups. Run once per panel
   build_facts.py         every number this component's prose is allowed to quote,
                          derived from the published tables into _run_info/facts.json
+                         (--reference-jmorp additionally measures the cost of not
+                         harmonising, which no delivered table records)
   plot_typing_qc.py      the COMPLETENESS figure
   plot_allele_freq.py    the frequency check: a summary figure and a per-locus record
   plot_typing_confound.py  the CONFOUNDING figure, under both reference panels

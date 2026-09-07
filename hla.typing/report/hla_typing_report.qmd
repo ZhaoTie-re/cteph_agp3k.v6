@@ -22,17 +22,34 @@ f   <- function(k) { v <- F[[k]]; if (is.null(v)) stop("no such fact: ", k); v }
 tsv <- function(p) read.delim(file.path(R, p), check.names = FALSE)
 ```
 
-::: {.callout-tip}
-## Who this is written for
+::: {.callout-note}
+## At a glance
 
-**Someone who has never worked with HLA.** Section 2 explains the biology and the
-notation from scratch; nothing after it assumes you read anything else first. If you
-already type HLA routinely, skip to §3.
+|  |  |
+|---|---|
+| **What this is** | HLA genotypes for `r f("n_typed")` people — `r f("n_typed_PH")` CTEPH cases, `r f("n_typed_AGP3K")` AGP3K controls |
+| **Delivered as** | `allele_dosage.tsv`, `residue_dosage.tsv`, `residue_diplotype.tsv`, `allele_pgroup_map.tsv` |
+| **Failures** | `r f("n_failed_gene_calls")` |
+| **Agreement with published data** | `r f("n_loci_concordant_jmorp")` of `r f("n_loci_comparable_jmorp")` comparable loci at *r* ≥ `r f("r_concordant_threshold")` |
+| **Use first** | class I residues (HLA-A, -B, -C) |
+| **Do not use** | DRB3, DRB4 and DRB5 dosages — wrong by construction |
+| **Read before analysing** | @sec-confound, then @sec-support |
+:::
+
+::: {.callout-tip}
+## Who this is written for, and how to read it
+
+**Someone who has never worked with HLA.** @sec-primer explains the biology and the
+notation from scratch; nothing after it assumes you read anything else first.
+
+If you already type HLA routinely, read @sec-harmonise, @sec-confound and @sec-support and
+skip the rest. If you are here to run an association, those three are the ones that change
+what you should do.
 
 Every number below is generated from the published tables when this page is built, not
 typed in by hand. If a table changes and the page is rebuilt, the numbers change with it;
 if a number here has no source in the data, the build fails rather than printing something
-stale.
+stale. Open any grey code block to see exactly which table a number came from.
 :::
 
 # What this document is
@@ -159,6 +176,7 @@ pd.read_csv(path, sep='\t', dtype={'sample_id': str})
 Three filters were applied in order, and **they are not the same kind of decision**.
 
 ```{r chain}
+#| echo: true
 data.frame(
   step = c("1. in the v6 study cohort", "2. passed sequencing quality control",
            "3. **in the mainland ancestry cluster**"),
@@ -211,12 +229,8 @@ not luck. The typing program exits successfully even when it has crashed interna
 every result is checked *inside* the typing job and a truncated result fails that job
 rather than being quietly published.
 
-![](figures/typing_qc.png)
+![Typing completeness, by sequencing platform and by gene. Read it by platform, not by case/control — see the note after panel (b).](figures/typing_qc.png){#fig-qc}
 
-::: {.figure-note}
-**Figure 1.** Typing completeness, by sequencing platform and by gene. Read this figure by
-**platform**, not by case/control — see the note after panel (b).
-:::
 
 **What you are looking at.** Four views of "was a call produced, and how good was it",
 none of which can tell you whether a call is *correct* — that is @sec-frequencies.
@@ -260,6 +274,125 @@ type and every case on a different one, with no overlap. Any case/control differ
 these metrics is therefore inseparable from the machine, which is why the comparison is
 never drawn that way. This becomes the central issue in §8.
 
+# How two sources of allele frequencies are made comparable {#sec-harmonise}
+
+@sec-frequencies compares our allele frequencies with a published panel's. Before it can,
+the two have to be talking about the same things. They are not, to begin with, and the
+work of making them so is worth understanding, because it is where one locus turns out to
+be uncomparable.
+
+## Three sources, three ways of writing the same allele
+
+| | how it writes an allele |
+|---|---|
+| us (HLA-HD) | `DRB3*01:01` — never any suffix |
+| jMorp 61KJPN-HLA | **a mixture**: `r f("n_ref_names_pgroup_jmorp")` of its `r f("n_ref_names_jmorp")` names end in `P`, the other `r f("n_ref_names_plain_jmorp")` do not |
+| 1000 Genomes JPT | `23:01` — bare, never any suffix |
+
+Nothing can be joined until these are in one namespace.
+
+## What the `P` means
+
+IPD-IMGT groups together alleles whose protein is **identical over the part that matters
+for binding** — the antigen recognition domain — and names the group after its
+lowest-numbered member with a `P` appended. `DRB3*01:01P` is not an allele; it is a group
+of more than a hundred of them, of which our cohort carries `r f("n_alleles_in_worked_group")`.
+
+The group exists because those alleles differ only outside the binding groove. For a
+frequency comparison they are the same thing; for a residue analysis they are not, which
+is why this translation stops at the QC boundary (see below).
+
+**Not every allele has a group.** A group of one gets no name, so `DRB1*15:13` — whose
+protein sequence in that region is unique — appears with no `P`. That is why the reference
+panel's naming looks inconsistent: it is not inconsistent, it is exact.
+
+## The translation runs in one direction, and only one direction is possible
+
+Ours → group is **many-to-one**: well defined, and lossy only in a way that will be
+quantified below. Group → ours is **not invertible**: jMorp publishes one number for
+`DRB3*01:01P` — the sum over all its members — and the split between members is
+information nobody has.
+
+Not translating at all is not an option either, and that is measured rather than assumed.
+Join our raw names straight against jMorp's own names and
+**`r f("unmatched_without_pgroups_jmorp")`** of our control chromosomes find no partner at
+all; at `r f("n_loci_unmatched_without_pgroups_jmorp")` loci
+(`r f("loci_unmatched_without_pgroups_jmorp")`) not one chromosome matches. The comparison
+would not be worse without the translation — it would not exist.
+
+## Both sides are normalised, not one
+
+A reference name that already ends in `P` passes through untouched; one that does not is
+looked up. Our names go through the same lookup. **The two therefore meet at whichever
+convention is finer for that particular allele** — the full two-field name where the
+reference kept it, the group name where the reference had already merged it.
+
+At the compared loci we carry `r f("n_alleles_at_compared_loci")` alleles, of which
+**`r f("n_alleles_name_unchanged")` keep their name exactly**.
+
+## What the merging costs
+
+`r f("n_alleles_in_multi_groups")` of our alleles fall into `r f("n_multi_groups")` groups
+that contain more than one of them, so **`r f("n_names_lost_to_merging")` distinct names
+disappear from the comparison**. They disappear only where the reference had already
+merged them, so nothing is lost that the comparison could have used.
+
+::: {.callout-important}
+## None of this reaches the genotypes you were given
+
+`allele_dosage.tsv` and `residue_dosage.tsv` contain **no P groups**. They carry the
+untranslated two-field names, because a group merges alleles that differ outside the
+binding region and the residue analysis reads the whole protein. Collapsing the delivered
+matrices onto groups would take `r f("n_alleles_carried")` columns down to
+`r f("n_pgroups_carried")` and throw away testable variation.
+:::
+
+## The two-field key, and the check that makes it legal
+
+The lookup is keyed on the two-field name, because that is the depth everything here runs
+at. That is only valid if **no two-field name ever spans two different groups** — otherwise
+the collapse would be arbitrary. The code checks all 25,290 of them and aborts rather than
+choosing one, so if a future IPD-IMGT release ever breaks the property, the pipeline stops
+instead of quietly producing a wrong comparison.
+
+## Denominators: what is left out, and why
+
+A frequency needs a denominator, and the two sources must use the same one.
+
+- **Chromosomes where we made no call are excluded from ours.** For DRB3, DRB4 and DRB5
+  that is most of them, and correctly so — @sec-primer explains that those genes are
+  genuinely absent from many haplotypes.
+- **Null alleles are dropped from the reference and the rest renormalised.** jMorp uses the
+  null allele `DRB4*03:01N` — 0.543 of all its chromosomes — to mean "this haplotype has no
+  working DRB4". That is the same fact our data records as *not typed*. Keeping it would
+  compare two different quantities; dropping it moves DRB4 from *r* = 0.625 to
+  *r* = `r f("r_DRB4_jmorp")`.
+
+## Where this fails: HLA-DRB3 {#sec-drb3}
+
+**jMorp provides no null allele for DRB3**, yet its DRB3 counts still add up to every
+chromosome in the panel.
+
+| | ours | jMorp |
+|---|---|---|
+| chromosomes carrying DRB3 | `r f("frac_chr_ctrl_not_comparable_jmorp")` | `r f("frac_chr_ref_not_comparable_jmorp")` |
+
+`r f("frac_chr_ref_not_comparable_jmorp")` is not possible: DRB3 exists only on one family
+of haplotypes. So the panel is assigning a real DRB3 allele to chromosomes that do not
+carry the gene, and they land mostly on the commonest one. Our denominator is the
+`r f("frac_chr_ctrl_not_comparable_jmorp")` that do carry it.
+
+The two numbers are not the same quantity, so the correlation between them measures the
+mismatch and not the typing. **DRB3 is therefore marked not comparable and excluded from
+the headline**, drawn hollow in @fig-freq (b) and flagged with a dagger. Every other locus
+agrees with the reference to within 0.7 percentage points on this fraction; DRB3 differs by
+more than fifty.
+
+The test is mechanical, not a special case for DRB3: a locus is marked uncomparable when
+the reference covers essentially every chromosome while we call the gene on materially
+fewer. DRB4 is not caught by it, and should not be — its 0.457 is an honest fraction, not a
+saturated one.
+
 # Do the calls agree with published data? {#sec-frequencies}
 
 Completeness cannot see a call that was made confidently and is wrong. The only thing that
@@ -268,15 +401,16 @@ frequencies we observe in our controls should reproduce the frequencies publishe
 comparable population.** If the typing were systematically picking the wrong version, the
 whole frequency spectrum would shift and no completeness metric would notice.
 
-**`r f("n_loci_concordant_jmorp")` of `r f("n_loci_jmorp")` loci reproduce the reference at
-a correlation of `r f("r_min_concordant_jmorp")` or better.**
+Getting the two sources into the same namespace is @sec-harmonise; this section reads
+the result.
 
-![](figures/allele_frequency.png)
+**`r f("n_loci_concordant_jmorp")` of the `r f("n_loci_comparable_jmorp")` comparable loci
+reproduce the reference at a correlation of `r f("r_min_concordant_jmorp")` or better.**
+The `r f("n_loci_not_comparable_jmorp")` locus left out is
+HLA-`r f("locus_not_comparable_jmorp")`, for the reason given in @sec-drb3.
 
-::: {.figure-note}
-**Figure 2.** Control allele frequencies against jMorp 61KJPN-HLA
-(`r f("n_ref_individuals_jmorp")` individuals, `r f("n_loci_jmorp")` loci).
-:::
+![Our control allele frequencies against the reference panels. Panel (d) is the comparison between the two panels themselves.](figures/allele_frequency.png){#fig-freq}
+
 
 ::: {.panels}
 **(a) all loci pooled** — One dot per allele. The horizontal position is the frequency the
@@ -286,8 +420,8 @@ confidence intervals on our estimate. Red dots are the two commonest alleles and
 furthest from the line, named so you can see which they are.
 
 **(b) concordance** — For each locus separately, the correlation between the two sets of
-frequencies. The dotted line is 0.98, the level above which a locus is
-read at face value. Twelve of thirteen loci clear it comfortably; **HLA-DRB3 does not**,
+frequencies. The dotted line is `r f("r_concordant_threshold")`, the level above which a
+locus is read at face value. Twelve of thirteen loci clear it comfortably; **HLA-DRB3 does not**,
 and is marked with a dagger.
 
 **(c) unconfirmed share** — For each locus, the fraction of our control chromosomes
@@ -295,6 +429,13 @@ carrying an allele the reference **does not list at all**. This is a different q
 from (b): a locus can have excellent correlation on the alleles both sources share and
 still put many chromosomes onto alleles the reference has never seen. Drawn on the same
 rows as (b) so the two can be read together.
+
+**(d) the same loci under both panels** — Panel (b) computed twice, once against each
+reference panel, at the five loci both panels carry. The number beside each dot is how
+many alleles that source and ours actually have in common. Two things to take from it:
+the two panels **agree on concordance** — which is why the finding in @sec-confound does
+not depend on the choice of panel — and the smaller panel reaches that agreement on
+roughly a seventh of the evidence.
 :::
 
 **A caution about (b) that the numbers themselves make plain.** The table below reports
@@ -304,30 +445,32 @@ HLA-`r f("locus_fewest_shared_jmorp")`**. A correlation computed where only two 
 shared is not meaningful, however high it looks. Read `r"$r$"` and `n_shared` together.
 
 ```{r concordance}
+#| echo: true
 sm <- tsv("05.qc/allele_frequency_summary.tsv")
 sm[, c("gene", "n_alleles", "n_shared", "n_chr_ctrl", "pearson_r", "max_abs_diff",
        "allele_at_max")] |> kable()
 ```
 
-![](figures/allele_frequency_loci.png)
+![The same comparison, one panel per locus. This is the record behind @fig-freq, not a separate argument.](figures/allele_frequency_loci.png){#fig-loci}
 
-::: {.figure-note}
-**Figure 3.** The same comparison, one panel per locus. This is the record behind Figure 2,
-not a separate argument.
-:::
 
-Each panel is the same plot as Figure 2(a) restricted to one locus. **The axes are scaled
+Each panel is the same plot as @fig-freq (a) restricted to one locus. **The axes are scaled
 to each locus separately**, so panels cannot be compared with each other by eye — that is
-what Figure 2(b) is for. Panel (i), HLA-DRB3, is the one to look at: its three commonest
+what @fig-freq (b) is for. Panel (i), HLA-DRB3, is the one to look at: its three commonest
 alleles sit visibly off the line in both directions.
 
 ::: {.callout-important}
-## HLA-DRB3 is flagged and excluded from the headline
+## HLA-DRB3 is excluded, and the reason is now known
 
-Its correlation is `r f("worst_locus_r_jmorp")`, against `r f("r_min_concordant_jmorp")` for
-the worst locus that passes. The reference assigns every chromosome a DRB3 allele and this
-pipeline does not, and no mechanism we have tested accounts for the rest of the gap. Do not
-read DRB3 frequencies at face value.
+Earlier versions of this document said that no mechanism we had tested accounted for the
+DRB3 gap. **That is no longer true.** The reference panel has no way to say "this
+chromosome has no DRB3" and so assigns one anyway; our denominator counts only the
+chromosomes that carry the gene. @sec-drb3 has the numbers. The comparison is invalid at
+this locus rather than merely poor, which is why the bar in @fig-freq (b) is drawn hollow
+and the locus is not counted in the headline.
+
+This changes a quality metric, not the delivered genotypes — DRB3 dosages were already
+marked *do not use*, for the separate reason in @sec-support.
 :::
 
 # The one real quality problem {#sec-confound}
@@ -343,11 +486,8 @@ controls.**
 `r f("unconfirmed_PH_jmorp")`.** A ratio of **`r f("unconfirmed_ratio_jmorp")`**, Fisher
 exact *P* = `r f("fisher_p_group")`.
 
-![](figures/typing_confound.png)
+![Testing the two explanations that would make the case/control difference go away.](figures/typing_confound.png){#fig-confound}
 
-::: {.figure-note}
-**Figure 4.** Testing the two explanations that would make this finding go away.
-:::
 
 Three things could produce that difference. Two of them are tested here and neither
 survives.
@@ -440,7 +580,7 @@ carries, `r f("n_alleles_not_in_reference")` are flagged that way — but they a
 is why the chromosome-weighted figure is only `r f("unconfirmed_cohort_jmorp")`.
 :::
 
-# What these calls can and cannot support
+# What these calls can and cannot support {#sec-support}
 
 **In order of robustness, most to least.**
 

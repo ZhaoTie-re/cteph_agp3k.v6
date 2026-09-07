@@ -314,8 +314,11 @@ def main():
     hz = gq.set_index('gene')['hemizygous']
     hz_top = hz.idxmax()
     # top_pad has to clear the legends now parked in the title slot.
-    lay_out(fig, list(axes.ravel()), plot_h=plot_h, top_pad=0.60,
-            wspace=0.26, hspace=0.30, right=0.965,
+    # hspace 0.30 put row 2's panel TITLES straight through row 1's x labels --
+    # "c outcome per|calls|gene". The gap has to hold an x label (~0.30 in) plus a
+    # legend row plus a title, and it is measured below rather than guessed.
+    lay_out(fig, list(axes.ravel()), plot_h=plot_h, top_pad=0.52,
+            wspace=0.26, hspace=0.62, right=0.965,
             title='Typing completeness, by sequencing platform and by gene')
     fig.savefig(args.out_png)
     plt.close(fig)

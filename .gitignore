@@ -43,3 +43,4 @@
 # the same failure mode as .gitignore not tracking itself.
 !**/report/_quarto.yml
 !**/report/*.css
+!**/report/*.lua
