@@ -32,7 +32,6 @@ def parse_args():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--sample', required=True)
     p.add_argument('--result-dir', required=True, help='<sample>/result')
-    p.add_argument('--log-dir', help='<sample>/log')
     p.add_argument('--run-log', help='the hlahd.sh stdout/stderr capture')
     p.add_argument('--gene-split', required=True,
                    help='HLA_gene.split.*.txt — defines which genes must be present')

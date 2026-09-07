@@ -31,12 +31,31 @@ Every path below is under `results/`.
 05.qc/                         copied
   typing_qc_sample.tsv · typing_qc_platform.tsv · typing_qc_group.tsv
   typing_qc_gene.tsv
-  allele_frequency_check.tsv · allele_frequency_summary.tsv
+  allele_frequency_check.tsv    one row per (locus, allele): ours, cases, reference
+  allele_frequency_summary.tsv  one row per locus: r, rho, max|diff|
+  allele_frequency_sample.tsv   one row per sample: chromosomes called, unconfirmed
+  allele_pgroup_map.tsv         allele -> P group -> in_reference; the association
+                                reads this one
+  *.1kg.tsv                     the same four against the SECONDARY panel. Same
+                                schema, different reference and locus list
+  typing_confound.tsv           written by PLOT_TYPING_CONFOUND: every stratum
+                                behind figures/typing_confound.png, both panels
 figures/                       copied
   typing_qc.png · typing_qc.md
-  allele_frequency.png · allele_frequency.md
+  allele_frequency.png · allele_frequency.md            the summary
+  allele_frequency_loci.png · allele_frequency_loci.md  the per-locus record
+  typing_confound.png · typing_confound.md
 _run_info/                     copied
   trace.txt · report.html · timeline.html · dag.html · run_manifest.json
+  facts.json                   every number this component's prose may quote,
+                               derived from the tables above by build_facts.py.
+                               verify.sh section 9 fails on any number in a .md
+                               that is not in here or in docs/NUMBERS_ALLOWED.md
+_superseded.3569/              NOT AN OUTPUT — the record of what the cohort filter
+                               removed. The 468 samples' reads and HLA-HD output
+                               (moved, still symlinks into work/) and the tables
+                               built before the filter existed, with their md5s.
+                               verify.sh section 23 checks it is intact.
 ```
 
 ## Copied, symlinked, and the one thing that follows from it
@@ -50,7 +69,7 @@ data that already exists in `work/`; deleting them would mean re-reading 88 TB o
 back to the same place. The symlink is the only option that costs nothing and loses nothing.
 
 **Extraction is fork-limited.** `EXTRACT_READS` and `INDEX_CRAM` run at most
-`params.maxForksExtract` (48) at a time. They are the only I/O-bound stages, and 3,569 of
+`params.maxForksExtract` (48) at a time. They are the only I/O-bound stages, and all of
 them at once would pull ~88 TB off a shared filesystem as fast as the scheduler allows — a
 cost paid by everyone on it, not only by this run.
 
@@ -61,10 +80,10 @@ validating against a second tool, would start again from the CRAMs.
 
 ## READ `sample_id` AS A STRING, ALWAYS
 
-**107 of the 3,569 sample ids carry leading zeros** — `0000063134`, not `63134`. Every file in
+**66 of the 3,101 sample ids carry leading zeros** — `0000000123`, not `123`. Every file in
 this tree preserves them, but `pandas.read_csv` without `dtype` coerces the column to an integer
-and silently drops the zeros. A join keyed on it then loses those 107 samples with no error and
-no warning: an inner merge simply returns 3,462 rows.
+and silently drops the zeros. A join keyed on it then loses those 66 samples with no error and
+no warning: an inner merge simply returns 3,035 rows.
 
 ```python
 pd.read_csv(path, sep='\t', dtype={'sample_id': str})          # tables
@@ -155,15 +174,15 @@ other 16 genes.
 
 Both carry only positions polymorphic in this cohort.
 
-**The columns for one position do NOT always sum to 2.** They sum to 2 for 98.4 % of
+**The columns for one position do NOT always sum to 2.** They sum to 2 for 98.61 % of
 (sample, position) pairs, to 1 for 1.4 % and to 0 for 0.16 %. IMGT's protein alignment writes
 `*` for an unsequenced residue and `.` for an alignment gap, and an allele carrying either
 contributes no residue at that position — HLA-A position -22 is `*` for 2,703 of the alignment's
 alleles. So a residue dosage is the count among chromosomes with a DETERMINED residue there, not
 among all typed chromosomes.
 
-Over the 1,115 positions at the 16 genes with usable dosages the median undetermined rate is
-0.03 %, but **157 positions exceed 5 %** and DQA1:56 reaches 24.8 %. `assoc_hla` carries this as
+Over the 1,055 positions at the 16 genes with usable dosages the median undetermined rate is
+0.0322 %, but **143 positions exceed 5 %** and DQA1:56 reaches 23.73 %. `assoc_hla` carries this as
 a per-position QC column and holds low-determination positions out of its omnibus test.
 
 ## `residue_sites.tsv`
@@ -206,7 +225,7 @@ explained. See [METHODS.md](METHODS.md) §11 and [OPEN_QUESTIONS.md](OPEN_QUESTI
 ## `allele_pgroup_map.tsv`
 
 The crosswalk the association reads. One row per allele this cohort actually carries — all
-2,544 of them, over all 33 typed genes, not only the 13 the reference covers:
+2,298 of them, over all 33 typed genes, not only the 13 the reference covers:
 
 | column | meaning |
 |---|---|
@@ -220,8 +239,8 @@ Two uses, both at reporting time and both one join away:
 - an allele hit gets a **Japanese population frequency from 61,424 individuals** attached, in
   place of the 105 the previous reference could offer;
 - **`in_reference = 0` is an artefact flag.** A hit on an allele that a 61,424-person Japanese
-  panel has never observed is far more likely a typing error than a finding. 1,490 of the 2,544
-  distinct alleles are flagged, but they are rare — chromosome-weighted the figure is 4.6 %, and
+  panel has never observed is far more likely a typing error than a finding. 1,332 of the 2,298
+  distinct alleles are flagged, but they are rare — chromosome-weighted the figure is 4.48 %, and
   that is the number to quote.
 
 It is written by `ALLELE_FREQ_CHECK`, not `RESIDUE_MATRIX`, deliberately: see
@@ -252,17 +271,26 @@ and reading the tail off that table silently undercounts the cases. This file, a
 
 The technical-artefact table, one row per stratum: the two phenotype groups, each platform,
 and the depth-matched 17–21× window. Columns are `n`, `median_depth`, `n_chr`,
-`n_unconfirmed`, `share_unconfirmed`, plus two tests filled in only where they apply —
-`fisher_p_matched` on the matched window and `mannwhitney_p_depth` on cases against controls.
+`n_unconfirmed`, `share_unconfirmed`, plus three tests filled in only where they apply —
+`fisher_p_matched` on the matched window, `mannwhitney_p_depth` on cases against controls,
+and `fisher_p_group` on the case/control contrast under each reference panel. The last two
+rows are the SECONDARY panel's controls and cases, which is what makes the table self-
+contained: the same contrast under two references, in one file.
 
 The point of the matched window: the `15x` / `30x` in a platform label is a **target**, not a
-measurement. Measured depth does not differ between cases and controls (18.68× vs 19.03×,
-Mann-Whitney *P* = 0.784), so the case/control gap in the tail cannot be attributed to depth.
-Restricted to samples measured at 17–21×, where the two medians are ~18.6×, the gap persists
-(4.71 % vs 3.13 %, Fisher *P* = 9.6 × 10⁻¹⁰) — it tracks the platform, not the coverage.
+measurement. Measured depth does not differ between cases and controls (18.65× vs 18.72×,
+Mann–Whitney *P* = 0.194), so the case/control gap in the tail cannot be attributed to depth.
+Restricted to samples measured at 17–21×, where the two medians are near 18.5×, the gap
+persists (4.48 % vs 3.16 %, Fisher *P* = 3.58e-07) — it tracks the platform, not the
+coverage.
 
-Depth still matters *within* a platform: the tail runs 10.7 % at a median 14.2× down to 1.5 %
-at 30.9×. There is simply no case/control depth difference to act on. See
+The point of the second panel: "unconfirmed" is defined by a finite reference, so the level
+could be an artefact of what that reference carries. Against the smaller panel the level
+moves to 7.42 % against 5.40 % while the ratio moves only from 1.31 to 1.37. The level
+belongs to the panel; the contrast does not.
+
+Depth still matters *within* a platform: the tail runs 10.66 % at a median 14.17× down to
+1.32 % at 30.93×. There is simply no case/control depth difference to act on. See
 [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) §3.
 
 ## `typing_qc_platform.tsv` and `typing_qc_group.tsv`

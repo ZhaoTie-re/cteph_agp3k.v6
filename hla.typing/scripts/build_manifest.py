@@ -47,6 +47,12 @@ def parse_args():
     p.add_argument('--keep-id', required=True,
                    help='sample_qc.keep.id from wgs.auto.par — the samples that '
                         'passed sample QC. FID<TAB>IID, both the sample id.')
+    p.add_argument('--cohort-keep', default=None,
+                   help='the analysis cohort, e.g. PopGMM_output/full_mainland.fid_iid.txt. '
+                        'Applied AFTER --keep-id and kept separate from it on purpose: '
+                        'sample QC decides what is analysable, the cohort list decides what '
+                        'is COMPARABLE, and collapsing the two would lose the distinction. '
+                        'Same FID<TAB>IID shape. Omit to type every QC-passing sample.')
     p.add_argument('--crai-dir', default=None,
                    help="this run's own crai/, searched after the two beside-the-CRAM "
                         'spellings. Indexes INDEX_CRAM built on an earlier run are '
@@ -57,6 +63,24 @@ def parse_args():
                         'rather than the first N rows of one.')
     p.add_argument('--out', default='sample_manifest.tsv')
     return p.parse_args()
+
+
+def read_keep(path, what):
+    """The ids in a FID<TAB>IID keep list, or a named abort.
+
+    Both lists this component reads — wgs.auto.par's sample_qc.keep.id and
+    PopGMM_output/<cohort>.fid_iid.txt — are the same two-column shape with the
+    sample id in both columns, so one reader serves both.
+    """
+    path = Path(path)
+    if not path.exists():
+        raise SystemExit(
+            f'ABORT: no {what} at {path}.\n'
+            f'  The upstream component has not produced it, or its work/ was cleaned.')
+    ids = {ln.split()[0] for ln in path.read_text().splitlines() if ln.strip()}
+    if not ids:
+        raise SystemExit(f'ABORT: {path} is empty')
+    return ids
 
 
 def resolve_index(cram, sample=None, crai_dir=None):
@@ -101,14 +125,7 @@ def main():
     # own. The exclusions are heterozygosity outliers, which for HLA typing are
     # exactly the samples least likely to resolve into two clean haplotypes.
     keep_path = Path(args.keep_id)
-    if not keep_path.exists():
-        raise SystemExit(
-            f'ABORT: no sample-QC keep list at {keep_path}.\n'
-            f'  wgs.auto.par has not produced 07_sample_qc, or its work/ was cleaned.\n'
-            f'  Run wgs.auto.par first, or point --keep-id at the list to use.')
-    keep = {ln.split()[0] for ln in keep_path.read_text().splitlines() if ln.strip()}
-    if not keep:
-        raise SystemExit(f'ABORT: {keep_path} is empty')
+    keep = read_keep(keep_path, 'sample-QC keep list (wgs.auto.par 07_sample_qc)')
 
     sel = sel[sel[args.id_col].astype(str).isin(keep)]
     n_qc_dropped = n_flag - len(sel)
@@ -116,6 +133,30 @@ def main():
         raise SystemExit(
             f'ABORT: none of the {n_flag} flagged samples is in {keep_path}. '
             f'The two are probably keyed on different ids.')
+    n_qc_pass = len(sel)
+
+    # THE THIRD STAGE, and it is an ANCESTRY filter, not a quality one. Sample QC
+    # leaves 3,569 analysable samples; the cohort list is the subset that shares an
+    # ancestry background, so that an allele absent from a Japanese reference panel
+    # means something about the typing rather than about the sample. Typing every
+    # QC-passing sample and subsetting later is the other valid choice; this
+    # component takes the cohort as its scope so that every table it publishes has
+    # one denominator.
+    n_cohort_dropped = 0
+    cohort_path = Path(args.cohort_keep) if args.cohort_keep else None
+    if cohort_path is not None:
+        cohort = read_keep(cohort_path, 'cohort keep list')
+        absent = sorted(cohort - set(sel[args.id_col].astype(str)))
+        if absent:
+            raise SystemExit(
+                f'ABORT: {len(absent)} of {len(cohort)} cohort sample(s) in {cohort_path} '
+                f'are not available to type — they are absent from {args.xlsx} with '
+                f'{args.flag_col} == True, or were dropped by {keep_path.name}.\n'
+                f'  first few: {absent[:10]}\n'
+                f'  The cohort must be a SUBSET of the QC-passing set; if it is not, the '
+                f'two were built from different sample universes.')
+        sel = sel[sel[args.id_col].astype(str).isin(cohort)]
+        n_cohort_dropped = n_qc_pass - len(sel)
 
     # Every problem is collected before anything is reported, so one run names all
     # of them instead of one per re-launch.
@@ -172,8 +213,12 @@ def main():
 
     n_noidx = int((out.crai == '').sum())
     print(f'[build_manifest] {len(out)} sample(s) -> {args.out}')
-    print(f'    {args.flag_col} == True: {n_flag}; '
-          f'{n_qc_dropped} dropped by sample QC ({keep_path.name}); {n_flag - n_qc_dropped} kept')
+    print(f'    {args.flag_col} == True: {n_flag}')
+    print(f'    -{n_qc_dropped:<5d} sample QC ({keep_path.name})  -> {n_qc_pass}')
+    if cohort_path is not None:
+        print(f'    -{n_cohort_dropped:<5d} cohort   ({cohort_path.name})  -> {len(sel)}')
+    else:
+        print('    (no --cohort-keep: every QC-passing sample is typed)')
     for pf, g in out.groupby('platform'):
         print(f'    {str(pf):22s} {len(g):5d}')
     print(f'    symlinked CRAMs (index resolved via realpath): '

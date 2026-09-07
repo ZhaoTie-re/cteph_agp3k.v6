@@ -20,25 +20,40 @@ groups would look exactly like a systematic difference in biology.
 IMGT's published protein alignment. Its correctness is entirely inherited from the allele
 call; nothing here re-measures the protein.
 
-## 2. The sample set is inherited, not decided here
+## 2. The sample set is inherited, not decided here — three filters, in order
 
-`Flag_JHRPv6 == True` defines the v6 cohort — 3,592 samples. **Which of them is analysable is
-decided upstream**, by `wgs.auto.par`'s sample QC, and this component reads that list rather
-than repeating the judgement:
+`Flag_JHRPv6 == True` defines the v6 cohort. **Which of them is analysable, and which of
+those is comparable, are both decided upstream**, and this component reads the two lists
+rather than repeating either judgement:
 
 ```
-Flag_JHRPv6 == True                     3,592
-  ∩ 07_sample_qc/…/sample_qc.keep.id    3,569      (23 excluded)
+Flag_JHRPv6 == True                            3,592
+  ∩ 07_sample_qc/…/sample_qc.keep.id           3,569   (23 excluded, quality)
+  ∩ PopGMM_output/full_mainland.fid_iid.txt    3,101   (468 excluded, ancestry)
 ```
 
-All 23 exclusions are heterozygosity outliers (`n_fail_het`), and that is the most relevant
-exclusion this analysis could inherit: typing resolves a sample into **two haplotypes**, and a
-sample whose genome-wide heterozygosity is anomalous is the one least likely to do so cleanly.
-Typing them anyway would put the least trustworthy calls into the matrix with nothing marking
-them.
+**The two filters are kept separate on purpose**, both in `build_manifest.py` (`--keep-id`
+and `--cohort-keep`) and in the summary it prints, because they answer different questions
+and collapsing them loses the distinction. Writing "full_mainland is the set that passed QC"
+would be false: it is the set that passed QC **and** fell in the mainland ancestry clusters.
 
-If the keep list is absent the run **fails at launch naming the path it wanted**, rather than
-silently typing 23 samples the rest of the study has already dropped.
+All 23 quality exclusions are heterozygosity outliers (`n_fail_het`), and that is the most
+relevant exclusion this analysis could inherit: typing resolves a sample into **two
+haplotypes**, and a sample whose genome-wide heterozygosity is anomalous is the one least
+likely to do so cleanly.
+
+The 468 ancestry exclusions are a different kind of decision, and the reason for applying it
+*here* rather than downstream is §10: the only external check available asks whether a called
+allele appears in a mainland Japanese panel, and a control who is not mainland Japanese fails
+that check for a reason that has nothing to do with typing. Restricting at the manifest gives
+every table in this component one denominator. The cost is that a future analysis on a
+different sample set must re-derive these tables — which is why the excluded samples' HLA-HD
+output is retained under `results/_superseded.3569/` rather than deleted, so that cost is a
+re-run of `collect_alleles.py` and not a re-run of HLA-HD.
+
+If either list is absent the run **fails at launch naming the path it wanted**. If the cohort
+list names a sample that is not available to type, it fails naming those samples rather than
+quietly producing a smaller cohort than the one it was asked for.
 
 ## 3. Extraction: four sources of reads, and why none is optional
 
@@ -56,7 +71,7 @@ unusual, which is the opposite of what typing needs. The list is built **once pe
 `hs38DH.fa.fai`; deriving it by parsing the 3 GB FASTA in every task costs about 200 s per
 sample and buys nothing.
 
-**The index is resolved by `realpath`.** 3,117 of this study's 3,569 CRAM paths are
+**The index is resolved by `realpath`.** Most of this study's CRAM paths are
 symlinks whose `.crai` sits beside the real file, so the obvious `<cram>.crai` does not
 exist and `samtools` fails with `[E::cram_index_load] Could not retrieve index file`. The
 resolved path is passed with `-X`. A further 111 CRAMs have no index anywhere; those are
@@ -111,7 +126,7 @@ the second's process**:
 whole `result/` tree, and `HLAHD` publishes the whole tree, but the workflow passes on only
 `<sample>_final.result.txt` — all `COLLECT_ALLELES` reads. Passing the directory would
 stage 67 files per sample into that single downstream task: 239,123 symlinks for this
-cohort against the 3,569 it needs.
+cohort against the one file per sample it needs.
 
 Those files are staged under **HLA-HD's own names**, which are unique per sample, and
 `collect_alleles.py` takes the sample id from the filename. The earlier design staged them
@@ -122,7 +137,7 @@ collection holds a single file, which made a one-sample run fail outright.
 ## 5. Concurrency is limited on I/O, not on compute
 
 `EXTRACT_READS` and `INDEX_CRAM` are capped at `params.maxForksExtract` (48). Between them
-they read ~88 TB of CRAM, and the filesystem they read it from is **shared** — running 3,569
+they read ~88 TB of CRAM, and the filesystem they read it from is **shared** — running all
 of them as fast as the scheduler allows would degrade it for everyone, not only for this run.
 Neither is CPU-hungry, so the cap costs little: the pilot took ~6 minutes per extraction, and
 48 at a time keeps extraction off the critical path.
@@ -294,25 +309,32 @@ Three choices are load-bearing:
 
 - **Measured depth, not the label.** `15x` and `30x` in a platform name are sequencing
   *targets*. The depth actually achieved is in the manifest, and on this cohort the two
-  disagree: measured depth does not differ between cases and controls (median 18.68× vs
-  19.03×, Mann-Whitney *P* = 0.784) despite every case being labelled `30x` and every control
+  disagree: measured depth does not differ between cases and controls (median 18.65× vs
+  18.72×, Mann–Whitney *P* = 0.194) despite every case being labelled `30x` and every control
   `15x`. Anything reasoned from the labels would have been reasoned from a fiction.
 - **A matched window, because the marginal comparison cannot separate the two.** Platform is
   fully confounded with phenotype, so a case/control difference has no attributable cause on
   its own. Restricting to samples measured at 17–21× — where the two largest platforms have
-  median 18.64× and 18.55×, 2,047 of 3,569 samples — holds depth fixed and lets platform vary.
-  The gap persists there (4.71 % vs 3.13 %, Fisher *P* = 9.6 × 10⁻¹⁰), so it is not depth.
+  median 18.58× and 18.53×, 1,868 samples of 3,101 — holds depth fixed and lets platform
+  vary. The gap persists there (4.48 % vs 3.16 %, Fisher *P* = 3.58e-07), so it is not depth.
   The window is fixed in the script, not tuned to the result.
 - **Fisher on chromosome counts, not a *t*-test on per-sample shares.** The quantity is a
   proportion over ~10 chromosomes per sample; the per-sample share is coarse and its variance
   depends on how many genes a sample resolved. The counts are pooled and tested directly.
 
-Depth does act *within* a platform — the tail runs 10.7 % at a median 14.2× down to 1.5 % at
-30.9× — which is why the per-platform panel is plotted against measured depth rather than
-against the platform name. What it does not do is differ between the phenotype groups, which
-is why re-typing cases at reduced depth was scoped and then dropped: only 95 of 452 cases
-exceed 25×, so downsampling would push them toward the 10.7 % regime and manufacture a worse
-artefact than the one it set out to measure. See [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) §3.
+- **Two panels, not one, and that is the third choice.** "Unconfirmed" is defined by a
+  finite reference, so the whole measurement could in principle be an artefact of what that
+  reference carries. `ALLELE_FREQ_CHECK` therefore runs once per panel on identical calls:
+  the absolute level moves — 4.63 % against 7.42 % in controls — and the case-control ratio
+  does not, 1.31 against 1.37. That is a demonstration where the caption used to carry an
+  assertion. See §10.
+
+Depth does act *within* a platform — the tail runs 10.66 % at a median 14.17× down to
+1.32 % at 30.93× — which is why the per-platform panel is plotted against measured depth
+rather than against the platform name. What it does not do is differ between the phenotype
+groups, which is why re-typing cases at reduced depth was scoped and then dropped: only 90 of
+439 cases exceed 25×, so downsampling would push them toward the 10.66 % regime and
+manufacture a worse artefact than the one it set out to measure. See [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) §3.
 
 ## 13. Why the P-group translation stops at the QC boundary
 
@@ -333,7 +355,7 @@ to `AlleleFieldDepth` fields as `allele_dosage.tsv` encodes them:
   documented.
 
 Collapsing to P groups would therefore delete ~21,700 real residue differences from
-`residue_dosage.tsv` and cut `allele_dosage.tsv` from 2,544 columns to 1,984 — a 22 % smaller
+`residue_dosage.tsv` and cut `allele_dosage.tsv` from 2,298 columns to 1,788 — a smaller
 multiple-testing burden bought by discarding testable variation. So:
 
 | key | built from | used by | reaches the association? |

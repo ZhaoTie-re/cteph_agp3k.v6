@@ -319,6 +319,13 @@ def main():
     grp = dict(zip(man.sample_id, man.group))
     calls['__group'] = calls.sample_id.map(grp)
 
+    # This comparison is ancestry-sensitive: it asks whether an allele we called
+    # appears in a mainland Japanese panel, so a control that is not mainland
+    # Japanese fails it for a reason that has nothing to do with typing. The
+    # restriction that makes it valid is applied ONCE, upstream, by
+    # build_manifest.py --cohort-keep, and every table this component publishes
+    # carries it. There is deliberately no second restriction here; two mechanisms
+    # for one rule is how the numbers start disagreeing.
     ctrl = calls[calls.__group == args.control_group]
     case = calls[calls.__group != args.control_group]
     # No controls is not an error: a pilot spread over platforms draws its first
@@ -376,8 +383,10 @@ def main():
             f_r = k_r / nr if nr else float('nan')
             lo, hi = wilson(k_c, nc)
             # Fisher against the reference COUNTS, not against its frequency: the
-            # reference is itself an estimate from 105 samples and treating it as
-            # known would make every difference look significant.
+            # reference is itself an estimate from a finite panel, and treating it
+            # as known would make every difference look significant. This script
+            # runs against panels three orders of magnitude apart in size, so the
+            # panel's own uncertainty cannot be assumed away for either.
             p = (stats.fisher_exact([[k_c, nc - k_c], [k_r, nr - k_r]])[1]
                  if nc and nr else float('nan'))
             rows.append({
@@ -416,8 +425,10 @@ def main():
                             'allele_at_max': '', 'n_ref_only': '', 'n_obs_only': ''})
 
     # ── per sample, so the confound has something to be plotted against ──────
-    # An allele the reference never carries is not necessarily wrong — 105 samples
-    # cannot sample a 0.3 % allele — but the SHARE of such calls is the only
+    # An allele the reference never carries is not necessarily wrong: a panel
+    # samples a finite number of chromosomes and cannot contain an allele rarer
+    # than about one over that number. How much that matters is a property of the
+    # PANEL, which is why both are run. The SHARE of such calls is still the only
     # per-sample quantity here that tracks typing quality rather than completeness.
     confirmed = {g: set(o_ref[g][0]) for g in genes}
     srows = []

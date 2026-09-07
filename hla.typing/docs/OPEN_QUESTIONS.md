@@ -136,9 +136,13 @@ nothing finer — and it carried no DPB1, no DQA1 and no DRB3/4/5, so **the loci
 reliable typing here were exactly the ones it could not check**. jMorp is ~580× larger and
 covers eight of those previously-unchecked loci.
 
-It is **kept**, not deleted (`--truth-format 1kg_wide`), as an independent second reference:
-the two agree at *r* = 0.94–0.98 on the five loci they share, and two unrelated Japanese
-references corroborating each other is worth more than either alone.
+It is **kept and RUN**, not merely kept: `ALLELE_FREQ_CHECK` fans out over both panels on
+every execution, each with its own locus list, writing `*.1kg.tsv` beside the primary
+tables. Our calls reproduce it at *r* = 0.968–0.993 across the five loci it carries, against
+*r* = 0.983–0.993 for the same five loci in jMorp. Two unrelated Japanese references
+corroborating each other is worth more than either alone — and, as §3 shows, running both is
+also the only way to demonstrate rather than assert that the unconfirmed *level* belongs to
+the panel while the *contrast* does not.
 
 **Neither is an accuracy measurement.** Both compare population frequencies; neither can say a
 given sample was typed correctly, and a set of errors that happens to preserve the spectrum is
@@ -171,152 +175,157 @@ population-frequency check.
 
 ---
 
-## 3. 13-18 % of A/B/C chromosomes are called as alleles JPT never carries
+## 3. Controls are typed measurably worse than cases, and it is not depth or the panel
 
-**Found by the frequency check of §2 on the full 3,569-sample run — this is the defect that
-check was built to detect, and it is the largest open question here.**
+**Found by the frequency check of §2 — this is the defect that check was built to detect,
+and it is the largest open question here.** All numbers are for the `full_mainland`
+cohort and are derived in `results/_run_info/facts.json`.
 
-Per locus, the share of control chromosomes assigned to a P group that jMorp's 61,424
-individuals never observe, beside the total shortfall across alleles the panel carries at
-frequency >= 0.05:
+Per locus, the share of control chromosomes assigned to an allele the reference panel
+never lists, beside the total shortfall across alleles the panel carries at frequency
+≥ 0.05:
 
 | locus | tail alleles | tail chromosomes | share | common-allele shortfall |
 |---|---|---|---|---|
-| A | 231 | 379 | **6.1 %** | 0.099 |
-| B | 255 | 400 | **6.4 %** | 0.079 |
-| C | 195 | 332 | **5.3 %** | 0.090 |
-| DPB1 | 117 | 218 | 3.5 % | 0.057 |
-| DRB1 | 97 | 128 | 2.1 % | 0.009 |
-| DPA1 | 24 | 120 | 1.9 % | 0.019 |
-| DQB1 | 52 | 62 | 1.0 % | 0.054 |
-| DQA1 | 19 | 28 | 0.4 % | 0.040 |
+| DRB4 | 73 | 580 | **19.15 %** | 0.2083 |
+| DRB3 | 67 | 424 | **16.69 %** | 0.1711 |
+| B | 216 | 329 | 6.18 % | 0.0632 |
+| A | 205 | 323 | 6.07 % | 0.0820 |
+| G | 11 | 319 | 5.99 % | 0.0626 |
+| C | 173 | 264 | 4.96 % | 0.0610 |
+| E | 32 | 187 | 3.51 % | 0.0351 |
+| DPB1 | 106 | 178 | 3.34 % | 0.0501 |
+| DPA1 | 22 | 111 | 2.08 % | 0.0209 |
+| DRB1 | 82 | 105 | 1.97 % | −0.0554 |
+| F | 13 | 77 | 1.45 % | 0.0150 |
+| DQB1 | 42 | 50 | 0.94 % | −0.0062 |
+| DQA1 | 18 | 25 | 0.47 % | 0.0013 |
 
-**The two columns still match, and that is the finding.** The tail is not extra diversity
-sitting beside a correct common spectrum; it is taken *out of* the common alleles. 20 of the
-27 alleles the panel carries at >= 0.08 come out low in our controls — `A*24:02P` 0.315
-against 0.339, `B*40:02P` 0.077 against 0.096, `C*07:02P` 0.129 against 0.150 — and at A the
-shortfall is 6 of 6.
-
-These shares roughly halved on 2026-08-26 when the reference changed from 1000 Genomes JPT
-(105 people) to jMorp (61,424): A was 13.8 %, B 17.8 %, C 12.8 %. **Most of that reduction was
-the old panel's own incompleteness, not our typing** — a 105-person panel simply had not
-sampled many real Japanese alleles. What did not go away is the shortfall column: the common
-alleles are still called low, by about the same amount, against a reference 580× larger. That
-is the part of this defect that was never a reference artefact.
+**The two columns match at the class I loci, and that is the finding there.** At A, B and
+C the tail is not extra diversity sitting beside a correct common spectrum; it is taken
+*out of* the common alleles, and the shortfall is close to the tail share.
+**They do not match everywhere**, and the earlier version of this section over-generalised:
+at DRB1 and DQB1 the shortfall is negative — our controls call those loci's common alleles
+slightly *high* — so whatever moves the class I spectrum is not acting uniformly. DRB3 and
+DRB4 are the largest shares in the table and are also the two loci §1 says are encoded
+wrongly; read them as a symptom of §1 before reading them as a symptom of this.
 
 ### What it is not
 
-- **Not the ambiguity resolution of §5.** Traced per allele: `B*44:302` appears 67 times and
-  exactly 1 of those came from an ambiguous call; `B*40:379`, `B*07:381`, `B*35:380`,
-  `DRB1*14:253` and `A*24:50` came from ambiguity **zero** times. HLA-HD reports these as
-  unambiguous calls.
-- **Not the reference's small size.** 210 chromosomes cannot sample an allele below ~0.5 %,
-  so a long tail of *names* is expected. A tail carrying 13-18 % of the **mass** is not:
-  a Japanese population puts >95 % of chromosomes at these loci on ~30 common alleles.
-- **Not a parsing artefact.** The reference's own `*`-flagged and `/`-ambiguous values were a
-  separate bug, fixed; it moved `n_ref_only` from 11 to 1 and left these numbers intact.
+- **Not the ambiguity resolution of §5.** Traced per allele on the earlier run: `B*44:302`
+  appeared 67 times and exactly 1 of those came from an ambiguous call; `B*40:379`,
+  `B*07:381`, `B*35:380`, `DRB1*14:253` and `A*24:50` came from ambiguity **zero** times.
+  HLA-HD reports these as unambiguous calls.
+- **Not the reference panel being too small to have seen the allele.** This is now tested
+  rather than argued: the same calls are scored against two panels of very different size
+  on every run. See "not the panel" below.
+- **Not the samples not being Japanese.** The cohort is ancestry-restricted to
+  `full_mainland`, so an allele missing from a Japanese panel can no longer be explained
+  by the sample being from somewhere else. Before that restriction the same contrast was
+  4.74 % against 3.57 %; after it, 4.63 % against 3.53 %. Removing the benign explanation
+  left the finding where it was.
+- **Not a parsing artefact.** The reference's own `*`-flagged and `/`-ambiguous values were
+  a separate bug, fixed; it moved `n_ref_only` and left these numbers intact.
 
 ### What it probably is
 
 HLA-HD choosing a nearly identical rare allele over the common one out of a 46,005-allele
 dictionary — `B*44:302:01` instead of `B*44:03`, `B*40:379` instead of `B*40:02`. The
-frequency table meant to break exactly these ties (`-f freq_data`) **is** passed, and it is a
-global registry count rather than a Japanese one, which is the wrong prior for this cohort.
+frequency table meant to break exactly these ties (`-f freq_data`) **is** passed, and it is
+a global registry count rather than a Japanese one, which is the wrong prior for this
+cohort.
 
 ### Why it is not fixed here
 
 Every candidate fix changes genotypes, and the choice is a study decision, not a code one:
 
 1. restrict the dictionary to alleles observed in East Asians, and re-type;
-2. post-hoc collapse tail alleles onto their nearest common relative — cheap, reversible, and
-   an invention nobody else uses;
-3. accept it, and treat the 2-field allele test as the primary analysis only for alleles the
-   reference panel confirms.
+2. post-hoc collapse tail alleles onto their nearest common relative — cheap, reversible,
+   and an invention nobody else uses;
+3. accept it, and treat the 2-field allele test as the primary analysis only for alleles
+   the reference panel confirms.
 
 ### IT IS DIFFERENTIAL BY PHENOTYPE, and that is the part that matters
 
-Call rate is flat between the groups (0.917 vs 0.916), which is what made this look benign at
-first. **Typing accuracy is not.** The share of chromosomes on a JPT-confirmed allele:
+Call rate is flat between the groups — which
+is what made this look benign at first. **Typing accuracy is not.** The share of
+chromosomes on a confirmed allele, per locus:
 
 | locus | controls | cases | difference | Fisher *P* |
 |---|---|---|---|---|
-| A | 86.2 % | 90.6 % | **+4.4 %** | 2 × 10⁻⁴ |
-| B | 82.2 % | 86.3 % | **+4.0 %** | 0.0025 |
-| DRB1 | 93.0 % | 95.5 % | +2.4 % | 0.0053 |
-| C | 87.2 % | 89.4 % | +2.2 % | 0.067 |
-| DQB1 | 97.5 % | 98.5 % | +0.9 % | 0.10 |
-| **all five** | **89.2 %** | **92.0 %** | **+2.8 %** | |
+| DRB4 | 80.85 % | 90.91 % | +10.06 % | 1.84e-09 |
+| DRB3 | 83.31 % | 90.78 % | +7.48 % | 0.000186 |
+| A | 93.93 % | 98.86 % | +4.93 % | 4.08e-12 |
+| B | 93.82 % | 97.95 % | +4.13 % | 5.17e-08 |
+| C | 95.04 % | 99.09 % | +4.05 % | 3.68e-10 |
+| DPB1 | 96.66 % | 99.66 % | +3.00 % | 6.73e-09 |
+| E | 96.49 % | 98.18 % | +1.69 % | 0.00752 |
+| DPA1 | 97.92 % | 99.32 % | +1.40 % | 0.0029 |
+| DRB1 | 98.03 % | 99.20 % | +1.17 % | 0.0131 |
+| G | 94.01 % | 94.87 % | +0.87 % | 0.352 |
+| DQB1 | 99.06 % | 99.89 % | +0.83 % | 0.00741 |
+| DQA1 | 99.53 % | 99.89 % | +0.36 % | 0.164 |
+| F | 98.55 % | 97.04 % | -1.51 % | 0.00246 |
+| **pooled** | **95.37 %** | **96.47 %** | **+1.10 %** | 1.89e-07 |
 
-### The cause is NOT depth — that was wrong, and it matters
+Twelve of thirteen loci point the same way. F is the one exception and is also the locus
+where the reference is nearly monomorphic, so its denominator carries almost no
+information.
 
-An earlier version of this section attributed the gap to sequencing depth, reading the `15x`
-and `30x` **platform labels as if they were measured depths**. They are targets, and the
-measured values do not agree with them:
+### The cause is NOT depth
+
+An earlier version of this section attributed the gap to sequencing depth, reading the
+`15x` and `30x` **platform labels as if they were measured depths**. They are targets, and
+the measured values do not agree with them:
 
 | platform | label | measured depth (median) | unconfirmed share |
 |---|---|---|---|
-| NovaSeq | 30x | 30.9× | 1.5 % |
-| DNBSeq-G400RS | 30x | 36.4× | 2.6 % |
-| **DNBSeq-T7** (cases) | 30x | **18.4×** | **3.4 %** |
-| **HiSeqX** (controls) | 15x | **19.0×** | **4.7 %** |
-| DNBseq-G400RS | 15x | 14.2× | 10.7 % |
+| NovaSeq | 30x | 30.93× | 1.32 % |
+| DNBSeq-G400RS | 30x | 36.25× | 2.23 % |
+| **DNBSeq-T7** (cases) | 30x | **18.43×** | **3.36 %** |
+| **HiSeqX** (controls) | 15x | **18.72×** | **4.63 %** |
+| DNBseq-G400RS | 15x | 14.17× | 10.66 % |
 
-**Cases and controls are at the same measured depth.** Median 18.7× against 19.0×,
-Mann-Whitney *P* = 0.78. And the gap survives matching on it: restricted to the 17–21×
-window, where both platforms have a median of 18.6×, HiSeqX controls are at **4.71 %**
-unconfirmed against T7 cases at **3.13 %** — Fisher *P* = 9.6 × 10⁻¹⁰ on 1,759 against 288
-samples.
+**Cases and controls are at the same measured depth.** Median 18.65× against 18.72×,
+Mann–Whitney *P* = 0.194. And the gap survives matching on it: restricted to the 17–21×
+window, where both platforms have a median near 18.5×, HiSeqX controls are at 4.48 %
+unconfirmed against DNBSeq-T7 cases at 3.16 % — Fisher *P* = 3.58e-07 on 1,868 samples.
 
-Depth *does* have a real effect, and it is visible where phenotype is held fixed. Within cases
-only: G400RS 14.2× → **10.7 %**, T7 18.4× → 3.4 %, NovaSeq 30.9× → 1.5 %. **But that effect
-does not explain the case–control gap, because there is no case–control depth difference for
-it to act on.**
+Depth *does* have a real effect, and it is visible where phenotype is held fixed. Within
+cases only: DNBseq-G400RS at 14.17× gives 10.66 %, DNBSeq-T7 at 18.43× gives 3.36 %,
+NovaSeq at 30.93× gives 1.32 %. **But that effect does not explain the case–control gap,
+because there is no case–control depth difference for it to act on.**
 
-What separates them is the **platform and the cohort** — every control is an AGP3K sample on
-HiSeqX, every case is a PH sample on something else — and those two are perfectly confounded
-with each other and with phenotype. Which of read length, library chemistry, alignment
-reference or batch is responsible **cannot be determined from these data at all**.
+### The cause is NOT the reference panel either, and this is now shown rather than argued
 
-So the controls are typed measurably worse than the cases, for a technical reason that cannot
-be separated from phenotype. A common allele depleted more in controls than in cases reads as
-enrichment in cases — a false risk association, from the typing alone.
+The obvious objection to everything above is that "unconfirmed" is defined by a finite
+panel, so the whole measurement could be an artefact of what that panel happens to carry.
+Both panels are therefore run on every execution, on identical calls:
 
-### The downsampling control does not work, and would make it worse
+| panel | individuals | loci | controls | cases | ratio |
+|---|---|---|---|---|---|
+| jMorp 61KJPN-HLA | 61,424 | 13 | 4.63 % | 3.53 % | 1.31 |
+| 1000 Genomes JPT | 105 | 5 | 7.42 % | 5.40 % | 1.37 |
 
-Downsampling the cases to the controls' depth was the recorded plan for validating this. The
-measurements above retire it:
+**The level moves by more than half again between the panels; the ratio barely moves.**
+That is the whole argument for reading only the contrast, and it is now a measurement
+rather than a caveat. Panel (d) of `figures/typing_confound.png` is this table.
 
-- **there is no depth difference to remove** (*P* = 0.78), and only 95 of 452 cases are above
-  25× at all;
-- **it would introduce a new artefact**: pushing T7 cases from 18.4× toward 14× moves them into
-  the regime where the within-case data show the unconfirmed share rising from 3.4 % to
-  **10.7 %** — three-fold, and past the control level. That degrades the cases for a different
-  reason than the one under test, which is the opposite of a control.
+Note which direction it runs. The smaller panel gives the *larger* unconfirmed share,
+because 105 individuals have not sampled the rare Japanese repertoire. An allele absent
+from 105 people is weak evidence; absent from 61,424 it is strong. The captions in this
+component said the opposite for three months after the panel changed, which is what
+`verify.sh` §7 and §8 now exist to prevent.
 
-**No within-data control exists.** That promotes §2's deferred experiment from a nice-to-have
-to the only available one: typing samples of known HLA type — the 104 JPT samples with both a
-published type and a downloadable CRAM — on this pipeline, and reading the accuracy directly.
+### Which output survives it
 
-*(Every number in this section moved on 2026-08-26, when the reference changed from 1000
-Genomes JPT (105 people, 5 loci) to jMorp 61KJPN (61,424 people, 13 loci) — see §2. The tail is
-defined against the reference allele set, so a better reference tightens it: controls
-10.76 % → **4.74 %**, cases 7.97 % → **3.57 %**, matched window 10.64 % vs 6.88 % →
-**4.71 % vs 3.13 %**. The typing did not change. What changed is how much of the tail was a real
-disagreement rather than an allele the old 105-person panel had simply never sampled. **The
-conclusion is unchanged** and the matched-depth gap is, if anything, cleaner.*
+The table below was measured on the superseded 3,569-sample run and is **carried over
+deliberately**: it compares the RESIDUES of one allele against another, which is a property
+of the IMGT alignments and not of which samples were typed. Only the `pairs` column depends
+on the cohort, and it changes only by which tail alleles happen to be observed.
 
-*Three earlier corrections to this section. It first said the defect was not differential — read
-off call rate, which measures completeness, not accuracy. It then attributed the gap to depth.
-It then quoted per-platform shares computed by treating any allele missing from
-`allele_frequency_check.tsv` as confirmed; that table lists only alleles seen in the CONTROLS or
-in the reference, so alleles seen only in cases were invisible and the case share came out too
-low. Every number above is `05.qc/typing_confound.tsv`, produced by the pipeline itself against
-the reference allele set directly, and is re-derived rather than hand-edited.)*
-
-### Which output survives it, measured
-
-Comparing each tail allele's residues against the commonest confirmed allele of its 1-field
-family:
+Comparing each tail allele's residues against the commonest confirmed allele of its
+1-field family:
 
 | locus | pairs | median residues differing | share differing by ≤ 2 | positions |
 |---|---|---|---|---|
@@ -327,12 +336,16 @@ family:
 | DRB1 | 144 | 85 | 22 % | 290 |
 
 **Class I residues are largely insulated**: a mis-call to a rare allele of the same family
-moves 2–5 of ~400 positions. **Class II residues are not** — DQB1 and DRB1 tail calls move
-tens of positions — but their tails are also the smallest (2.5 % and 7.0 %).
+moves 2–5 of the locus's several hundred positions. **Class II residues are not** — DQB1 and
+DRB1 tail calls move tens of positions — but their tails are also the smallest in the
+per-locus table above, 0.94 % and 1.97 % of control chromosomes.
 
-Order of robustness, most to least: class I residues → class II residues → `allele_dosage.tsv`.
-Rare rows of `allele_dosage.tsv` should not be tested without checking them against
-`05.qc/allele_frequency_check.tsv` first.
+Order of robustness, most to least: class I residues → class II residues →
+`allele_dosage.tsv`. Rare rows of `allele_dosage.tsv` should not be tested without checking
+them against **`05.qc/allele_pgroup_map.tsv`** first — that is the crosswalk with the
+`in_reference` flag, one row per allele the cohort carries.
+`allele_frequency_check.tsv` is a per-locus comparison table and does not answer the
+per-allele question, which is what [OUTPUTS.md](OUTPUTS.md) says about it.
 
 ---
 

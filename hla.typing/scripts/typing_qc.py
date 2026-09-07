@@ -34,7 +34,6 @@ import pandas as pd
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--calls', required=True)
-    p.add_argument('--status', required=True)
     p.add_argument('--ambiguity', required=True)
     p.add_argument('--manifest', required=True)
     p.add_argument('--genes', required=True, help='comma-separated; the genes to score')

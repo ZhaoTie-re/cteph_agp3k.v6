@@ -3,13 +3,29 @@
 // hla.typing — HLA allele typing and amino-acid residue calling.
 //
 // CRAM -> HLA-region reads -> HLA-HD allele calls -> allele dosages and an
-// IMGT-numbered residue matrix, for every sample that is BOTH marked
-// Flag_JHRPv6 = True in the workbook AND passed wgs.auto.par's sample QC.
+// IMGT-numbered residue matrix, for the full_mainland analysis cohort.
+//
+// THE SAMPLE SET IS THREE FILTERS, IN ORDER, AND THEY ARE NOT THE SAME KIND
+//   Flag_JHRPv6 = True in the workbook          the v6 cohort      3,592
+//   in wgs.auto.par's sample_qc.keep.id         analysable         3,569  (-23)
+//   in PopGMM_output/full_mainland.fid_iid.txt  COMPARABLE         3,101  (-468)
+//
+//   The third is an ANCESTRY filter, not a quality one, and it is the reason this
+//   component's scope is a cohort rather than "everything that typed". The only
+//   external check available here asks whether an allele we called appears in a
+//   mainland Japanese reference panel; a control who is not mainland Japanese
+//   fails that check for a reason that has nothing to do with typing. Typing the
+//   whole QC-passing set and subsetting downstream is the other valid design. This
+//   one is chosen so every table published here has ONE denominator.
+//
+//   The 468 samples the cohort filter removes were typed by an earlier run and are
+//   NOT deleted: their reads, HLA-HD output and the 3,569-sample tables built from
+//   them are kept under results/_superseded.3569/, which is regenerable from work/.
 //
 // WHAT THIS COMPONENT DOES NOT DECIDE
 //   Nothing about association. It produces genotypes; whether a residue is
 //   associated with anything is a question for the component that reads them.
-//   It also does not decide the sample set: `info/…xlsx` does, and this reads it.
+//   It also does not decide the sample set: the three files above do.
 //
 // THE THREE THINGS THAT ARE NOT NEGOTIABLE HERE
 //
@@ -55,9 +71,13 @@
 //           04.residues/   reference (symlinked) · allele_dosage · residue
 //                          diplotype/dosage/sites · allele_match_map · unmatched
 //           05.qc/         typing_qc_{sample,platform,group,gene}.tsv ·
-//                          allele_frequency_{check,summary}.tsv
-//           figures/       typing_qc.png · allele_frequency.png, each with its .md
-//           _run_info/     trace · report · timeline · dag · run_manifest.json
+//                          allele_frequency_{check,summary,sample}[.1kg].tsv ·
+//                          allele_pgroup_map[.1kg].tsv · typing_confound.tsv
+//           figures/       typing_qc · allele_frequency · allele_frequency_loci ·
+//                          typing_confound — each .png with its .md
+//           _run_info/     trace · report · timeline · dag · run_manifest · facts.json
+//           _superseded.3569/  the 468 samples outside the cohort, and the tables
+//                          built before the cohort filter existed. Not an output.
 // =============================================================================
 
 nextflow.enable.dsl = 2
@@ -88,6 +108,14 @@ params.DepthCol          = 'Observed_Depth'
 // heterozygosity is anomalous is exactly the one least likely to resolve into two
 // clean HLA haplotypes.
 params.sample_qc_keep    = "${params.project_dir}/wgs.auto.par/results/07_sample_qc/run_qc/cteph_agp3k_v6_wgs_merged.sample_qc.keep.id"
+// The analysis cohort. Applied after sample QC and kept separate from it: the two
+// answer different questions and collapsing them would lose the distinction. It is
+// a fixed list on disk — the union of 17 components of a Gaussian mixture fitted in
+// BBJ principal-component space; the clustering itself is not this repository's code
+// and PopGMM_output/keep_list_summary.tsv is its only in-repo provenance. Set to ''
+// to type every QC-passing sample instead.
+params.cohort_keep       = "${params.project_dir}/PopGMM_output/full_mainland.fid_iid.txt"
+params.CohortName        = 'full_mainland'
 params.MaxSamples        = 0        // 0 = all; a positive value takes a pilot
                                     // spread across every platform
 
@@ -129,16 +157,20 @@ params.AlleleFieldDepth  = 2        // the depth allele dosage is encoded at, an
 // The one external check this component can afford. See jMorp_HLA_types/README.md and
 // docs/OPEN_QUESTIONS.md §2 for what it does and does not establish.
 //
-// jMorp 61KJPN-HLA: 61,424 Japanese individuals over 13 loci. It replaced the 1000
-// Genomes JPT panel, which is 105 individuals over 5 loci -- too small to bound
-// anything finer than gross error, and missing DPB1, DQA1 and DRB3/4/5, which are the
-// loci this component types least reliably. Set TruthPanel/TruthFormat/RefLoci back to
-// the 1KG triple to run the old comparison; it is kept as an independent second
-// reference and the two agree at r = 0.94-0.98 where they overlap.
+// jMorp 61KJPN-HLA is 61,424 Japanese individuals over 13 loci and is PRIMARY. The
+// 1000 Genomes JPT panel is 105 individuals over 5 loci, missing DPB1, DQA1 and
+// DRB3/4/5 -- the loci this component types least reliably -- and is SECONDARY. It is
+// not a fallback: both run on every execution, and the pair is what licenses reading
+// the group contrast rather than the level. An allele absent from 105 people is weak
+// evidence; absent from 61,424 Japanese it is strong, which is why the panel a caveat
+// names has to be the panel that produced the figure.
 params.hla_truth_jmorp   = "${params.project_dir}/../jMorp_HLA_types/HLA_allele_frequencies_61K.txt"
 params.hla_truth_1kg     = "${params.project_dir}/../1KG_HLA_types/20181129_HLA_types_full_1000_Genomes_Project_panel.txt"
-params.TruthPanel        = params.hla_truth_jmorp
-params.TruthFormat       = 'jmorp_long'   // or '1kg_wide' for the panel above it
+// BOTH panels are run, every time. jMorp is primary and 1000G JPT is the secondary
+// check, and running both is not redundancy: on identical calls the two disagree by
+// more than a factor of two on the ABSOLUTE unconfirmed rate while agreeing closely
+// on the RATIO between our two groups. That is the demonstration — not the assertion
+// — that the level is a property of the panel and only the contrast is readable.
 
 // IPD-IMGT/HLA P-group definitions, pinned to the SAME 3.64.0 release as
 // params.imgt_alignments so the alignments and the groupings cannot drift apart.
@@ -156,11 +188,18 @@ params.hla_pgroups       = "${params.project_dir}/../jMorp_HLA_types/hla_nom_p.t
 // null alleles, nor the OPEN_QUESTIONS §1 defect accounts for the rest of the gap.
 params.TruthName         = 'jMorp 61KJPN-HLA'
 params.TruthCite         = 'ToMMo jMorp; Tadaka et al. 2023'
+params.TruthName1kg      = '1000 Genomes JPT'
+params.TruthCite1kg      = '1000 Genomes Project; Abi-Rached et al. 2018'
 params.FlagLoci          = 'DRB3'
 
 params.TruthPopulation   = 'JPT'    // 1kg_wide only; the only Japanese population there
 params.ControlGroup      = 'AGP3K'  // the `group` value that is a population sample
-params.RefLoci           = 'A,B,C,DPA1,DPB1,DQA1,DQB1,DRB1,DRB3,DRB4,E,F,G'  // the 13 jMorp carries
+// ONE LOCUS LIST PER PANEL, and they must not be shared. A locus the panel does not
+// carry scores as entirely unconfirmed rather than as absent, so running the 13-locus
+// list against the 5-locus panel reports 62.8 % unconfirmed instead of 10.4 % — a
+// number about the list, not about the typing. Measured, not hypothetical.
+params.RefLociJmorp      = 'A,B,C,DPA1,DPB1,DQA1,DQB1,DRB1,DRB3,DRB4,E,F,G'  // the 13 jMorp carries
+params.RefLoci1kg        = 'A,B,C,DQB1,DRB1'                                 // the 5 the 1KG panel has
 
 // ---- Environment ----
 params.conda_env         = 'cteph_geno_pro'
@@ -202,11 +241,15 @@ process BUILD_MANIFEST {
     path script
     path xlsx
     path keep_id
+    path cohort_keep
 
     output:
     path('sample_manifest.tsv'), emit: manifest
 
     script:
+    // An empty cohort list is staged as the sentinel NO_COHORT, which does not
+    // exist as a file, so the flag is dropped rather than pointed at nothing.
+    def cohort_arg = cohort_keep.name == 'NO_COHORT' ? '' : "--cohort-keep ${cohort_keep}"
     """
     source activate ${params.conda_env}
     python3 ${script} \\
@@ -216,6 +259,7 @@ process BUILD_MANIFEST {
         --group-col ${params.GroupCol} --sex-col ${params.SexCol} \\
         --depth-col ${params.DepthCol} \\
         --keep-id ${keep_id} \\
+        ${cohort_arg} \\
         --max-samples ${params.MaxSamples} \\
         --out sample_manifest.tsv
     """
@@ -371,7 +415,6 @@ process HLAHD {
     python3 ${validator} \\
         --sample ${sample} \\
         --result-dir ${sample}/result \\
-        --log-dir ${sample}/log \\
         --run-log ${sample}/hlahd.run.log \\
         --gene-split ${gene_split} \\
         --out ${sample}/typing_validation.tsv
@@ -498,7 +541,7 @@ process TYPING_QC {
     publishDir "${params.out_dir}/05.qc", mode: 'copy', pattern: '*.tsv'
 
     input:
-    tuple path(calls), path(status), path(ambiguity), path(manifest)
+    tuple path(calls), path(ambiguity), path(manifest)
     path script
 
     output:
@@ -512,7 +555,7 @@ process TYPING_QC {
     set -euo pipefail
     source activate ${params.conda_env}
     python3 ${script} \\
-        --calls ${calls} --status ${status} --ambiguity ${ambiguity} \\
+        --calls ${calls} --ambiguity ${ambiguity} \\
         --manifest ${manifest} --genes ${params.ResidueGenes} \\
         --out-sample typing_qc_sample.tsv \\
         --out-platform typing_qc_platform.tsv \\
@@ -539,34 +582,36 @@ process ALLELE_FREQ_CHECK {
     publishDir "${params.out_dir}/05.qc", mode: 'copy'
 
     input:
-    tuple path(calls), path(manifest)
+    tuple val(meta), path(truth), path(calls), path(manifest)
     path script
-    path truth
     path pgroups
 
     output:
-    path('allele_frequency_check.tsv'),   emit: check
-    path('allele_frequency_summary.tsv'), emit: summary
-    path('allele_frequency_sample.tsv'),  emit: sample
-    path('allele_pgroup_map.tsv'),        emit: pgroup_map
+    tuple val(meta), path("allele_frequency_check${meta.suffix}.tsv"),
+                     path("allele_frequency_summary${meta.suffix}.tsv"),
+                     path("allele_frequency_sample${meta.suffix}.tsv"),
+                     path("allele_pgroup_map${meta.suffix}.tsv"), emit: out
 
     script:
+    // --population is meaningful only for the wide 1KG layout, which has one column
+    // per population; the jMorp file is already one population and rejects it.
+    def pop_arg = meta.population ? "--population ${meta.population}" : ''
     """
     set -euo pipefail
     source activate ${params.conda_env}
     python3 ${script} \\
         --calls ${calls} --manifest ${manifest} \\
         --truth ${truth} \\
-        --truth-format ${params.TruthFormat} \\
+        --truth-format ${meta.format} \\
         --p-groups ${pgroups} \\
-        --population ${params.TruthPopulation} \\
+        ${pop_arg} \\
         --control-group ${params.ControlGroup} \\
-        --genes ${params.RefLoci} \\
+        --genes ${meta.loci} \\
         --field-depth ${params.AlleleFieldDepth} \\
-        --out allele_frequency_check.tsv \\
-        --out-summary allele_frequency_summary.tsv \\
-        --out-sample allele_frequency_sample.tsv \\
-        --out-pgroup-map allele_pgroup_map.tsv
+        --out allele_frequency_check${meta.suffix}.tsv \\
+        --out-summary allele_frequency_summary${meta.suffix}.tsv \\
+        --out-sample allele_frequency_sample${meta.suffix}.tsv \\
+        --out-pgroup-map allele_pgroup_map${meta.suffix}.tsv
     """
 }
 
@@ -580,7 +625,7 @@ process PLOT_TYPING_QC {
     publishDir "${params.out_dir}/figures", mode: 'copy'
 
     input:
-    tuple path(sample_qc), path(platform_qc), path(gene_qc), path(sites)
+    tuple path(sample_qc), path(gene_qc), path(sites)
     path script
 
     output:
@@ -592,14 +637,18 @@ process PLOT_TYPING_QC {
     set -euo pipefail
     source activate ${params.conda_env}
     python3 ${script} \\
-        --sample-qc ${sample_qc} --platform-qc ${platform_qc} \\
+        --sample-qc ${sample_qc} \\
         --gene-qc ${gene_qc} --sites ${sites} \\
         --out-png typing_qc.png
     """
 }
 
-/* STEP 12 · PLOT_ALLELE_FREQ  -> figures/ — the frequency check, drawn. A second
- * standalone figure, so it carries its own document rather than a family catalogue. */
+/* STEP 12 · PLOT_ALLELE_FREQ  -> figures/ — the frequency check, drawn, as TWO
+ * figures from one script. `allele_frequency.png` answers "do the frequencies
+ * agree?" and `allele_frequency_loci.png` is the per-locus record behind it. They
+ * were one 17.4-inch figure in which 13 near-identical scatters crowded out the
+ * summary they were supposed to support; a reader who wants the answer and a reader
+ * who wants the evidence are not served by the same panel. */
 process PLOT_ALLELE_FREQ {
     executor 'slurm'
     queue    'gr10478b'
@@ -621,18 +670,23 @@ process PLOT_ALLELE_FREQ {
     source activate ${params.conda_env}
     python3 ${script} \\
         --check ${check} --summary ${summary} \\
-        --population ${params.TruthPopulation} \\
         --reference-name '${params.TruthName}' \\
         --reference-cite '${params.TruthCite}' \\
         --flag-genes '${params.FlagLoci}' \\
-        --out-png allele_frequency.png
+        --out-png allele_frequency.png \\
+        --out-png-loci allele_frequency_loci.png
     """
 }
 
 /* STEP 13 · PLOT_TYPING_CONFOUND  -> figures/ — the one quality problem this
  * component has, drawn. typing_qc.png measures completeness, which is saturated
- * here; this measures whether the two groups are typed EQUALLY WELL, which they
- * are not, and answers the obvious follow-up (is it depth?) with the data. */
+ * here; this measures whether the two groups are typed EQUALLY WELL, and answers the
+ * obvious follow-up (is it depth?) with the data.
+ *
+ * It reads BOTH panels' per-sample tables. The absolute unconfirmed rate is a
+ * property of the panel and the contrast between groups is not, and a figure that
+ * shows one panel can only assert that in its caption. Showing both makes the
+ * argument visible: the level moves, the ratio does not. */
 process PLOT_TYPING_CONFOUND {
     executor 'slurm'
     queue    'gr10478b'
@@ -643,7 +697,7 @@ process PLOT_TYPING_CONFOUND {
     publishDir "${params.out_dir}/05.qc",   mode: 'copy', pattern: '*.tsv'
 
     input:
-    tuple path(sample), path(summary)
+    tuple path(sample), path(sample_2nd)
     path script
 
     output:
@@ -656,9 +710,9 @@ process PLOT_TYPING_CONFOUND {
     set -euo pipefail
     source activate ${params.conda_env}
     python3 ${script} \\
-        --sample ${sample} --summary ${summary} \\
+        --sample ${sample} --reference-name '${params.TruthName}' \\
+        --sample-secondary ${sample_2nd} --reference-name-secondary '${params.TruthName1kg}' \\
         --control-group ${params.ControlGroup} \\
-        --population ${params.TruthPopulation} \\
         --out-png typing_confound.png --out-table typing_confound.tsv
     """
 }
@@ -689,9 +743,16 @@ MANIFEST
 workflow {
 
     // -- [1,2,3] the sample set and its regions, verified before anything runs ---
+    // An absent cohort list is a real configuration — type every QC-passing sample —
+    // so it is a sentinel name rather than a missing file, which `path` cannot stage.
+    ch_cohort = params.cohort_keep
+        ? file(params.cohort_keep, checkIfExists: true)
+        : file("${projectDir}/NO_COHORT")
+
     BUILD_MANIFEST(script_file('build_manifest.py'),
                    file(params.sample_info, checkIfExists: true),
-                   file(params.sample_qc_keep, checkIfExists: true))
+                   file(params.sample_qc_keep, checkIfExists: true),
+                   ch_cohort)
 
     CONTIG_LIST(script_file('contig_list.py'),
                 file("${params.reference}.fai", checkIfExists: true))
@@ -752,32 +813,55 @@ workflow {
                    script_file('residue_matrix.py'))
 
     // -- [9,10] QC, internal then external --------------------------------------
+    // typing_status.tsv is not staged here: typing_qc.py derives every outcome
+    // count from allele_calls.tsv itself, and the flag that used to pass it was
+    // declared required and never read. verify.sh section 4 is this rule.
     TYPING_QC(COLLECT_ALLELES.out.calls
-                  .combine(COLLECT_ALLELES.out.status)
                   .combine(COLLECT_ALLELES.out.ambiguity)
                   .combine(BUILD_MANIFEST.out.manifest),
               script_file('typing_qc.py'))
 
-    ALLELE_FREQ_CHECK(COLLECT_ALLELES.out.calls
-                          .combine(BUILD_MANIFEST.out.manifest),
+    // Both panels, one task each. The per-panel locus list travels WITH the panel:
+    // sharing one list between them is what silently reported 62.8 % unconfirmed
+    // against the 5-locus 1KG file, because the 8 loci it does not carry counted as
+    // unconfirmed rather than as absent.
+    ch_panel = channel.of(
+        [[tag: 'jmorp', role: 'primary',   format: 'jmorp_long', suffix: '',
+          loci: params.RefLociJmorp, population: '',
+          name: params.TruthName,    cite: params.TruthCite],
+         file(params.hla_truth_jmorp, checkIfExists: true)],
+        [[tag: '1kg',   role: 'secondary', format: '1kg_wide',   suffix: '.1kg',
+          loci: params.RefLoci1kg,   population: params.TruthPopulation,
+          name: params.TruthName1kg, cite: params.TruthCite1kg],
+         file(params.hla_truth_1kg,   checkIfExists: true)])
+
+    ALLELE_FREQ_CHECK(ch_panel.combine(COLLECT_ALLELES.out.calls
+                                           .combine(BUILD_MANIFEST.out.manifest)),
                       script_file('allele_freq_check.py'),
-                      file(params.TruthPanel, checkIfExists: true),
                       file(params.hla_pgroups, checkIfExists: true))
 
+    ch_freq = ALLELE_FREQ_CHECK.out.out.branch { meta, _c, _s, _sm, _pg ->
+        primary:   meta.role == 'primary'
+        secondary: true
+    }
+
     // -- [11,12] figures --------------------------------------------------------
+    // typing_qc_platform.tsv is NOT an input here. It was staged and never read --
+    // the figure derives its per-platform composition from the per-sample table,
+    // because a composition needs the counts and not their summary.
     PLOT_TYPING_QC(TYPING_QC.out.sample_qc
-                       .combine(TYPING_QC.out.platform_qc)
                        .combine(TYPING_QC.out.gene_qc)
                        .combine(RESIDUE_MATRIX.out.sites),
                    script_file('plot_typing_qc.py'))
 
-    PLOT_ALLELE_FREQ(ALLELE_FREQ_CHECK.out.check
-                         .combine(ALLELE_FREQ_CHECK.out.summary),
+    PLOT_ALLELE_FREQ(ch_freq.primary.map { _m, check, summary, _sm, _pg ->
+                         tuple(check, summary) },
                      script_file('plot_allele_freq.py'))
 
-    // -- [13] the confound, drawn -----------------------------------------------
-    PLOT_TYPING_CONFOUND(ALLELE_FREQ_CHECK.out.sample
-                             .combine(ALLELE_FREQ_CHECK.out.summary),
+    // -- [13] the confound, drawn, under both panels ----------------------------
+    PLOT_TYPING_CONFOUND(ch_freq.primary.map   { _m, _c, _s, smp, _pg -> smp }
+                             .combine(
+                         ch_freq.secondary.map { _m, _c, _s, smp, _pg -> smp }),
                          script_file('plot_typing_confound.py'))
 
     // -- [14] manifest ---------------------------------------------------------
@@ -785,6 +869,8 @@ workflow {
   "component": "hla.typing",
   "sample_info": "${params.sample_info}",
   "sample_qc_keep": "${params.sample_qc_keep}",
+  "cohort_keep": "${params.cohort_keep}",
+  "cohort_name": "${params.CohortName}",
   "max_samples": ${params.MaxSamples},
   "reference": "${params.reference}",
   "mhc_window": "${params.MhcChrom}:${params.MhcStart}-${params.MhcEnd}",
@@ -792,12 +878,14 @@ workflow {
   "hlahd_dictionary": "${params.hlahd_dict}",
   "hlahd_gene_split": "${params.hlahd_split}",
   "imgt_alignments": "${params.imgt_alignments}",
-  "truth_panel": "${params.TruthPanel}",
-  "truth_format": "${params.TruthFormat}",
+  "truth_panel_primary": "${params.hla_truth_jmorp}",
+  "truth_panel_secondary": "${params.hla_truth_1kg}",
   "hla_pgroups": "${params.hla_pgroups}",
-  "truth_population": "${params.TruthPopulation}",
+  "truth_population_1kg": "${params.TruthPopulation}",
   "control_group": "${params.ControlGroup}",
-  "reference_loci": ${groovy.json.JsonOutput.toJson(params.RefLoci.split(',') as List)},
+  "reference_loci_primary": ${groovy.json.JsonOutput.toJson(params.RefLociJmorp.split(',') as List)},
+  "reference_loci_secondary": ${groovy.json.JsonOutput.toJson(params.RefLoci1kg.split(',') as List)},
+  "hlahd_version": "1.7.1",
   "allele_field_depth": ${params.AlleleFieldDepth},
   "min_read_length": ${params.MinReadLength},
   "cutting_rate": ${params.CuttingRate},

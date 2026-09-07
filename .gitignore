@@ -1,0 +1,40 @@
+# An EXTENSION ALLOW-LIST, not a deny-list. Ignore everything, then name what may
+# be committed. This is what keeps the sample-keyed tables off a PUBLIC remote:
+# there is no *.tsv rule below, and there must never be one.
+*
+
+# Recurse into every directory so the rules below can match inside them.
+!*/
+
+# THIS FILE ITSELF. Without this line `*` ignores .gitignore, the rules never
+# reach the remote, and a fresh clone has no allow-list at all -- so the next
+# `git add .` there commits every per-sample .tsv in the tree. It was untracked
+# until this was noticed.
+!.gitignore
+
+# Nextflow work directories, whatever they contain.
+**/work/**
+
+# Explicitly allowed extensions, matched recursively.
+!**/*.nf
+!**/*.config
+!**/*.py
+!**/*.r
+!**/*.R
+!**/*.ipynb
+!**/*.json
+!**/*.sh
+!**/*.sbatch
+!**/*.dio
+!**/*.png
+!**/*.pdf
+!**/*.md
+
+# Delivery reports. SCOPED BY PATH, NOT BY EXTENSION, and deliberately.
+#
+# A blanket `!**/*.html` would also have committed results/_run_info/report.html
+# and timeline.html, which name every task and therefore every sample: measured,
+# 1,796 distinct sample ids in each. On a public remote that is the whole cohort
+# roster. Only the rendered report is allowed, and only from its own directory.
+!**/report/*.qmd
+!**/report/_output/*.html
