@@ -164,8 +164,6 @@ data.frame(
 `results/_superseded.3569/` 下。将来若要扩展到更大的样本集，代价是重跑一个收集脚本，而不是
 重跑分型。
 
-<!-- PCA_FIGURE_PLACEHOLDER -->
-
 # 分型是怎么做的
 
 * **读段**取自 6 号染色体整个 HLA 区域，外加参考基因组中所有 alternate 和 HLA 专属 contig

@@ -187,8 +187,6 @@ The `r f("n_dropped_ancestry")` people removed at step 3 were typed, and their r
 **not deleted** — they are kept under `results/_superseded.3569/`. Extending to a wider
 sample set later costs a re-run of one collection script, not a re-run of the typing.
 
-<!-- PCA_FIGURE_PLACEHOLDER -->
-
 # How the typing was done
 
 * **Reads** were taken from the whole HLA region of chromosome 6, plus every alternate and
