@@ -29,14 +29,20 @@
 #           RATIO between the groups where it was. The contrast is the readable
 #           quantity; the level is not.
 #
-#           NO NUMBER IS WRITTEN INTO THIS FILE. Every value in the caption is an
-#           f-string field read from the tables, and each panel is named by the
-#           caller, because the last time a reference panel changed the captions
-#           kept describing the old one for three months.
+#           NO CAPTION IS RENDERED INTO THIS PNG. Every word of explanation lives
+#           in report/hla_typing_report.qmd, where it can be written for a reader
+#           who has never heard of HLA and can be translated. A caption block was
+#           taking 31 % of this canvas; the figure is now only the figure.
+#
+#           NO NUMBER IS WRITTEN INTO THIS FILE either -- write_doc() still emits
+#           the sidecar .md, and every value in it is an f-string field read from
+#           the tables, because the last time a reference panel changed the
+#           captions kept describing the old one for three months.
 # Component: hla.typing
 # ---------------------------------------------------------------------------
 import argparse
 import sys
+import textwrap
 from pathlib import Path
 
 import matplotlib
@@ -50,7 +56,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'analysis' / '_shar
 import plot_style as S                   # noqa: E402
 import figure_doc                        # noqa: E402
 
-PLOT_H = 5.6
+PLOT_H = 5.15
+# Point-label placement. A label is offset by ITS OWN marker radius plus this pad,
+# then tried on four sides and scored against every OTHER marker -- the previous
+# version offset only by its own radius to the right, which put the `NovaSeq 30x`
+# label on top of the `G400RS 30x` marker and invited the reader to attach the
+# wrong platform to the wrong point. That inverts panel (a)'s argument.
+LABEL_PAD_PT = 4.0
+FS_SMALL = 6.8        # one small size for every in-axes annotation in this figure
 # The depth window panel (b) matches on. Chosen as the overlap of the two
 # platforms that carry the comparison, not tuned to the answer.
 WIN_LO, WIN_HI = 17.0, 21.0
@@ -100,6 +113,113 @@ def load(path, control_group):
     return d, ctrl, case
 
 
+def panel_head(ax, letter, title, *, pad=6.0, size=None):
+    """Bold panel letter and a short title, as ONE left-aligned artist.
+
+    plot_style.panel_tag() writes the letter at loc='left' and the title at
+    loc='center', and its own docstring says not to pass a title below about
+    2.2 in wide because the two collide. Most panels in this component are
+    narrower than that. Written as one left-aligned string they cannot collide,
+    and it reads as a label rather than as two competing ones.
+
+    The title says WHAT the panel shows. It never says what to conclude -- that
+    is the document's job, which is why no caption is rendered into these PNGs.
+    """
+    ax.set_title(rf'$\bf{{{letter}}}$  {title}', loc='left', pad=pad,
+                 fontsize=size or (plt.rcParams['axes.titlesize'] - 2))
+
+
+TITLE_H = 0.34        # inches reserved for the figure title
+
+
+def lay_out(fig, axes, *, plot_h, top_pad, wspace, hspace, right=0.975, title=None):
+    """Margins, canvas and figure title, with no caption block.
+
+    caption_block() is the only thing in the shared toolkit that sets the canvas
+    height and the measured left margin, so dropping it means doing that here.
+    A transcription of what it does, minus the caption text -- but WITH a title:
+    a figure lifted out of the report still has to say what it is, and each panel
+    says what it shows. What none of them say is what to conclude; that is the
+    document's job, and it is why the caption block is gone.
+    """
+    fig.set_layout_engine('none')
+    xlab_in = (plt.rcParams['axes.labelsize']
+               + plt.rcParams['xtick.labelsize'] + 8) * 1.5 / 72.0
+    head = TITLE_H if title else 0.0
+    fh = plot_h + head                       # the panels keep the size they were given
+    fig.set_size_inches(S.COL_DOUBLE, fh, forward=True)
+    kw = dict(right=right, top=1.0 - (top_pad + head) / fh,
+              bottom=xlab_in / fh, wspace=wspace, hspace=hspace)
+    left = S.fit_left_margin(fig, axes)
+    fig.subplots_adjust(left=left, **kw)
+    need = S.fit_left_margin(fig, axes)
+    if need > left + 0.002:
+        fig.subplots_adjust(left=need, **kw)
+    if title:
+        # WRAPPED. An unwrapped suptitle silently runs off both edges of the
+        # canvas -- matplotlib never clips it and never warns. The character
+        # estimate is deliberately conservative; a title that wraps to two lines
+        # is fine, a title bleeding into the margin is not.
+        fs = plt.rcParams['axes.titlesize'] + 1.5
+        per_line = max(20, int(S.COL_DOUBLE * 72.0 * 0.88 / (fs * 0.56)))
+        wrapped = textwrap.fill(title, per_line)
+        n_lines = wrapped.count('\n') + 1
+        if n_lines > 1:                       # give the extra line its own room
+            fh += (n_lines - 1) * fs * 1.25 / 72.0
+            fig.set_size_inches(S.COL_DOUBLE, fh, forward=True)
+            fig.subplots_adjust(top=1.0 - (top_pad + head
+                                           + (n_lines - 1) * fs * 1.25 / 72.0) / fh,
+                                bottom=xlab_in / fh)
+        fig.suptitle(wrapped, y=1.0 - 0.09 / fh, va='top', ha='center',
+                     fontsize=fs, fontweight='bold', color=S.INK)
+
+def place_point_labels(ax, xs, ys, sizes, texts):
+    """Label each point on whichever side is clearest of the OTHER points.
+
+    Four candidates per point, each offset by that point's own marker radius so
+    the text never lands on its own bubble. Each candidate is scored by its
+    distance, in display space, to every other marker and to every label already
+    placed; the best-scoring candidate wins. Deterministic, and with five points
+    it is exact rather than heuristic.
+    """
+    fig = ax.figure
+    fig.canvas.draw()
+    trans = ax.transData
+    pts = trans.transform(np.column_stack([xs, ys]))
+    rad = np.sqrt(np.asarray(sizes, float) / np.pi) * fig.dpi / 72.0
+    box = ax.get_window_extent()
+    placed, out = [], []
+    for i, (px, py) in enumerate(pts):
+        r = rad[i] + LABEL_PAD_PT * fig.dpi / 72.0
+        # Text width estimated from the string; the artist does not exist yet, and
+        # a candidate that would push the label out of the axes has to be rejected
+        # BEFORE it is drawn. Without this the widest label still ran into the
+        # gutter, because staying clear of the other markers scored better than
+        # staying inside the frame.
+        w = len(texts[i]) * FS_SMALL * 0.60 * fig.dpi / 72.0
+        h = FS_SMALL * 1.2 * fig.dpi / 72.0
+        best, best_score = None, -1e18
+        for dx, dy, ha, va in ((r, 0, 'left', 'center'), (-r, 0, 'right', 'center'),
+                               (0, r, 'center', 'bottom'), (0, -r, 'center', 'top')):
+            cx, cy = px + dx, py + dy
+            x0 = cx if ha == 'left' else (cx - w if ha == 'right' else cx - w / 2)
+            y0 = cy if va == 'bottom' else (cy - h if va == 'top' else cy - h / 2)
+            outside = (max(0.0, box.x0 - x0) + max(0.0, (x0 + w) - box.x1)
+                       + max(0.0, box.y0 - y0) + max(0.0, (y0 + h) - box.y1))
+            d = [np.hypot(cx - pts[j][0], cy - pts[j][1]) - rad[j]
+                 for j in range(len(pts)) if j != i]
+            d += [np.hypot(cx - qx, cy - qy) for qx, qy in placed]
+            score = (min(d) if d else 1e9) - 10.0 * outside
+            if score > best_score:
+                best, best_score = (dx, dy, ha, va, cx, cy), score
+        dx, dy, ha, va, cx, cy = best
+        placed.append((cx, cy))
+        out.append(ax.annotate(texts[i], (xs[i], ys[i]), textcoords='offset points',
+                               xytext=(dx / fig.dpi * 72.0, dy / fig.dpi * 72.0),
+                               ha=ha, va=va, fontsize=FS_SMALL, color=S.INK_SOFT))
+    return out
+
+
 def stat_note(ax, text, *, y=0.985, va='top'):
     """A computed statistic INSIDE the axes.
 
@@ -108,7 +228,8 @@ def stat_note(ax, text, *, y=0.985, va='top'):
     this script computed was silently absent from the figure it was computed for.
     """
     ax.text(0.5, y, text, transform=ax.transAxes, ha='center', va=va,
-            fontsize=6.8, color=S.INK_SOFT)
+            fontsize=FS_SMALL, color=S.INK_SOFT, clip_on=False,
+            bbox=dict(facecolor='white', edgecolor='none', alpha=0.85, pad=1.2))
 
 
 def main():
@@ -134,35 +255,43 @@ def main():
                      'share': share(g), 'is_ctrl': is_ctrl})
     pl = pd.DataFrame(rows).sort_values('depth')
     for is_ctrl, col, lab in ((True, C_CTRL, 'controls'), (False, C_CASE, 'cases')):
-        s = pl[pl.is_ctrl == is_ctrl]
-        ax_a.scatter(s.depth, s.share, s=np.sqrt(s.n) * 9, color=col, alpha=0.85,
+        sel = pl[pl.is_ctrl == is_ctrl]
+        ax_a.scatter(sel.depth, sel.share, s=np.sqrt(sel.n) * 9, color=col, alpha=0.85,
                      edgecolors='white', linewidths=0.8, zorder=3, label=lab)
     # The vendor prefix is dropped HERE ONLY, and only from the point labels: five
-    # full names at 6 pt on a 3.5 in axis overlap into an unreadable band. The
-    # table and every other panel keep the name in full.
-    short = {p: str(p).split('-')[-1] if '-' in str(p) else str(p) for p in pl.platform}
-    ann = [ax_a.annotate(short[r.platform], (r.depth, r.share),
-                         textcoords='offset points',
-                         xytext=(np.sqrt(np.sqrt(r.n) * 9 / np.pi) + 4.0, 3), fontsize=6.2,
-                         color=S.INK_SOFT) for _, r in pl.iterrows()]
-    ax_a.set_xlim(pl.depth.min() - 3, pl.depth.max() + 7)
-    ax_a.set_ylim(-pl.share.max() * 0.10, pl.share.max() * 1.42)
-    if ann:
-        S.spread_labels(ax_a, ann, axis='y')
-    ax_a.set_xlabel('measured depth, platform median (×)')
+    # full names on a 2.4 in axis overlap into an unreadable band. The table and
+    # every other panel keep the name in full.
+    short = {q: str(q).split('-')[-1] if '-' in str(q) else str(q) for q in pl.platform}
+    # Limits BEFORE placing labels: placement measures display coordinates, so the
+    # axes have to be final first. The x range is widened symmetrically because a
+    # label can now go on either side of its point.
+    xpad = (pl.depth.max() - pl.depth.min()) * 0.16 + 2.0
+    ax_a.set_xlim(pl.depth.min() - xpad, pl.depth.max() + xpad)
+    ax_a.set_ylim(-pl.share.max() * 0.12, pl.share.max() * 1.30)
+    ax_a.set_xlabel('median depth (×)')
     ax_a.set_ylabel('unconfirmed\nchromosomes')
     ax_a.yaxis.set_major_formatter(lambda v, _: f'{v:.0%}')
+    place_point_labels(ax_a, pl.depth.to_numpy(), pl.share.to_numpy(),
+                       (np.sqrt(pl.n) * 9).to_numpy(),
+                       [short[q] for q in pl.platform])
 
     dd = d.dropna(subset=['observed_depth'])
     cc, ca = dd[dd.group == args.control_group], dd[dd.group != args.control_group]
     p_depth = float(stats.mannwhitneyu(ca.observed_depth, cc.observed_depth)[1]) \
         if len(cc) and len(ca) else np.nan
-    S.panel_tag(ax_a, 'a', title='platform, not depth')
-    S.legend_inside(ax_a, ax_a.get_legend_handles_labels()[0], loc='upper right')
+    panel_head(ax_a, 'a', 'share vs depth')
+    # markerscale, because this is a SIZE-ENCODED scatter: without it the legend
+    # reproduces the handles at their data size and the control swatch is as big
+    # as the largest real datum, which a reader can legitimately read as a point.
+    leg = S.legend_inside(ax_a, ax_a.get_legend_handles_labels()[0], loc='upper right',
+                          fontsize=FS_SMALL + 1.5)
+    if leg is not None:
+        for h in leg.legend_handles:
+            h.set_sizes([18])
     if p_depth == p_depth:
-        stat_note(ax_a, f'group depths {cc.observed_depth.median():.1f}× vs '
+        stat_note(ax_a, f'{cc.observed_depth.median():.1f}× vs '
                         f'{ca.observed_depth.median():.1f}×, '
-                        f'Mann–Whitney {S.p_tex(p_depth)}', y=0.015, va='bottom')
+                        f'MW {S.p_tex(p_depth)}', y=0.02, va='bottom')
     S.despine(ax_a)
 
     # -- (b) the same comparison with depth held fixed -----------------------
@@ -178,20 +307,21 @@ def main():
     if len(bars) < 2:
         # An empty or one-sided window is a real outcome once the cohort is
         # restricted, and it has to be legible AS one rather than as a blank axis.
-        ax_b.text(0.5, 0.5, f'no two platforms overlap\nat {WIN_LO:.0f}–{WIN_HI:.0f}×',
+        ax_b.text(0.5, 0.5, f'no two platforms overlap\nat {WIN_LO:.0f}-{WIN_HI:.0f}x',
                   transform=ax_b.transAxes, ha='center', va='center',
-                  fontsize=7.5, color=S.INK_SOFT)
+                  fontsize=FS_SMALL, color=S.INK_SOFT)
         ax_b.set_xticks([])
     else:
-        ax_b.bar(range(len(bars)), bars, color=cols, width=0.55)
+        ax_b.bar(range(len(bars)), bars, color=cols, width=0.5)
         ax_b.set_xticks(range(len(bars)))
-        ax_b.set_xticklabels(labs, fontsize=6.5)
-        ax_b.set_ylim(0, max(bars) * 1.34)
+        ax_b.set_xticklabels(labs, fontsize=FS_SMALL)
+        ax_b.set_ylim(0, max(bars) * 1.30)
         if p_matched == p_matched:
             stat_note(ax_b, f'Fisher {S.p_tex(p_matched)}')
     ax_b.yaxis.set_major_formatter(lambda v, _: f'{v:.0%}')
-    ax_b.set_ylabel('unconfirmed\nchromosomes')
-    S.panel_tag(ax_b, 'b', title=f'matched {WIN_LO:.0f}–{WIN_HI:.0f}×')
+    # No y label here or on (d): all three share one quantity and one axis
+    # formatter, and three copies of a two-line label ate 624 px of the gutter.
+    panel_head(ax_b, 'b', f'matched at {WIN_LO:.0f}-{WIN_HI:.0f}×')
     S.despine(ax_b)
 
     # -- (c) per sample, so the reader sees a distribution and not a mean ----
@@ -202,11 +332,11 @@ def main():
         h, _ = np.histogram(g.n_unconfirmed, bins=bins)
         ax_c.step(np.arange(hi + 1), h / len(g), where='mid', color=col, lw=1.6, label=lab)
     n_lo, n_hi = int(d.n_chr.min()), int(d.n_chr.max())
-    denom = f'{n_hi}' if n_lo == n_hi else f'{n_lo}–{n_hi}'
-    ax_c.set_xlabel(f'unconfirmed chromosomes (of {denom})')
+    denom = f'{n_hi}' if n_lo == n_hi else f'{n_lo}-{n_hi}'
+    ax_c.set_xlabel('unconfirmed chromosomes')
     ax_c.set_ylabel('fraction of samples')
     ax_c.set_xticks(range(0, hi + 1, 2))
-    S.panel_tag(ax_c, 'c', title='per sample')
+    panel_head(ax_c, 'c', 'per sample')
     S.legend_inside(ax_c, ax_c.get_legend_handles_labels()[0], loc='upper right')
     S.despine(ax_c)
 
@@ -223,14 +353,12 @@ def main():
     ax_d.bar(x + wbar / 2, sh_k, wbar, color=C_CASE)
     for i, (c, k) in enumerate(zip(sh_c, sh_k)):
         ax_d.annotate(f'{c / k:.2f}×', (i, max(c, k)), textcoords='offset points',
-                      xytext=(0, 7), ha='center', fontsize=7.0, color=S.INK)
+                      xytext=(0, 7), ha='center', fontsize=FS_SMALL, color=S.INK)
     ax_d.set_xticks(x)
-    ax_d.set_xticklabels([f'{nm}\n{int(dd_.n_chr.sum()):,} chr'
-                          for (nm, c_, k_), dd_ in zip(panels, (d, d2))], fontsize=6.5)
+    ax_d.set_xticklabels([nm for nm, _c, _k in panels], fontsize=FS_SMALL)
     ax_d.set_ylim(0, max(sh_c + sh_k) * 1.26)
     ax_d.yaxis.set_major_formatter(lambda v, _: f'{v:.0%}')
-    ax_d.set_ylabel('unconfirmed\nchromosomes')
-    S.panel_tag(ax_d, 'd', title='both panels')
+    panel_head(ax_d, 'd', 'both panels')
     S.despine(ax_d)
 
     # -- the table, which carries everything the four panels cannot ----------
@@ -275,22 +403,9 @@ def main():
     tab.to_csv(args.out_table, sep='\t', index=False)
 
     n_loci = int(round(n_hi / 2))
-    S.caption_block(
-        fig, plot_h=PLOT_H,
-        title=(f'Controls carry {share(ctrl):.1%} of called chromosomes on an allele the '
-               f'reference never sees, cases {share(case):.1%} — not depth, not the panel.'),
-        panels=[
-            'Share against measured depth, one point per platform, area ∝ √n.',
-            f'The two platforms of the comparison at {WIN_LO:.0f}–{WIN_HI:.0f}×, equal medians.',
-            'Per sample, so the spread shows rather than a mean.',
-            'Both panels, control/case ratio above each pair.',
-        ],
-        notes=(f'"Unconfirmed" = a call the named panel does not carry. {args.reference_name}, '
-               f'{n_loci} loci, {int(d.n_chr.sum()):,} chr; {args.reference_name_secondary}, '
-               f'{int(round(int(d2.n_chr.max()) / 2))} loci, {int(d2.n_chr.sum()):,} chr. Only '
-               f'the group contrast is readable, never the level. docs/OPEN_QUESTIONS.md §3.'),
-        top_pad=0.32, wspace=0.46, hspace=0.60,
-        left='auto', right=0.965, margin_axes=list(axes.ravel()))
+    lay_out(fig, list(axes.ravel()), plot_h=PLOT_H, top_pad=0.34,
+            wspace=0.34, hspace=0.52,
+            title='Typing quality by group: depth, the reference panel, or neither?')
     fig.savefig(args.out_png)
     plt.close(fig)
 

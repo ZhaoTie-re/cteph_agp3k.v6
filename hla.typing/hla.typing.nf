@@ -671,7 +671,6 @@ process PLOT_ALLELE_FREQ {
     python3 ${script} \\
         --check ${check} --summary ${summary} \\
         --reference-name '${params.TruthName}' \\
-        --reference-cite '${params.TruthCite}' \\
         --flag-genes '${params.FlagLoci}' \\
         --out-png allele_frequency.png \\
         --out-png-loci allele_frequency_loci.png

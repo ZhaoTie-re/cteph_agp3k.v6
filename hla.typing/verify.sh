@@ -174,7 +174,7 @@ for pat in \
   hits=$(grep -nF -- "$pat" \
            hla.typing.nf nextflow.config README.md \
            scripts/*.py docs/*.md \
-           $([ -f report/hla_typing_report.qmd ] && echo report/hla_typing_report.qmd) \
+           $(ls report/*.qmd 2>/dev/null) \
            $(ls "$R"/figures/*.md 2>/dev/null) \
          2>/dev/null | grep -v '\[retired\]')
   # A line may quote a retired claim if it is explaining that the claim was
@@ -322,7 +322,8 @@ fi
 echo "═══ 10. documentation is present ═══"
 bad=0
 for f in README.md docs/METHODS.md docs/OUTPUTS.md docs/STUDY_NOTES.md docs/OPEN_QUESTIONS.md \
-         docs/NUMBERS_ALLOWED.md; do
+         docs/NUMBERS_ALLOWED.md report/_quarto.yml \
+         report/hla_typing_report.qmd report/hla_typing_report.zh.qmd; do
   [ -f "$f" ] || { echo "    ✗ $f missing"; bad=1; }
 done
 ck "README + docs present" $bad
@@ -333,6 +334,88 @@ if [ -d "$R/figures" ]; then
   done
   ck "every figure has a sidecar .md" $bad
 fi
+
+echo "═══ 10b. the two language editions cannot drift ═══"
+python3 - <<'PY'
+import re, sys, pathlib
+qmds = sorted(pathlib.Path('report').glob('*.qmd'))
+if len(qmds) < 2:
+    print('    – only one edition; nothing to compare'); sys.exit(0)
+keys = {}
+for q in qmds:
+    keys[q.name] = set(re.findall(r'\bfz?\("([^"]+)"\)', q.read_text(encoding='utf-8')))
+names = sorted(keys)
+a, b = keys[names[0]], keys[names[1]]
+bad = 0
+for only, other in ((a - b, names[0]), (b - a, names[1])):
+    for k in sorted(only):
+        print(f'    ✗ {other} quotes {k!r} and its sibling does not'); bad = 1
+print(f'    {len(a & b)} fact(s) quoted by both editions')
+sys.exit(bad)
+PY
+ck "both editions quote the same facts" $?
+
+echo "═══ 10c. no result is typed into a report ═══"
+if [ -f "$R/_run_info/facts.json" ]; then
+python3 - <<'PY'
+import json, re, sys, pathlib
+# The .qmd convention is that EVERY result is `r f("key")`. So the check is not
+# "is this number allowed" -- it is "did someone paste a value that the pipeline
+# derives". A rendered fact appearing as literal text in the prose is exactly
+# that mistake, and it is the one that silently goes stale.
+facts = json.load(open('results/_run_info/facts.json'))['rendered']
+# A fact whose VALUE is a name -- worst_locus_jmorp is the string 'DRB3' -- is
+# not a quantity, and flagging every prose mention of a gene would make this
+# check unusable. A quantity starts with a digit or a sign.
+vals = {str(v).strip() for v in facts.values()
+        if re.match(r'^[+-]?\d', str(v).strip()) and len(str(v).strip()) >= 4}
+bad = 0
+for q in sorted(pathlib.Path('report').glob('*.qmd')):
+    fence = False
+    for i, line in enumerate(q.read_text(encoding='utf-8').splitlines(), 1):
+        if line.lstrip().startswith('```'):
+            fence = not fence
+            continue
+        if fence:
+            continue
+        bare = re.sub(r'`r [^`]*`', '', line)      # inline R is derived, by definition
+        for v in vals:
+            if v in bare:
+                print(f'    ✗ {q}:{i}: {v!r} is typed in; use `r f(...)`')
+                bad = 1
+print(f'    {len(vals)} derived value(s) checked against '
+      f'{len(list(pathlib.Path("report").glob("*.qmd")))} report(s)')
+sys.exit(bad)
+PY
+ck "reports derive rather than state" $?
+else
+  echo "  – facts.json not built yet; skipped"
+fi
+
+echo "═══ 10d. no caption is rendered into a figure ═══"
+python3 - <<'PY'
+import ast, pathlib, sys
+# A CALL, found in the syntax tree -- not the word found by grep. Every one of
+# these scripts NAMES caption_block in a docstring explaining why it no longer
+# calls it, and a grep-based check punished the documentation for being honest.
+bad = 0
+for p in sorted(pathlib.Path('scripts').glob('plot_*.py')):
+    src = p.read_text()
+    tree = ast.parse(src)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            name = getattr(node.func, 'attr', None) or getattr(node.func, 'id', None)
+            if name == 'caption_block':
+                print(f'    ✗ {p.name}:{node.lineno} calls caption_block; '
+                      f'explanation belongs in the report')
+                bad = 1
+    if 'def panel_head' not in src:
+        print(f'    ✗ {p.name} has no panel_head'); bad = 1
+    if 'suptitle' not in src:
+        print(f'    ✗ {p.name} sets no figure title'); bad = 1
+sys.exit(bad)
+PY
+ck "figures carry a title and panel titles, and no caption" $?
 
 if [ "$HAVE_RESULTS" -eq 0 ]; then
   echo; echo "results/ not present — sections 11-23 skipped."
@@ -420,7 +503,6 @@ ck "failed == 0 and allele_unmatched is header-only" $?
 echo "═══ 15. allele_frequency_summary re-derived from allele_frequency_check ═══"
 python3 - <<'PY'
 import sys, numpy as np, pandas as pd
-from scipy import stats
 bad = 0
 for suf in ('', '.1kg'):
     c = pd.read_csv(f'results/05.qc/allele_frequency_check{suf}.tsv', sep='\t')
@@ -429,22 +511,22 @@ for suf in ('', '.1kg'):
         d = c[c.gene == row.gene]
         x, y = d.freq_ref.astype(float), d.freq_ctrl.astype(float)
         r = float(np.corrcoef(x, y)[0, 1])
-        rho = float(stats.spearmanr(x, y).statistic)
         md = float((y - x).abs().max())
-        # Pearson and max|diff| must reproduce exactly. SPEARMAN CANNOT, and the
-        # reason is not sloppiness: allele_freq_check.py writes freq_ctrl/freq_ref
-        # rounded to 5 dp but computes rho from the unrounded vectors. rho is
-        # rank-based, so rounding fuses rare alleles into ties that do not exist
-        # upstream and moves it in the third decimal. Observed spread over 13 loci
-        # is < 0.004; the tolerance is the rounding's, not a fudge.
+        n_sh = int(((x > 0) & (y > 0)).sum())
+        # There is no Spearman branch here any more, and its absence is the point.
+        # It could never reproduce: allele_freq_check.py wrote the frequencies
+        # rounded to 5 dp and computed rho from the unrounded vectors, and a
+        # rank statistic over a vector that is 70-96 % ties at zero moves when
+        # the rounding changes which values tie. The statistic was removed
+        # rather than given a tolerance.
         for name, got, want, tol in (('r', r, float(row.pearson_r), 5e-4),
                                      ('max|diff|', md, float(row.max_abs_diff), 5e-4),
-                                     ('rho', rho, float(row.spearman_rho), 1e-2)):
+                                     ('n_shared', n_sh, float(row.n_shared), 0.5)):
             if abs(got - want) > tol:
                 print(f'    ✗ {suf or "jmorp"} {row.gene} {name}: {got:.4f} vs {want:.4f} '
                       f'(tol {tol})')
                 bad = 1
-print('    both panels re-derived per locus (rho to the 5-dp rounding of the table)')
+print('    both panels re-derived per locus')
 sys.exit(bad)
 PY
 ck "summary reproduces check" $?
@@ -586,6 +668,26 @@ if [ -d report/figures ]; then
   done
   ck "report/figures matches results/figures ($n)" $bad
 fi
+
+echo "═══ 21d. every figure is embedded in every report ═══"
+python3 - <<'PY'
+import base64, pathlib, re, sys
+figs = {p.stat().st_size: p.name for p in pathlib.Path('results/figures').glob('*.png')}
+outs = sorted(pathlib.Path('report/_output').glob('*.html'))
+if not outs:
+    print('    – no rendered report yet'); sys.exit(0)
+bad = 0
+for o in outs:
+    h = o.read_text(encoding='utf-8')
+    got = {len(base64.b64decode(re.sub(r'\s', '', b)))
+           for b in re.findall(r'data:image/png;base64,([A-Za-z0-9+/=\s]+?)["\')]', h)}
+    missing = sorted(figs[k] for k in figs if k not in got)
+    print(f'    {o.name}: {len(got)} embedded, {len(figs)} on disk')
+    for m in missing:
+        print(f'    ✗ {o.name} does not embed {m}'); bad = 1
+sys.exit(bad)
+PY
+ck "no figure is named but unembedded" $?
 
 echo "═══ 21c. no per-sample data in the delivery ═══"
 # The repository is PUBLIC and .gitignore is an extension allow-list with no *.tsv,

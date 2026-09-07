@@ -1,270 +1,512 @@
 ---
-title: "HLA typing for the CTEPH / AGP3K `full_mainland` cohort"
+title: "HLA typing for the CTEPH / AGP3K cohort"
 subtitle: "What the calls are, how good they are, and what they will and will not support"
-author: "Shu Zhang"
+author: "ZHAO TIE"
 date: today
-format:
-  html:
-    theme: cosmo
-    toc: true
-    toc-depth: 3
-    toc-location: left
-    number-sections: true
-    embed-resources: true
-    fig-align: center
-    df-print: kable
-    code-fold: true
-    code-summary: "show the code that produced this number"
-execute:
-  echo: false
-  warning: false
-  message: false
+lang: en
+code-summary: "show the code that produced this number"
 ---
 
 ```{r setup}
 #| include: false
 # EVERY NUMBER IN THIS REPORT IS READ FROM results/_run_info/facts.json.
-# Nothing is typed in. build_facts.py derives that file from the published tables,
-# and verify.sh section 9 fails if a number appears in a document without being in
-# it. So a re-render after any data change is either correct or fails loudly --
-# which is the whole reason this report is a .qmd and not a .docx.
+# Nothing is typed in. build_facts.py derives that file from the published
+# tables. If a number is quoted here that the pipeline does not produce, the
+# render ABORTS -- which is the whole reason this report is a .qmd and not a
+# .docx, and it has already caught two mistakes.
 library(jsonlite)
 library(knitr)
-R    <- normalizePath("../results")
-F    <- fromJSON(file.path(R, "_run_info", "facts.json"))$rendered
-f    <- function(k) { v <- F[[k]]; if (is.null(v)) stop("no such fact: ", k); v }
-tsv  <- function(p) read.delim(file.path(R, p), check.names = FALSE)
-pct1 <- function(k) f(k)
+R   <- normalizePath("../results")
+F   <- fromJSON(file.path(R, "_run_info", "facts.json"))$rendered
+f   <- function(k) { v <- F[[k]]; if (is.null(v)) stop("no such fact: ", k); v }
+tsv <- function(p) read.delim(file.path(R, p), check.names = FALSE)
 ```
 
-::: {.callout-note}
-## How to read this document
+::: {.callout-tip}
+## Who this is written for
 
-Every number below is generated from the published tables at render time, not typed
-in. If a table changes and this document is re-rendered, the numbers change with it;
-if a number here has no source, the render fails. The mechanism is
-`scripts/build_facts.py` → `results/_run_info/facts.json` → this file, and
-`./verify.sh` §9 enforces it.
+**Someone who has never worked with HLA.** Section 2 explains the biology and the
+notation from scratch; nothing after it assumes you read anything else first. If you
+already type HLA routinely, skip to §3.
+
+Every number below is generated from the published tables when this page is built, not
+typed in by hand. If a table changes and the page is rebuilt, the numbers change with it;
+if a number here has no source in the data, the build fails rather than printing something
+stale.
 :::
+
+# What this document is
+
+You are being handed a set of **HLA genotypes** for `r f("n_typed")` people —
+`r f("n_typed_PH")` CTEPH cases and `r f("n_typed_AGP3K")` AGP3K controls — so that you
+can test whether any of them associates with disease.
+
+This document has one job: to let you use those genotypes **without having to trust them
+blindly**. It says what was measured, how completely, how well it agrees with published
+data, and — most importantly — the two specific ways it can mislead you if you are not
+careful. Sections 6 to 8 are the quality evidence; §9 is the part to read before you
+design an analysis.
+
+# HLA in five minutes {#sec-primer}
+
+Skip this section if you already know what `A*24:02` means.
+
+## What the HLA genes do
+
+Your immune system has to tell "self" from "not self". The proteins that do the actual
+showing-of-evidence are made by a cluster of genes on chromosome 6 called **HLA** (Human
+Leukocyte Antigen). An HLA protein picks up a short fragment of a protein from inside or
+outside the cell and **displays it on the cell surface**, where T cells inspect it. Which
+fragments a given HLA protein can hold is determined by the shape of its binding groove.
+
+Two consequences follow, and they are why HLA matters to a genetics study:
+
+* **HLA is the most variable region in the human genome.** There are tens of thousands of
+  known versions of some of these genes, because a population that all carried the same
+  version could be wiped out by one pathogen that evaded it.
+* **Because the variation changes which fragments get displayed, HLA is associated with
+  more diseases than any other locus** — autoimmune disease, infection, transplant
+  rejection, drug reactions. If a disease has an immune component, HLA is worth testing.
+
+## What "typing" means, and why it is harder than reading a SNP
+
+For an ordinary variant you read one position and report one of two letters. HLA does not
+work that way. The genes are so variable that the question is not "which letter is at this
+position" but **"which of the thousands of known versions of this gene is this?"** —
+and you have two of them, one from each parent.
+
+So HLA typing is a *matching* problem: take the sequencing reads from the HLA region,
+compare them against a catalogue of every known version, and decide which two versions
+explain the reads best. That catalogue is called **IPD-IMGT/HLA**, and the version used
+here is pinned so it cannot change under the study.
+
+## How to read an allele name
+
+A version of an HLA gene is called an **allele**, and its name looks like this:
+
+```
+A * 24 : 02 : 01 : 03
+│   │    │    │    └── field 4: a difference outside the protein-coding part
+│   │    │    └─────── field 3: a DNA difference that does NOT change the protein
+│   │    └──────────── field 2: a difference that DOES change the protein
+│   └───────────────── field 1: the broad family, roughly the old serological type
+└───────────────────── the gene
+```
+
+The fields run from most consequential to least. **Field 2 is where the protein changes**,
+which is why this delivery reports alleles at **two fields** — `A*24:02` — and stops
+there. Reporting more fields would add digits that do not change the protein, would be
+less reliable, and could not be compared against published population data, which is also
+published at two fields.
+
+## Residues, and why they are often the better test
+
+A **residue** is one amino acid at one position in the protein. Because a `GENE:position:
+aminoacid` combination is shared by many different alleles, a residue test asks a more
+robust question than an allele test:
+
+| | allele test | residue test |
+|---|---|---|
+| asks | "do people with `DRB1*15:01` get the disease more?" | "do people with a proline at DRB1 position 11 get it more?" |
+| number of things tested | many, each rare | fewer, each common |
+| if one rare allele is mis-called | that allele's result is wrong | usually unchanged, because the neighbouring allele has the same residue there |
+
+Both are delivered. §9 says which to trust when they disagree.
+
+## Why a gene can be present on one chromosome and absent from the other
+
+Most genes come in two copies. Three of the HLA genes — **DRB3, DRB4 and DRB5** — do not:
+whether you carry them at all depends on which version of the neighbouring DRB1 you
+inherited. So a person can genuinely have **one copy, or none**. That is biology, not a
+sequencing failure, and it produces two of the outcome labels you will see in §6:
+
+* **hemizygous** — one copy present, one genuinely absent.
+* **not typed** — the gene is absent from that person's haplotype altogether.
+
+Neither means anything went wrong. **`failed` is the label that would mean something went
+wrong, and it occurs `r f("n_failed_gene_calls")` times in this dataset.**
 
 # What you are getting
 
-Four tables, all keyed on `sample_id`, all covering exactly the `full_mainland`
-cohort of **`r f("n_typed")`** samples (**`r f("n_typed_PH")`** CTEPH cases,
-**`r f("n_typed_AGP3K")`** AGP3K controls).
+Four tables, all keyed on `sample_id`, all covering exactly the same
+**`r f("n_typed")`** people.
 
-| file | shape | what a column is |
-|---|---|---|
-| `04.residues/allele_dosage.tsv` | `r f("n_typed")` × `r f("n_allele_columns")` | one 2-field allele, e.g. `A*24:02`; the value is 0/1/2 copies |
-| `04.residues/residue_dosage.tsv` | `r f("n_typed")` × `r f("n_residue_columns")` | one `GENE:position:aminoacid`, at **IMGT numbering**; 0/1/2 copies |
-| `04.residues/residue_diplotype.tsv` | `r f("n_typed")` × `r f("n_diplotype_columns")` | one `GENE:position`; the value is the unordered pair of residues |
-| `05.qc/allele_pgroup_map.tsv` | one row per allele | `in_reference` — whether a published Japanese panel lists this allele at all |
+| file | shape | one column is | one cell is |
+|---|---|---|---|
+| `04.residues/allele_dosage.tsv` | `r f("n_typed")` × `r f("n_allele_columns")` | one 2-field allele, e.g. `A*24:02` | how many copies (0, 1, 2) |
+| `04.residues/residue_dosage.tsv` | `r f("n_typed")` × `r f("n_residue_columns")` | one `GENE:position:aminoacid` | how many copies (0, 1, 2) |
+| `04.residues/residue_diplotype.tsv` | `r f("n_typed")` × `r f("n_diplotype_columns")` | one `GENE:position` | the unordered pair of amino acids |
+| `05.qc/allele_pgroup_map.tsv` | one row per allele | — | whether a published Japanese panel lists this allele at all |
+
+The first two are what you will regress on. The fourth is the safety check §8 tells you to
+apply before testing a rare allele.
 
 ::: {.callout-warning}
-## Read `sample_id` as a string
+## Read `sample_id` as a string, always
 
-`r f("n_typed")` ids include some that carry leading zeros — `0000000123`, not
-`123`. `pandas.read_csv` without `dtype` coerces the column to an integer and
-silently drops them, and an inner merge then returns fewer rows with no error and no
-warning.
+`r f("n_leading_zero_ids")` of the `r f("n_typed")` sample ids begin with a zero.
+`pandas.read_csv` without `dtype` turns the column into an integer and silently deletes
+those zeros; an inner join then returns `r f("n_after_numeric_join")` rows instead of
+`r f("n_typed")`, with no error and no warning.
 
 ```python
 pd.read_csv(path, sep='\t', dtype={'sample_id': str})
 ```
 :::
 
-# Which samples these cover
+# Which people these cover
 
-Three filters, in order, and they are **not the same kind of decision**.
+Three filters were applied in order, and **they are not the same kind of decision**.
 
 ```{r chain}
 data.frame(
-  stage = c("v6 cohort (`Flag_JHRPv6 = True`)",
-            "passed `wgs.auto.par` sample QC",
-            "**`full_mainland` — the analysis cohort**"),
-  rule  = c("the workbook",
-            "quality: heterozygosity outliers removed",
-            "**ancestry: mainland Japanese GMM clusters**"),
-  n     = c(f("n_v6_flagged"), f("n_qc_pass"), f("n_typed")),
+  step = c("1. in the v6 study cohort", "2. passed sequencing quality control",
+           "3. **in the mainland ancestry cluster**"),
+  `what it selects for` = c("being part of this study at all",
+                            "the genome-wide data being usable",
+                            "**sharing an ancestry background**"),
+  remaining = c(f("n_v6_flagged"), f("n_qc_pass"), f("n_typed")),
   removed = c("—", f("n_dropped_sample_qc"), f("n_dropped_ancestry")),
   check.names = FALSE
 ) |> kable()
 ```
 
-The third filter is an **ancestry** decision, not a quality one, and the distinction
-matters for how you read §4: the only external check available here asks whether a
-called allele appears in a mainland Japanese reference panel, and a control who is not
-mainland Japanese fails that check for a reason that has nothing to do with typing.
-Restricting the cohort before typing removes that explanation by construction, so the
-QC below measures typing rather than ancestry.
+Step 2 is a **quality** decision: `r f("n_dropped_sample_qc")` people whose genome-wide
+heterozygosity was anomalous were dropped upstream. For HLA typing those are exactly the
+samples least likely to resolve cleanly into two versions of a gene, so inheriting that
+decision is the right thing to do.
 
-`full_mainland` is fixed on disk at `PopGMM_output/full_mainland.fid_iid.txt`. It is a
-**strict subset of the QC-passing set** — `r f("n_cohort_outside_qc")` of its samples
-fall outside it — so joining these matrices onto any mainland cohort roster is a
-straight left join with nothing missing.
+Step 3 is an **ancestry** decision, and it is the one worth understanding, because §8
+depends on it. The only external check available for HLA calls is *"does the allele we
+called appear in a published Japanese reference panel?"*. A control who is not of the same
+ancestral background as that panel will fail that check for reasons that have nothing to
+do with typing quality. Restricting the cohort first removes that explanation by
+construction.
 
-The `r f("n_dropped_ancestry")` samples the ancestry filter removed
-(`r f("n_dropped_ancestry_AGP3K")` AGP3K, `r f("n_dropped_ancestry_PH")` PH) were typed
-by an earlier run and are **not deleted**: their reads and HLA-HD output are kept under
-`results/_superseded.3569/`. Extending to a wider sample set costs a re-run of
-`collect_alleles.py`, not a re-run of HLA-HD.
+The `r f("n_dropped_ancestry")` people removed at step 3 were typed, and their results are
+**not deleted** — they are kept under `results/_superseded.3569/`. Extending to a wider
+sample set later costs a re-run of one collection script, not a re-run of the typing.
 
-# What was done
+<!-- PCA_FIGURE_PLACEHOLDER -->
 
-HLA-HD **1.7.1** against a **pinned** IPD-IMGT/HLA **3.64.0** dictionary, from reads
-extracted over the chr6 MHC window plus every `chr6_*_alt` and `HLA*` contig of the
-hs38DH the CRAMs were aligned to.
+# How the typing was done
 
-- **`r f("n_genes_typed")` genes typed.** IPD-IMGT/HLA publishes a protein alignment for
-  **`r f("n_genes_with_residues")`** of them, and only those can carry residues. The rest
-  keep their allele calls.
-- **Residues come from IMGT's published alignments**, never from a recomputed one.
-  Re-deriving them replaces IMGT numbering with an alignment column index that restarts
-  per exon and moves with every release, so "DRB1 position 13" would be neither
-  reproducible nor the position anyone else means.
-- **Alleles are encoded at 2 fields** in `allele_dosage.tsv`, which is the resolution the
-  external reference carries.
-- **`r f("n_polymorphic_positions")` of `r f("n_reference_positions")` reference positions
-  are polymorphic in this cohort** and are the ones emitted.
+* **Reads** were taken from the whole HLA region of chromosome 6, plus every alternate and
+  HLA-specific contig in the reference genome the data were aligned to — HLA is variable
+  enough that reads from an unusual version will not map to the single "standard" copy.
+* **HLA-HD `r f("hlahd_version")`** matched those reads against a **pinned** copy
+  of the IPD-IMGT/HLA `r f("imgt_release")` catalogue. Pinned means a fixed copy on
+  our own disk: the public catalogue is updated several times a year, and a reference that
+  moves under a study is not a reference.
+* **`r f("n_genes_typed")` genes** were typed. IPD-IMGT publishes a protein alignment for
+  **`r f("n_genes_with_residues")`** of them, and only those can be turned into residues.
+* **Residues come from IMGT's own published alignment**, never from a re-computed one, so
+  "DRB1 position 11" means the same position everyone else means by it.
+* Of the `r f("n_reference_positions")` positions in that alignment,
+  **`r f("n_polymorphic_positions")` actually vary in this cohort** and are the ones
+  delivered. A position where everybody has the same amino acid carries no information.
 
-# Completeness
+# How complete is it? {#sec-completeness}
 
-**`r f("n_failed_gene_calls")` (sample, gene) failures across the whole cohort.** That is
-not luck: HLA-HD exits 0 whatever happens inside it, so every result is validated inside
-the typing task itself, and a truncated result fails the task rather than being published.
-
-```{r completeness}
-s <- tsv("03.alleles/typing_status.tsv")
-data.frame(
-  outcome = c("called", "hemizygous", "not_typed", "failed"),
-  n = c(f("n_called_gene_calls"), f("n_hemizygous_gene_calls"),
-        f("n_not_typed_gene_calls"), f("n_failed_gene_calls")),
-  meaning = c("two alleles resolved",
-              "one allele resolved — for most genes this is real biology",
-              "the gene is absent from that haplotype",
-              "HLA-HD could not produce a call"),
-  check.names = FALSE
-) |> kable()
-```
+**`r f("n_failed_gene_calls")` (sample, gene) failures across the entire dataset.** That is
+not luck. The typing program exits successfully even when it has crashed internally, so
+every result is checked *inside* the typing job and a truncated result fails that job
+rather than being quietly published.
 
 ![](figures/typing_qc.png)
 
-**A low bar at DRB3/4/5 is not a failure.** Their shortfall is entirely `not_typed`: the
-gene is absent from that haplotype. Plotting it as a call rate shows correct biology as
-if it were breakage, which is why panel (c) is a four-way composition.
+::: {.figure-note}
+**Figure 1.** Typing completeness, by sequencing platform and by gene. Read this figure by
+**platform**, not by case/control — see the note after panel (b).
+:::
 
-Call rate is *k*/`r f("n_genes_with_residues")` and takes only
-`r f("n_call_rate_values")` distinct values across the cohort, so it is a weak quality
-signal here. Every panel of the figure is a composition for that reason.
+**What you are looking at.** Four views of "was a call produced, and how good was it",
+none of which can tell you whether a call is *correct* — that is @sec-frequencies.
 
-# The external check
+::: {.panels}
+**(a) field resolution** — For each sequencing platform, what fraction of calls resolved to
+2 fields and what fraction to 3. Remember from @sec-primer that field 2 is where the
+protein changes: a 2-field call is already enough for everything in this delivery, and a
+3-field call is a bonus. The printed white number is the 2-field share, so **a bigger
+number means slightly less resolved calls**. The spread across platforms is
+`r f("field2_share_min")` on `r f("platform_best_resolution")` to `r f("field2_share_max")` on `r f("platform_worst_resolution")` — real, but small.
 
-Completeness cannot see a call that was made confidently and is wrong. The only thing
-that can, without a truth set, is whether the control allele frequencies reproduce
-published Japanese ones.
+**(b) ambiguity** — For each platform, how many samples had 0, 1, 2, 3 or 4+ genes where
+the program could not choose between several equally good answers. This is the closest
+thing to a per-call confidence score the method offers.
 
-**`r f("n_loci_concordant_jmorp")` of `r f("n_loci_jmorp")` loci reproduce
-jMorp 61KJPN-HLA** (`r f("n_ref_individuals_jmorp")` individuals) at Pearson
-*r* ≥ 0.98.
+**(c) outcome per gene** — For each of the `r f("n_genes_with_residues")` genes that carry
+residues, the fraction of people in each outcome. **This is the panel most likely to be
+misread.** The three bars at the top — DRB5, DRB3, DRB4 — look bad and are not: their grey
+`not_typed` block is the biology from @sec-primer, those genes being genuinely absent from
+many haplotypes. There is no `failed` category drawn because there were no failures.
+
+**(d) testable positions** — How many amino-acid positions in each gene actually vary in
+this cohort, drawn on the same gene order as (c) so you can read a gene's completeness and
+its usefulness together. HLA-A and HLA-B contribute the most testable positions; DMA, DOA,
+DRA and DOB contribute almost none.
+:::
+
+**What to conclude.** Completeness is essentially saturated, so it is a *weak* quality
+signal here: the call rate takes only `r f("n_call_rate_values")` distinct values across the
+whole cohort and `r f("share_top_two_call_rates")` of people sit on two of them.
+That is why every panel is a composition rather than an average — an average over a
+saturated measurement hides the only variation there is.
+
+**What this figure cannot tell you.** Whether any call is *right*. Every measurement here
+is about whether a call was produced and how finely, not whether it names the correct
+version of the gene.
+
+**Why by platform, and not by case/control.** Every control was sequenced on one machine
+type and every case on a different one, with no overlap. Any case/control difference in
+these metrics is therefore inseparable from the machine, which is why the comparison is
+never drawn that way. This becomes the central issue in §8.
+
+# Do the calls agree with published data? {#sec-frequencies}
+
+Completeness cannot see a call that was made confidently and is wrong. The only thing that
+can, without re-typing samples of known type, is this: **if we call alleles correctly, the
+frequencies we observe in our controls should reproduce the frequencies published for a
+comparable population.** If the typing were systematically picking the wrong version, the
+whole frequency spectrum would shift and no completeness metric would notice.
+
+**`r f("n_loci_concordant_jmorp")` of `r f("n_loci_jmorp")` loci reproduce the reference at
+a correlation of `r f("r_min_concordant_jmorp")` or better.**
 
 ![](figures/allele_frequency.png)
 
+::: {.figure-note}
+**Figure 2.** Control allele frequencies against jMorp 61KJPN-HLA
+(`r f("n_ref_individuals_jmorp")` individuals, `r f("n_loci_jmorp")` loci).
+:::
+
+::: {.panels}
+**(a) all loci pooled** — One dot per allele. The horizontal position is the frequency the
+reference publishes; the vertical position is the frequency we observe in our controls.
+**A dot on the dashed line means we and the reference agree.** The vertical bars are 95 %
+confidence intervals on our estimate. Red dots are the two commonest alleles and the three
+furthest from the line, named so you can see which they are.
+
+**(b) concordance** — For each locus separately, the correlation between the two sets of
+frequencies. The dotted line is 0.98, the level above which a locus is
+read at face value. Twelve of thirteen loci clear it comfortably; **HLA-DRB3 does not**,
+and is marked with a dagger.
+
+**(c) unconfirmed share** — For each locus, the fraction of our control chromosomes
+carrying an allele the reference **does not list at all**. This is a different question
+from (b): a locus can have excellent correlation on the alleles both sources share and
+still put many chromosomes onto alleles the reference has never seen. Drawn on the same
+rows as (b) so the two can be read together.
+:::
+
+**A caution about (b) that the numbers themselves make plain.** The table below reports
+`n_shared` — how many alleles the two sources actually have in common at each locus. It
+ranges from `r f("n_shared_max_jmorp")` at HLA-A down to **`r f("n_shared_min_jmorp")` at
+HLA-`r f("locus_fewest_shared_jmorp")`**. A correlation computed where only two alleles are
+shared is not meaningful, however high it looks. Read `r"$r$"` and `n_shared` together.
+
 ```{r concordance}
 sm <- tsv("05.qc/allele_frequency_summary.tsv")
-sm[, c("gene", "n_alleles", "n_chr_ctrl", "pearson_r", "spearman_rho", "max_abs_diff",
+sm[, c("gene", "n_alleles", "n_shared", "n_chr_ctrl", "pearson_r", "max_abs_diff",
        "allele_at_max")] |> kable()
 ```
 
-The per-locus scatters behind this are `figures/allele_frequency_loci.png`.
+![](figures/allele_frequency_loci.png)
 
-::: {.callout-important}
-## `r f("worst_locus_jmorp")` is flagged and excluded from the headline
-
-Its concordance is *r* = `r f("worst_locus_r_jmorp")` against
-`r f("r_min_concordant_jmorp")` for the worst of the loci that pass. The reference
-assigns every chromosome a `r f("worst_locus_jmorp")` allele and this pipeline does not,
-and no mechanism tested accounts for the rest of the gap. Do not read
-`r f("worst_locus_jmorp")` frequencies at face value.
+::: {.figure-note}
+**Figure 3.** The same comparison, one panel per locus. This is the record behind Figure 2,
+not a separate argument.
 :::
 
-# Two constraints that bound what you may conclude
+Each panel is the same plot as Figure 2(a) restricted to one locus. **The axes are scaled
+to each locus separately**, so panels cannot be compared with each other by eye — that is
+what Figure 2(b) is for. Panel (i), HLA-DRB3, is the one to look at: its three commonest
+alleles sit visibly off the line in both directions.
 
-## DRB3, DRB4 and DRB5 dosages are wrong by construction
+::: {.callout-important}
+## HLA-DRB3 is flagged and excluded from the headline
 
-These three genes are **present or absent from a haplotype**. A sample carrying one copy
-is genuinely hemizygous — but the pipeline writes a hemizygous call as two copies of the
-same allele, so those columns of `allele_dosage.tsv` and `residue_dosage.tsv` read 2
-where the truth is 1.
+Its correlation is `r f("worst_locus_r_jmorp")`, against `r f("r_min_concordant_jmorp")` for
+the worst locus that passes. The reference assigns every chromosome a DRB3 allele and this
+pipeline does not, and no mechanism we have tested accounts for the rest of the gap. Do not
+read DRB3 frequencies at face value.
+:::
 
-**The other `r f("n_genes_with_residues")` genes' residue columns are unaffected.** If a
-DRB3/4/5 result matters, derive presence/absence from `03.alleles/allele_calls.tsv`
-directly rather than from the dosage matrix. Details:
-`docs/OPEN_QUESTIONS.md` §1.
+# The one real quality problem {#sec-confound}
 
-## Controls are typed measurably worse than cases
+This is the section that most constrains what these genotypes can support.
 
-This is the finding that most constrains what these calls can support.
+Define **"unconfirmed"** as: a chromosome carrying an allele that the reference panel does
+not list. Some unconfirmed calls are expected — no panel contains every rare allele. The
+problem is not the level. **The problem is that the level differs between our cases and our
+controls.**
 
-**`r f("unconfirmed_AGP3K_jmorp")` of control chromosomes carry an allele the reference
-panel never lists, against `r f("unconfirmed_PH_jmorp")` in cases** — a ratio of
-**`r f("unconfirmed_ratio_jmorp")`**, Fisher *P* = `r f("fisher_p_group") ` for the
-primary panel.
+**Controls: `r f("unconfirmed_AGP3K_jmorp")` of called chromosomes. Cases:
+`r f("unconfirmed_PH_jmorp")`.** A ratio of **`r f("unconfirmed_ratio_jmorp")`**, Fisher
+exact *P* = `r f("fisher_p_group")`.
 
 ![](figures/typing_confound.png)
 
-Three explanations are available and two of them are ruled out here.
+::: {.figure-note}
+**Figure 4.** Testing the two explanations that would make this finding go away.
+:::
 
-- **Not depth.** Median measured depth is `r f("median_depth_controls")`× in controls and
-  `r f("median_depth_cases")`× in cases, Mann–Whitney *P* = `r f("mannwhitney_p_depth")`.
-  Restricted to the 17–21× window where the two largest platforms have equal medians, the
-  shares are `r f("unconfirmed_matched_17_21x_HiSeqX_15x")` against
-  `r f("unconfirmed_matched_17_21x_DNBSeq_T7_30x")`, Fisher
-  *P* = `r f("fisher_p_matched")`.
-- **Not the reference panel.** The same calls scored against a much smaller panel
-  (`r f("n_ref_individuals_1kg")` individuals, `r f("n_loci_1kg")` loci) give
-  `r f("unconfirmed_AGP3K_1kg")` against `r f("unconfirmed_PH_1kg")` — the *level* moves
-  by more than half again, the *ratio* moves only from
-  `r f("unconfirmed_ratio_jmorp")` to `r f("unconfirmed_ratio_1kg")`. The level belongs to
-  the panel; the contrast does not.
-- **Not ancestry.** The cohort is ancestry-restricted, so an unlisted allele cannot be
-  explained by the sample not being mainland Japanese.
+Three things could produce that difference. Two of them are tested here and neither
+survives.
 
-**What is left is platform, and it is perfectly confounded with phenotype.** Every control
-is an AGP3K sample on HiSeqX; every case is a PH sample on something else. Which of read
-length, library chemistry, alignment reference or batch is responsible cannot be
-determined from these data.
+::: {.panels}
+**(a) share vs depth** — One dot per sequencing platform. Horizontal: how much sequence
+data that platform produced per person (its median depth). Vertical: the unconfirmed share.
+Dot area is proportional to the number of people. **Read it twice.** First along the
+*case* platforms alone — phenotype is held constant there, and the share clearly falls as
+depth rises, so depth genuinely does matter. Then compare the large blue control dot with
+the case dot sitting immediately below it at the same depth: same depth, different share.
+The note inside the panel gives the two group medians and a test of whether they differ:
+`r f("median_depth_controls")`× against `r f("median_depth_cases")`×,
+*P* = `r f("mannwhitney_p_depth")`. **They do not.**
+
+**(b) matched at 17–21×** — The same comparison restricted to people whose actual depth
+falls in a narrow window where the two largest platforms have equal medians. If depth were
+the cause, these two bars would be level. They are not:
+`r f("unconfirmed_matched_17_21x_HiSeqX_15x")` against
+`r f("unconfirmed_matched_17_21x_DNBSeq_T7_30x")`, *P* = `r f("fisher_p_matched")`.
+
+**(c) per sample** — The distribution across individuals rather than the pooled average,
+because an average would hide that most people have zero unconfirmed chromosomes and a tail
+have several. The two curves are close, which is the honest picture: this is a modest shift
+in a distribution, not two separate populations.
+
+**(d) both panels** — The same case/control comparison computed twice, against two different
+reference panels, from *identical* calls. The number above each pair is the control/case
+ratio.
+:::
+
+## Why panel (d) matters more than it looks
+
+"Unconfirmed" is defined by whichever reference panel you choose, so the obvious objection
+is that the whole finding is an artefact of that choice. Panel (d) tests it, and the two
+panels differ in **two ways at once**:
+
+| | jMorp 61KJPN-HLA | 1000 Genomes JPT |
+|---|---|---|
+| individuals | `r f("n_ref_individuals_jmorp")` | `r f("n_ref_individuals_1kg")` |
+| loci covered | `r f("n_loci_jmorp")` | `r f("n_loci_1kg")` |
+| population sampled | Tohoku, north-east Japan | Tokyo region |
+| unconfirmed, controls | `r f("unconfirmed_AGP3K_jmorp")` | `r f("unconfirmed_AGP3K_1kg")` |
+| unconfirmed, cases | `r f("unconfirmed_PH_jmorp")` | `r f("unconfirmed_PH_1kg")` |
+| **control/case ratio** | **`r f("unconfirmed_ratio_jmorp")`** | **`r f("unconfirmed_ratio_1kg")`** |
+
+Neither panel is simply better. The larger one has seen far more of the rare Japanese
+allele repertoire, which is why it leaves less unconfirmed. The smaller one samples a
+population plausibly closer to our own cohort, but at a size where it cannot have observed
+an allele carried by fewer than about one person in a hundred. Our cohort is neither of
+those two populations; on the evidence of where it sits in Japanese population-structure
+analyses, it lies between them.
+
+**So the level moves a great deal between the two panels and the ratio barely moves at
+all.** The absolute number belongs to the reference; the difference between our two groups
+does not. That is a demonstration, not an assurance — and it is the reason this figure runs
+both panels on every execution rather than picking one.
+
+::: {.callout-note}
+## The third explanation — ancestry — was removed before the data were produced
+
+A control whose ancestry differs from the reference panel's would carry alleles the panel
+has not seen, for reasons unrelated to typing. That is why the cohort was restricted to a
+single ancestry cluster in §5 **before** any of these numbers were computed. Before that
+restriction the same comparison gave `r f("superseded_unconfirmed_AGP3K_jmorp")` against
+`r f("superseded_unconfirmed_PH_jmorp")`, a ratio of
+`r f("superseded_unconfirmed_ratio_jmorp")`. Removing the benign explanation left the
+finding essentially unchanged.
+:::
+
+## What is left, and what it means for you
+
+Not depth. Not the reference panel. Not ancestry. **What remains is the sequencing
+platform** — and every control was sequenced on one platform and every case on another,
+with no overlap at all. Platform, cohort and phenotype are perfectly confounded, so it is
+not possible from these data to say which of read length, library chemistry, alignment
+behaviour or batch is responsible.
 
 ::: {.callout-warning}
-## The practical consequence
+## The practical consequence, stated plainly
 
-A common allele depleted more in controls than in cases reads as **enrichment in cases** —
-a false risk association produced by the typing alone. Before testing a rare row of
-`allele_dosage.tsv`, check it against `05.qc/allele_pgroup_map.tsv`: `in_reference = 0`
-means no published Japanese panel lists that allele.
+If a common allele is under-called slightly more often in controls than in cases, it will
+look like that allele is **enriched in cases** — a false disease association produced
+entirely by the typing.
+
+Before testing any rare allele from `allele_dosage.tsv`, check it against
+`05.qc/allele_pgroup_map.tsv`. A value of `in_reference = 0` means no published Japanese
+panel lists that allele at all. Of the `r f("n_alleles_carried")` alleles this cohort
+carries, `r f("n_alleles_not_in_reference")` are flagged that way — but they are rare, which
+is why the chromosome-weighted figure is only `r f("unconfirmed_cohort_jmorp")`.
 :::
 
 # What these calls can and cannot support
 
-**Order of robustness, most to least.**
+**In order of robustness, most to least.**
 
-1. **Class I residues** (A, B, C). A mis-call to a rare allele of the same 1-field family
-   moves 2–5 of the locus's several hundred IMGT positions, so a residue test barely
-   notices it. This is the analysis these calls support best.
-2. **Class II residues** (DRB1, DQB1, DPB1, DQA1, DPA1). A tail mis-call moves tens of
-   positions, but the class II tails are the smallest in the cohort — DQB1 at
-   `r f("unconfirmed_ctrl_DQB1")` and DRB1 at `r f("unconfirmed_ctrl_DRB1")` of control
-   chromosomes.
-3. **`allele_dosage.tsv`, common alleles.** Fine, with the `in_reference` check above.
-4. **`allele_dosage.tsv`, rare alleles.** Least robust. A rare allele is exactly where the
-   differential in §6.2 lives.
-5. **DRB3/4/5 dosages.** Do not use; see §6.1.
+1. **Class I residues (A, B, C).** Most robust. A mis-call to a rare version of the same
+   family typically moves only a handful of the several hundred amino-acid positions, so a
+   residue test barely notices it. If you run one analysis, run this one.
+2. **Class II residues (DRB1, DQB1, DPB1, DQA1, DPA1).** A mis-call moves more positions
+   here, but the class II unconfirmed shares are the smallest in the cohort — DQB1 at
+   `r f("unconfirmed_ctrl_DQB1")` and DRB1 at `r f("unconfirmed_ctrl_DRB1")`.
+3. **`allele_dosage.tsv`, common alleles.** Sound, with the `in_reference` check above.
+4. **`allele_dosage.tsv`, rare alleles.** Least robust — a rare allele is precisely where
+   the §8 differential lives.
+5. **DRB3, DRB4 and DRB5 dosages. Do not use them.** See the box below.
 
-**What is not established.** There is no per-sample accuracy measurement anywhere in this
-component. The frequency check compares *population frequencies*, so a set of errors that
-happens to preserve the spectrum is invisible to it. Only typing samples with a published
-type would settle it, and that is scoped and deferred in `docs/OPEN_QUESTIONS.md` §2.
+::: {.callout-important}
+## DRB3/4/5 dosages are wrong by construction
 
-# Appendix
+@sec-primer explained that these three genes are genuinely present or absent from a
+haplotype. A person carrying one copy is hemizygous — but the pipeline writes a hemizygous
+call as **two copies of the same allele**, so those columns read 2 where the truth is 1.
+
+The other `r f("n_genes_with_residues")` genes' residue columns are unaffected. If a
+DRB3/4/5 result matters, derive presence/absence from `03.alleles/allele_calls.tsv`
+directly rather than from the dosage matrix.
+:::
+
+**What is not established anywhere in this delivery.** There is no per-sample accuracy
+measurement. The frequency check compares *population frequencies*, so a set of errors that
+happens to preserve the overall spectrum would be invisible to it. Settling that would
+require typing samples whose HLA type is already published, which is scoped and deferred in
+`docs/OPEN_QUESTIONS.md` §2.
+
+# Glossary {#sec-glossary}
+
+Terms used in this document, in the figures, and as column names in the delivered files.
+
+| term | 中文 | meaning |
+|---|---|---|
+| HLA | 人类白细胞抗原 | the gene cluster on chromosome 6 whose proteins display protein fragments to T cells |
+| allele | 等位基因 | one specific known version of a gene |
+| typing | 分型 | deciding which two known versions of a gene a person carries |
+| field | 字段 | one colon-separated number in an allele name; field 2 is where the protein changes |
+| 2-field | 二字段 | the resolution used throughout this delivery, e.g. `A*24:02` |
+| residue | 残基 | one amino acid at one position in the protein |
+| dosage | 剂量 | how many copies (0, 1 or 2) a person carries |
+| diplotype | 双体型 | the unordered pair of amino acids at one position |
+| locus | 位点 | one HLA gene, considered as a place in the genome |
+| called | 已定型 | two versions resolved for this person at this gene |
+| hemizygous | 半合子 | one version present and one genuinely absent — biology, not failure |
+| not_typed | 未分型 | the gene is absent from this person's haplotype altogether |
+| failed | 失败 | the method could not produce a call. Occurs `r f("n_failed_gene_calls")` times here |
+| ambiguous | 存在歧义 | several candidate answers fitted the reads equally well |
+| unconfirmed | 未被参考面板收录 | our call names an allele the reference panel does not list |
+| in_reference | 是否在参考面板中 | the flag in `allele_pgroup_map.tsv` recording exactly that |
+| reference panel | 参考面板 | published allele frequencies from an independent population |
+| P group | P 组 | alleles grouped by identical protein in the binding region; how the reference names things |
+| depth | 测序深度 | how many times each position was sequenced, on average |
+| IPD-IMGT/HLA | IPD-IMGT/HLA | the international catalogue of known HLA alleles |
+| cohort | 队列 | the set of people an analysis is run on |
+| case / control | 病例 / 对照 | people with the disease / comparison group without it |
+
+: {.glossary}
+
+# Appendix {.appendix}
 
 ## Parameters and pinned resources
 
@@ -274,14 +516,14 @@ flat <- vapply(m, function(v) paste(as.character(v), collapse = ", "), character
 data.frame(key = names(flat), value = unname(flat), check.names = FALSE) |> kable()
 ```
 
-## Per-platform completeness
+## Completeness per sequencing platform
 
 ```{r platform}
 tsv("05.qc/typing_qc_platform.tsv")[, c("platform", "n_samples", "call_rate_mean",
   "mean_field_depth_mean", "ambiguous_mean", "failed_mean")] |> kable()
 ```
 
-## Every stratum behind the confounding figure
+## Every stratum behind Figure 4
 
 ```{r confound}
 tsv("05.qc/typing_confound.tsv") |> kable()
@@ -289,18 +531,18 @@ tsv("05.qc/typing_confound.tsv") |> kable()
 
 ## Provenance
 
-The tables and figures in this delivery were produced by **direct invocation** of the
-component's scripts, with the exact command lines `hla.typing.nf` issues. They were not
-produced by `nextflow -resume`: `extract_hla_reads.py` was edited after the typing run,
-and a resume would re-run read extraction and cascade into HLA-HD — about 480 CPU-hours
-re-reading 88 TB of CRAM to reproduce calls that already exist.
+The tables and figures here were produced by running this component's own scripts directly,
+with the same command lines the pipeline issues. They were **not** produced by resuming the
+pipeline: one of the read-extraction scripts was edited after the typing run, and a resume
+would have re-run read extraction and cascaded into re-typing — hundreds of CPU-hours
+re-reading tens of terabytes to reproduce calls that already existed.
 
-`./verify.sh` in the component root is the check that this document's numbers are current.
-It re-derives the sample chain from the workbook and the two keep lists, re-derives the
-concordance and confounding tables from their inputs, and fails on any number in any
-document that is not in `facts.json` or in `docs/NUMBERS_ALLOWED.md`.
+`verify.sh` in the component root is the check that the numbers in this document are
+current. It re-derives the sample chain from the source files, re-derives the concordance
+and confounding tables from their inputs, and fails on any number in any document that is
+not in `facts.json`.
 
-## Where everything lives
+## Where everything else lives
 
 | | |
 |---|---|

@@ -36,7 +36,7 @@ The residue numbering is IMGT's, and these are how that is known:
 | *DRB1* `*15:01:01` at 11/13/71/74 | **P / R / A / A** |
 | *DRB1* `*03:01:01` at 11/13/71/74 | **S / S / K / R** |
 | `NXNE` in `residue_reference/` | **0 rows** — the signature of a fabricated residue |
-| the frequency check against itself | feeding a panel in as if it were the calls gives `r = ρ = 1.000` and `max\|diff\| = 0.000` at every locus it carries |
+| the frequency check against itself | feeding a panel in as if it were the calls gives `r = 1.000` and `max\|diff\| = 0.000` at every locus it carries |
 
 These are properties of IMGT and of the code, not of the cohort, so they do not move when
 the sample set does. That is what makes them anchors.

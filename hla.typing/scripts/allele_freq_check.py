@@ -412,7 +412,17 @@ def main():
                 'gene': g, 'n_alleles': len(alleles),
                 'n_chr_ctrl': nc, 'n_chr_ref': nr,
                 'pearson_r': round(float(stats.pearsonr(fc, fr)[0]), 4),
-                'spearman_rho': round(float(stats.spearmanr(fc, fr)[0]), 4),
+                # WHY THERE IS NO SPEARMAN HERE. It was reported until it was
+                # measured: 70-96 % of every locus's vector is a zero-pair -- an
+                # allele one source carries and the other does not -- so a rank
+                # correlation over it is dominated by ties at zero and its sign is
+                # set by the size of the two disjoint sets, not by rank agreement.
+                # Restricted to the alleles both sources carry, every locus flipped
+                # positive (A -0.25 -> +0.56, B -0.28 -> +0.74, DRB4 -0.0001 ->
+                # +1.00) and E and F had only 2 shared alleles, so their published
+                # rho was noise. n_shared is reported instead: it is what makes the
+                # rest of the row readable, and it cannot mislead.
+                'n_shared': sum(1 for a in alleles if cc.get(a, 0) and cr.get(a, 0)),
                 'max_abs_diff': round(abs(fc[worst] - fr[worst]), 4),
                 'allele_at_max': alleles[worst],
                 'n_ref_only': sum(1 for a in alleles if cc.get(a, 0) == 0),
@@ -421,7 +431,7 @@ def main():
         else:
             summary.append({'gene': g, 'n_alleles': len(alleles),
                             'n_chr_ctrl': nc, 'n_chr_ref': nr,
-                            'pearson_r': '', 'spearman_rho': '', 'max_abs_diff': '',
+                            'pearson_r': '', 'n_shared': '', 'max_abs_diff': '',
                             'allele_at_max': '', 'n_ref_only': '', 'n_obs_only': ''})
 
     # ── per sample, so the confound has something to be plotted against ──────
@@ -461,7 +471,7 @@ def main():
             'in_ref_only', 'in_obs_only']
     pd.DataFrame(rows, columns=cols).to_csv(args.out, sep='\t', index=False)
     scols = ['gene', 'n_alleles', 'n_chr_ctrl', 'n_chr_ref', 'pearson_r',
-             'spearman_rho', 'max_abs_diff', 'allele_at_max', 'n_ref_only',
+             'n_shared', 'max_abs_diff', 'allele_at_max', 'n_ref_only',
              'n_obs_only']
     pd.DataFrame(summary, columns=scols).to_csv(args.out_summary, sep='\t', index=False)
 
@@ -481,7 +491,7 @@ def main():
                   f"  — {why}")
         else:
             print(f"      {s['gene']:6s} n_chr {s['n_chr_ctrl']:>6} vs {s['n_chr_ref']:>4}"
-                  f"  r={s['pearson_r']:.3f}  rho={s['spearman_rho']:.3f}"
+                  f"  r={s['pearson_r']:.3f}  shared={s['n_shared']:d}"
                   f"  max|diff|={s['max_abs_diff']:.3f} at {s['allele_at_max']}")
     # ---- the crosswalk the association reads -------------------------------
     # Covers EVERY gene this cohort carries calls for, not just the reference loci:

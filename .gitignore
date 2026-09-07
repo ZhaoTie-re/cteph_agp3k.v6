@@ -38,3 +38,8 @@
 # roster. Only the rendered report is allowed, and only from its own directory.
 !**/report/*.qmd
 !**/report/_output/*.html
+# The project file and the stylesheet are what make the .qmd buildable. Without
+# them a clone has the source of the report and no way to render it -- which is
+# the same failure mode as .gitignore not tracking itself.
+!**/report/_quarto.yml
+!**/report/*.css

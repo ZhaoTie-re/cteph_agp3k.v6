@@ -212,10 +212,16 @@ names them; see [METHODS.md](METHODS.md) §11.
 | `in_ref_only`, `in_obs_only` | present in one source and absent from the other |
 
 `allele_frequency_summary.tsv`, one row per locus: `n_alleles`, both denominators,
-`pearson_r` and `spearman_rho` between the frequency vectors, `max_abs_diff` and the allele
-where it occurs, and the two directional counts. **`r` is dominated by the common alleles
-and `ρ` weights every allele equally**, so the two disagreeing localises the disagreement
-to the tail.
+`pearson_r` between the frequency vectors, `n_shared`, `max_abs_diff` and the allele
+where it occurs, and the two directional counts.
+
+**`n_shared` is the column that makes `r` readable**, and it is why there is no rank
+correlation beside it. Most of each locus's vector is an allele one source carries and the
+other does not, so a rank statistic over the whole vector is dominated by ties at zero and
+its sign is set by the size of the two disjoint sets rather than by agreement. `n_shared`
+says how many alleles the two sources actually have in common: 114 at HLA-A, but **2 at
+HLA-E and 2 at HLA-F**, whose `r` of 0.999 and 1.000 is therefore computed on two points
+and a mass of zeros. Read `r` and `n_shared` together or neither.
 
 This compares **population frequencies**, not genotypes. It cannot say a given sample was
 typed correctly. Eleven of the thirteen loci agree at *r* = 0.986–1.000; DRB4 needs the null

@@ -1,0 +1,23 @@
+/* Small, deliberate overrides. Everything else is the cosmo theme. */
+
+/* Figures are 7.20 in wide at 600 dpi. Let them use the column and centre them. */
+.quarto-figure img, p > img { max-width: 100%; height: auto; display: block;
+                              margin: 0.6rem auto 0.2rem auto; }
+
+/* A figure and the paragraph that reads it belong together. */
+.figure-note { font-size: 0.92rem; color: #454A50; border-left: 3px solid #D4D8DC;
+               padding: 0.15rem 0 0.15rem 0.85rem; margin: 0.4rem 0 1.1rem 0; }
+
+/* The panel-by-panel walkthrough: a definition list, not a bullet list. */
+dl.panels dt { font-weight: 600; margin-top: 0.7rem; }
+dl.panels dd { margin-left: 1.2rem; margin-bottom: 0.35rem; }
+
+/* Glossary: keep the term column narrow so definitions line up. */
+table.glossary td:first-child { white-space: nowrap; font-weight: 600; }
+
+/* Deterministic Chinese typography rather than whatever the OS picks first. */
+:lang(zh) body, html[lang="zh"] body {
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Source Han Sans SC",
+               -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.75;
+}

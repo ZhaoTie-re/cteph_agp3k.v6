@@ -1,0 +1,28 @@
+# Shared format for both language editions of the report.
+#
+# The two .qmd files carry only their own title, subtitle, language and prose.
+# Everything about HOW the page is built lives here, once, so the English and
+# Chinese editions cannot drift apart in appearance -- and so that a change to
+# the theme is one edit rather than two.
+project:
+  type: default
+  output-dir: _output
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    toc-expand: 2
+    number-sections: true
+    embed-resources: true
+    fig-align: center
+    df-print: kable
+    code-fold: true
+    css: report.css
+
+execute:
+  echo: false
+  warning: false
+  message: false

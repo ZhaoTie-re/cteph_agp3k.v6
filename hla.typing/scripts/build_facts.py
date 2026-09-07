@@ -22,6 +22,7 @@
 # ---------------------------------------------------------------------------
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -139,13 +140,37 @@ def main():
     for _, r in gq.iterrows():
         put(f"call_rate_{r['gene']}", f"{float(r['call_rate']):.4f}", float(r['call_rate']))
 
+    # ---- what actually ran, read back from the run record --------------------
+    rm = R / '_run_info/run_manifest.json'
+    if rm.is_file():
+        man_json = json.loads(rm.read_text())
+        if 'hlahd_version' in man_json:
+            put('hlahd_version', str(man_json['hlahd_version']))
+        # The IMGT release is IN the pinned dictionary path and nowhere else, so
+        # it is parsed from there rather than typed beside it.
+        m_ = re.search(r'IMGT-HLA-([0-9.]+?)_', str(man_json.get('hlahd_dictionary', '')))
+        if m_:
+            put('imgt_release', m_.group(1))
+
     sq = pd.read_csv(R / '05.qc/typing_qc_sample.tsv', sep='\t', dtype=SAMPLE_ID)
     put('n_call_rate_values', num(sq['call_rate'].nunique()), int(sq['call_rate'].nunique()))
+    top2 = float(sq['call_rate'].value_counts(normalize=True).head(2).sum())
+    put('share_top_two_call_rates', pct(top2, 0), top2)
     put('max_field_depth_seen', num(4 if sq['field4'].sum() else 3),
         int(4 if sq['field4'].sum() else 3))
     put('n_field4_calls', num(sq['field4'].sum()), int(sq['field4'].sum()))
 
     pq = pd.read_csv(R / '05.qc/typing_qc_platform.tsv', sep='\t')
+    # The 2-field share per platform, which the report quotes as a range. Derived
+    # the same way plot_typing_qc.py derives it, from the per-sample counts.
+    fcols = [c for c in ('field2', 'field3', 'field4') if c in sq.columns]
+    if fcols:
+        cmp_ = sq.groupby('platform')[fcols].sum()
+        f2 = cmp_['field2'] / cmp_[fcols].sum(axis=1)
+        put('field2_share_min', pct(f2.min(), 1), float(f2.min()))
+        put('field2_share_max', pct(f2.max(), 1), float(f2.max()))
+        put('platform_best_resolution', str(f2.idxmin()))
+        put('platform_worst_resolution', str(f2.idxmax()))
     for _, r in pq.iterrows():
         k = str(r['platform']).replace(' ', '_')
         put(f'n_{k}', num(r['n_samples']), int(r['n_samples']))
@@ -190,6 +215,13 @@ def main():
             int(s['n_chr_ref'].max() // 2))
         for _, r in s.iterrows():
             put(f"r_{r['gene']}_{tag}", f"{float(r['pearson_r']):.4f}", float(r['pearson_r']))
+            if 'n_shared' in s.columns:
+                put(f"n_shared_{r['gene']}_{tag}", num(r['n_shared']), int(r['n_shared']))
+        if 'n_shared' in s.columns:
+            put(f'n_shared_min_{tag}', num(s['n_shared'].min()), int(s['n_shared'].min()))
+            put(f'n_shared_max_{tag}', num(s['n_shared'].max()), int(s['n_shared'].max()))
+            put(f'locus_fewest_shared_{tag}',
+                str(s.loc[s['n_shared'].idxmin(), 'gene']))
 
     # ---- the confound ------------------------------------------------------
     cf = R / '05.qc/typing_confound.tsv'

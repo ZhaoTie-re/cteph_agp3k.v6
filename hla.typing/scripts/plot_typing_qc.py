@@ -19,8 +19,12 @@
 #           names were printed twice in two different orders and the reader had to
 #           re-find each gene to compare. One order, one set of labels.
 #
-#           NO NUMBER IS WRITTEN INTO THIS FILE. Every value in the caption and the
-#           sidecar is an f-string field read from the tables it describes.
+#           NO CAPTION IS RENDERED INTO THIS PNG. Every word of explanation lives
+#           in report/hla_typing_report.qmd, written for a reader who has never
+#           heard of HLA. The caption block was taking 34 % of this canvas.
+#
+#           NO NUMBER IS WRITTEN INTO THIS FILE either -- write_doc() still emits
+#           the sidecar, and every value in it is read from the tables.
 #
 #           A LOW `call_rate` AT DRB3/4/5 IS NOT A FAILURE. Their shortfall is
 #           entirely `not_typed` — the gene is absent from that haplotype — and
@@ -34,6 +38,7 @@
 # ---------------------------------------------------------------------------
 import argparse
 import sys
+import textwrap
 from pathlib import Path
 
 import matplotlib
@@ -49,11 +54,15 @@ import figure_doc                        # noqa: E402
 # 7.6, not 5.4: the two bar panels carry one row per gene, and 19 rows do not
 # fit a 2.2 in axis — the labels overlapped into an unreadable band. The row
 # count is data-dependent, so the height is set from it below.
-PLOT_H_BASE = 3.3     # the two composition panels (5 platform rows each) plus the
+PLOT_H_BASE = 2.75    # the two composition panels (5 platform rows each) plus the
                       # space their below-axis legends and x labels need
-ROW_IN = 0.155        # inches per gene row. Was 0.24, sized for a panel that
-                      # printed the gene names twice; now (c) carries the labels
-                      # and (d) is aligned to it, so a row needs one 7 pt line.
+ROW_IN = 0.200        # inches per gene row = 14.4 pt of pitch. It was 0.155, and
+                      # the tick font was left at the 12 pt 'slide' default, so 19
+                      # labels in an 8.8 pt pitch fused into three solid runs of
+                      # ink. A row's font is now set explicitly below; the two
+                      # numbers have to be chosen together or this recurs.
+FS_ROW = 7.5          # gene row labels
+FS_SMALL = 7.0        # legends, in-bar values, platform names
 
 
 def parse_args():
@@ -65,10 +74,83 @@ def parse_args():
     return p.parse_args()
 
 
+def panel_head(ax, letter, title, *, pad=6.0, size=None):
+    """Bold panel letter and a short title, as ONE left-aligned artist.
+
+    plot_style.panel_tag() writes the letter at loc='left' and the title at
+    loc='center', and its own docstring says not to pass a title below about
+    2.2 in wide because the two collide. Most panels in this component are
+    narrower than that. Written as one left-aligned string they cannot collide,
+    and it reads as a label rather than as two competing ones.
+
+    The title says WHAT the panel shows. It never says what to conclude -- that
+    is the document's job, which is why no caption is rendered into these PNGs.
+    """
+    ax.set_title(rf'$\bf{{{letter}}}$  {title}', loc='left', pad=pad,
+                 fontsize=size or (plt.rcParams['axes.titlesize'] - 2))
+
+
+TITLE_H = 0.34        # inches reserved for the figure title
+
+
+def lay_out(fig, axes, *, plot_h, top_pad, wspace, hspace, right=0.975, title=None):
+    """Margins, canvas and figure title, with no caption block.
+
+    caption_block() is the only thing in the shared toolkit that sets the canvas
+    height and the measured left margin, so dropping it means doing that here.
+    A transcription of what it does, minus the caption text -- but WITH a title:
+    a figure lifted out of the report still has to say what it is, and each panel
+    says what it shows. What none of them say is what to conclude; that is the
+    document's job, and it is why the caption block is gone.
+    """
+    fig.set_layout_engine('none')
+    xlab_in = (plt.rcParams['axes.labelsize']
+               + plt.rcParams['xtick.labelsize'] + 8) * 1.5 / 72.0
+    head = TITLE_H if title else 0.0
+    fh = plot_h + head                       # the panels keep the size they were given
+    fig.set_size_inches(S.COL_DOUBLE, fh, forward=True)
+    kw = dict(right=right, top=1.0 - (top_pad + head) / fh,
+              bottom=xlab_in / fh, wspace=wspace, hspace=hspace)
+    left = S.fit_left_margin(fig, axes)
+    fig.subplots_adjust(left=left, **kw)
+    need = S.fit_left_margin(fig, axes)
+    if need > left + 0.002:
+        fig.subplots_adjust(left=need, **kw)
+    if title:
+        # WRAPPED. An unwrapped suptitle silently runs off both edges of the
+        # canvas -- matplotlib never clips it and never warns. The character
+        # estimate is deliberately conservative; a title that wraps to two lines
+        # is fine, a title bleeding into the margin is not.
+        fs = plt.rcParams['axes.titlesize'] + 1.5
+        per_line = max(20, int(S.COL_DOUBLE * 72.0 * 0.88 / (fs * 0.56)))
+        wrapped = textwrap.fill(title, per_line)
+        n_lines = wrapped.count('\n') + 1
+        if n_lines > 1:                       # give the extra line its own room
+            fh += (n_lines - 1) * fs * 1.25 / 72.0
+            fig.set_size_inches(S.COL_DOUBLE, fh, forward=True)
+            fig.subplots_adjust(top=1.0 - (top_pad + head
+                                           + (n_lines - 1) * fs * 1.25 / 72.0) / fh,
+                                bottom=xlab_in / fh)
+        fig.suptitle(wrapped, y=1.0 - 0.09 / fh, va='top', ha='center',
+                     fontsize=fs, fontweight='bold', color=S.INK)
+
+
 def order_platforms(df):
     """Platforms by sample count, largest first — the controls dominate and
     should anchor the eye."""
     return df.groupby('platform').size().sort_values(ascending=False).index.tolist()
+
+
+def short_platform(name):
+    """Drop the vendor prefix, HERE ONLY, and only from the row labels.
+
+    `DNBSeq-G400RS 30x` at 12 pt is 1.86 in wide, and fit_left_margin sizes ONE
+    left margin for the whole figure from the widest label in it -- which left a
+    1.4 x 3.3 in blank column beside the gene panels below. The full names are in
+    the sidecar and in every table.
+    """
+    t = str(name)
+    return t.split('-', 1)[1] if '-' in t else t
 
 
 def main():
@@ -94,6 +176,7 @@ def main():
     # split is what actually differs and it is a proportion, so it is stacked.
     fld = [c for c in ('field2', 'field3', 'field4') if c in sq.columns]
     lab_f = {'field2': '2-field', 'field3': '3-field', 'field4': '4-field'}
+    short = [short_platform(q) for q in plats]
     comp = sq.groupby('platform')[fld].sum().reindex(plats)
     comp = comp.div(comp.sum(axis=1), axis=0)
     # A legend swatch for a series that is identically zero is a lie of omission.
@@ -107,19 +190,24 @@ def main():
         left += comp[c].to_numpy()
     # The discriminating number is the 2-field share; print it so the platform gap
     # is read off the figure rather than estimated from a 4-point-wide segment.
+    # WHITE, and inside the next segment. Drawn in ink at v + 0.015 it landed on
+    # the mid-blue 3-field bar with 58-70 % of each glyph box over the fill, which
+    # is unreadable on a 100 %-stacked bar -- there is no white space to land in.
     for y, v in enumerate(comp[fld[0]].to_numpy()):
-        ax_call.text(v + 0.015, y, f'{v:.1%}', va='center', ha='left',
-                     fontsize=plt.rcParams['legend.fontsize'] - 2, color=S.INK)
+        ax_call.text(v + 0.012, y, f'{v:.1%}', va='center', ha='left',
+                     fontsize=FS_SMALL, color='white', fontweight='bold')
     ax_call.set_yticks(range(len(plats)))
-    ax_call.set_yticklabels(plats)
+    ax_call.set_yticklabels(short, fontsize=FS_ROW + 1.5)
     ax_call.set_ylim(len(plats) - 0.5, -0.5)
     ax_call.set_xlim(0, 1)
+    ax_call.set_xticks([0, 0.25, 0.5, 0.75, 1.0])
+    ax_call.tick_params(axis='x', labelsize=FS_ROW + 1.5)
     ax_call.xaxis.set_major_formatter(lambda v, _: f'{v:.0%}')
     ax_call.set_xlabel('calls')
-    S.panel_tag(ax_call, 'a', title='field resolution')
-    ax_call.legend(loc='upper center', bbox_to_anchor=(0.5, -0.30), ncol=3, frameon=False,
-                   handlelength=1.1, columnspacing=1.1,
-                   fontsize=plt.rcParams['legend.fontsize'] - 2)
+    panel_head(ax_call, 'a', 'field resolution', pad=18.0)
+    ax_call.legend(loc='lower center', bbox_to_anchor=(0.5, 1.005), ncol=len(fld),
+                   frameon=False, handlelength=1.0, columnspacing=0.9,
+                   fontsize=FS_SMALL)
     S.despine(ax_call)
 
     # (b) AMBIGUITY, which varies and was never plotted. 2,957 records across the
@@ -131,21 +219,27 @@ def main():
     left = np.zeros(len(plats))
     ramp = [S.NEUTRAL, S.NEUTRAL_D, S.DATA, S.DATA_DARK, S.ACCENT]
     for i, c in enumerate(['0', '1', '2', '3', '4+']):
-        if c not in amb.columns:
+        # A swatch for a category that is zero on EVERY platform is the same lie
+        # of omission panel (a) guards against. A category that is zero on some
+        # platforms and not others stays: that is data, not absence.
+        if c not in amb.columns or not amb[c].sum():
             continue
         ax_depth.barh(range(len(plats)), amb[c], left=left, height=0.66,
-                      color=ramp[i], label=f'{c} genes' if c == '0' else c)
+                      color=ramp[i], label=c)
         left += amb[c].to_numpy()
     ax_depth.set_yticks(range(len(plats)))
     ax_depth.set_yticklabels([])
+    ax_depth.tick_params(axis='y', length=0)
     ax_depth.set_ylim(len(plats) - 0.5, -0.5)
     ax_depth.set_xlim(0, 1)
+    ax_depth.set_xticks([0, 0.25, 0.5, 0.75, 1.0])
+    ax_depth.tick_params(axis='x', labelsize=FS_ROW + 1.5)
     ax_depth.xaxis.set_major_formatter(lambda v, _: f'{v:.0%}')
     ax_depth.set_xlabel('samples')
-    S.panel_tag(ax_depth, 'b', title='ambiguity')
-    ax_depth.legend(loc='upper center', bbox_to_anchor=(0.5, -0.30), ncol=5, frameon=False,
-                    handlelength=1.1, columnspacing=1.0,
-                    fontsize=plt.rcParams['legend.fontsize'] - 2)
+    panel_head(ax_depth, 'b', 'ambiguity', pad=18.0)
+    ax_depth.legend(loc='lower center', bbox_to_anchor=(0.5, 1.005), ncol=5,
+                    frameon=False, handlelength=0.9, columnspacing=0.8,
+                    fontsize=FS_SMALL)
     S.despine(ax_depth)
 
     # (c) THE FOUR OUTCOMES per gene, not a call rate. `called` and `hemizygous`
@@ -153,7 +247,12 @@ def main():
     # 73 % of samples and HLA-A in 14 %, because DMA is nearly monomorphic here.
     # `not_typed` is the gene being absent from the haplotype, which is what makes
     # DRB3/4/5 look broken on a call-rate axis when nothing failed.
-    states = [c for c in ('called', 'hemizygous', 'not_typed', 'failed') if c in gq.columns]
+    # `failed` is dropped when it is zero for every gene -- the caption says there
+    # were none, and a red swatch with no red pixels in the panel invites a reader
+    # to look for something that is not there. Panel (a) has applied this guard
+    # since it was written; this panel did not.
+    states = [c for c in ('called', 'hemizygous', 'not_typed', 'failed')
+              if c in gq.columns and gq[c].sum()]
     gq = gq.copy()
     tot = gq[states].sum(axis=1)
     gq = gq.assign(**{c: gq[c] / tot for c in states})
@@ -170,13 +269,16 @@ def main():
                      color=cols_s[c], label=c)
         left += gq[c].to_numpy()
     ax_gene.set_yticks(range(len(gq)))
-    ax_gene.set_yticklabels(gq['gene'], fontstyle='italic')
+    ax_gene.set_yticklabels(gq['gene'], fontstyle='italic', fontsize=FS_ROW)
     ax_gene.set_xlim(0, 1)
+    ax_gene.set_xticks([0, 0.25, 0.5, 0.75, 1.0])
+    ax_gene.tick_params(axis='x', labelsize=FS_ROW + 1.5)
     ax_gene.xaxis.set_major_formatter(lambda v, _: f'{v:.0%}')
-    S.panel_tag(ax_gene, 'c', title='gene outcome')
-    ax_gene.legend(loc='upper center', bbox_to_anchor=(0.5, -0.055), ncol=4, frameon=False,
-                   handlelength=1.1, columnspacing=1.1,
-                   fontsize=plt.rcParams['legend.fontsize'] - 2)
+    ax_gene.set_xlabel('samples')
+    panel_head(ax_gene, 'c', 'outcome per gene', pad=18.0)
+    ax_gene.legend(loc='lower center', bbox_to_anchor=(0.5, 1.005), ncol=len(states),
+                   frameon=False, handlelength=0.9, columnspacing=0.8,
+                   fontsize=FS_SMALL)
     S.despine(ax_gene)
 
     # (d) polymorphic residue positions per gene, ON (c)'S ROW ORDER.
@@ -189,8 +291,9 @@ def main():
     ax_amb.set_yticks(range(len(gq)))
     ax_amb.set_yticklabels([])
     ax_amb.set_ylim(*ax_gene.get_ylim())
-    ax_amb.set_xlabel('polymorphic positions')
-    S.panel_tag(ax_amb, 'd', title='testable sites')
+    ax_amb.tick_params(axis='x', labelsize=FS_ROW + 1.5)
+    ax_amb.set_xlabel('positions')
+    panel_head(ax_amb, 'd', 'testable positions', pad=18.0)
     S.despine(ax_amb)
 
     n_fail = int(sq['failed'].sum()) if 'failed' in sq.columns else 0
@@ -210,23 +313,10 @@ def main():
     n_amb_records = int(sq['ambiguous'].sum()) if 'ambiguous' in sq.columns else 0
     hz = gq.set_index('gene')['hemizygous']
     hz_top = hz.idxmax()
-    S.caption_block(
-        fig,
-        title=(f'{len(sq):,} samples, {n_fail} (sample, gene) failures; completeness read '
-               f'across the {len(plats)} platforms, not across case and control.'),
-        panels=[
-            'Calls by IMGT field depth; the printed number is the 2-field share.',
-            'Samples by how many genes HLA-HD could not choose a genotype for.',
-            'The four outcomes per gene; a low bar at DRB3/4/5 is `not_typed`, never `failed`.',
-            'Positions polymorphic in this cohort, on panel c\'s gene order.',
-        ],
-        notes=(f'HLA-HD against a pinned IPD-IMGT/HLA 3.64.0 dictionary; IMGT-numbered '
-               f'residues. Completeness is saturated here — call rate takes {n_cr} values, '
-               f'{top2:.0%} of samples on two of them — hence compositions, not means. Whether '
-               f'a call is RIGHT is typing_confound.png. Read by platform: it is fully '
-               f'confounded with case/control.'),
-        plot_h=plot_h, top_pad=0.30, wspace=0.30, hspace=0.52,
-        left='auto', right=0.955, margin_axes=list(axes.ravel()))
+    # top_pad has to clear the legends now parked in the title slot.
+    lay_out(fig, list(axes.ravel()), plot_h=plot_h, top_pad=0.60,
+            wspace=0.26, hspace=0.30, right=0.965,
+            title='Typing completeness, by sequencing platform and by gene')
     fig.savefig(args.out_png)
     plt.close(fig)
 
