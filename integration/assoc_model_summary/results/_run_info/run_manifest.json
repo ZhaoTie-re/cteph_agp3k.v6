@@ -1,0 +1,15 @@
+{
+  "component": "assoc_model_summary",
+  "session": "f11a72f9-7eb4-4bfd-91b2-686aaa724bfc",
+  "saige_results": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_saige/results",
+  "plink2_results": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_plink2/results",
+  "cohorts": ["narrow_mainland","intermediate_mainland","full_mainland"],
+  "cohort_labels": ["Narrow mainland","Intermediate mainland","Full mainland"],
+  "cohort_colors": ["0571B0","008837","B2182B"],
+  "models": {"fixed": "assoc_plink2:additive", "grm_pc": "assoc_saige:main", "grm_only": "assoc_saige:detect"},
+  "fixed_covariates": "SEX,PC1_AVG-PC10_AVG",
+  "saige_covariates": {"main":"SEX,PC1_AVG,PC2_AVG,PC3_AVG,PC4_AVG,PC5_AVG,PC6_AVG,PC7_AVG,PC8_AVG,PC9_AVG,PC10_AVG","detect":"SEX"},
+  "saige_p_value_source": "no_spa",
+  "n_pcs": 10,
+  "python": "/home/b/b37974/anaconda3/envs/cteph_geno_pro/bin/python3"
+}

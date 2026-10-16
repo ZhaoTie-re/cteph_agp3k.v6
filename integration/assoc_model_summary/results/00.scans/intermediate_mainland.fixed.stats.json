@@ -1,0 +1,62 @@
+{
+  "cohort": "intermediate_mainland",
+  "model": "fixed",
+  "upstream_model": "additive",
+  "n_all": 5113982,
+  "n_excluded": 80,
+  "n": 5113902,
+  "lambda_gc": 1.1210756541290992,
+  "lambda_by_maf": [
+    {
+      "bin": "<0.01",
+      "lo": 0.0,
+      "hi": 0.01,
+      "n": 27400,
+      "lambda_gc": 2.8439657828414764
+    },
+    {
+      "bin": "0.01\u20130.02",
+      "lo": 0.01,
+      "hi": 0.02,
+      "n": 619378,
+      "lambda_gc": 1.0327300050043124
+    },
+    {
+      "bin": "0.02\u20130.05",
+      "lo": 0.02,
+      "hi": 0.05,
+      "n": 802169,
+      "lambda_gc": 1.1028170730755558
+    },
+    {
+      "bin": "0.05\u20130.10",
+      "lo": 0.05,
+      "hi": 0.1,
+      "n": 710656,
+      "lambda_gc": 1.0940088350747312
+    },
+    {
+      "bin": "0.10\u20130.20",
+      "lo": 0.1,
+      "hi": 0.2,
+      "n": 953279,
+      "lambda_gc": 1.1389704367834714
+    },
+    {
+      "bin": "0.20\u20130.50",
+      "lo": 0.2,
+      "hi": 0.5,
+      "n": 2001020,
+      "lambda_gc": 1.1393764811418243
+    }
+  ],
+  "n_p_lt_suggestive": 216,
+  "n_p_lt_genomewide": 4,
+  "expected_p_lt_suggestive": 51.13902,
+  "expected_p_lt_genomewide": 0.2556951,
+  "min_p": 1.15354e-08,
+  "n_case": 429,
+  "n_ctrl": 2051,
+  "n_eff": 1419.2,
+  "upstream_lambda_gc": 1.12108
+}
