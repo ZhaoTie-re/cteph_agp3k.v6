@@ -42,9 +42,9 @@ The figure shows the experiment that was designed, before any association was ru
 
 | figure | cohort | variants in the call set | chromosomes | annotated | unannotated | MODIFIER-only | HIGH | MODERATE | LOW | MODIFIER | eligible (HIGH+MODERATE+LOW) | eligible percent | distinct consequence terms | multi-gene variants in the map | MinNumVar | legend rows in (a) | LOW+MODERATE+HIGH: sets produced | LOW+MODERATE+HIGH: sets tested | LOW+MODERATE+HIGH: variants tested | LOW+MODERATE+HIGH: Bonferroni | LOW+MODERATE+HIGH: median variants per set | MODERATE+HIGH: sets produced | MODERATE+HIGH: sets tested | MODERATE+HIGH: variants tested | MODERATE+HIGH: Bonferroni | MODERATE+HIGH: median variants per set |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| variant_sets.full_mainland | full_mainland | 8,832,209 | 22 | 8,832,209 | 0 | 8,657,032 | 4,283 | 74,808 | 99,916 | 8,653,202 | 179,007 | 2.027 | 48 | 2,067 | 2 | 6 | 19,398 | 15,691 | 171,641 | 3.18654005481e-06 | 6 | 15,815 | 12,378 | 75,787 | 4.03942478591e-06 | 4 |
-| variant_sets.intermediate_mainland | intermediate_mainland | 7,620,757 | 22 | 7,620,757 | 0 | 7,470,269 | 3,604 | 63,894 | 86,335 | 7,466,924 | 153,833 | 2.019 | 48 | 1,762 | 2 | 6 | 18,857 | 15,009 | 146,820 | 3.33133453261e-06 | 6 | 15,207 | 11,436 | 63,867 | 4.37215809724e-06 | 4 |
-| variant_sets.narrow_mainland | narrow_mainland | 6,857,863 | 22 | 6,857,863 | 0 | 6,722,024 | 3,260 | 57,512 | 78,080 | 6,719,011 | 138,852 | 2.025 | 48 | 1,612 | 2 | 6 | 18,468 | 14,557 | 132,096 | 3.43477364842e-06 | 5 | 14,801 | 10,832 | 56,931 | 4.61595273264e-06 | 4 |
+| variant_sets.full_mainland | full_mainland | 9,161,666 | 22 | 9,161,666 | 0 | 8,980,576 | 4,413 | 77,396 | 103,231 | 8,976,626 | 185,040 | 2.02 | 48 | 2,134 | 2 | 6 | 19,539 | 15,829 | 177,552 | 3.15875923937e-06 | 6 | 15,935 | 12,554 | 78,558 | 3.9827943285e-06 | 4 |
+| variant_sets.intermediate_mainland | intermediate_mainland | 8,050,528 | 22 | 8,050,528 | 0 | 7,892,642 | 3,755 | 67,044 | 90,602 | 7,889,127 | 161,401 | 2.005 | 48 | 1,847 | 2 | 6 | 19,061 | 15,219 | 154,223 | 3.28536697549e-06 | 6 | 15,397 | 11,720 | 67,257 | 4.2662116041e-06 | 4 |
+| variant_sets.narrow_mainland | narrow_mainland | 7,431,380 | 22 | 7,431,380 | 0 | 7,286,155 | 3,432 | 61,467 | 83,569 | 7,282,912 | 148,468 | 1.998 | 48 | 1,702 | 2 | 6 | 18,734 | 14,848 | 141,510 | 3.36745689655e-06 | 5 | 15,064 | 11,192 | 61,153 | 4.46747676912e-06 | 4 |
 
 ## How to read it
 

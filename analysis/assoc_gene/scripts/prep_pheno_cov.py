@@ -43,6 +43,10 @@ def parse_args():
     p.add_argument('--cohort', required=True,
                    help='cohort tag, written into pheno_coding.json so COLLECT_ALL can key '
                         'the sample counts without parsing a staged path')
+    p.add_argument('--depth', default=None,
+                   help='tuning.rv sample_metrics.txt.gz (SampleID, MeanDP); read only with --add-depth true')
+    p.add_argument('--add-depth', default='false', choices=['true', 'false'],
+                   help='add MEAN_DEPTH (MeanDP z-scored over these samples) as a covariate column')
     p.add_argument('--pheno-col', default='PHENO1')
     p.add_argument('--id-col', default='IID')
     p.add_argument('--out-rvt-pheno', default='pheno_rvt.tsv')
@@ -113,6 +117,17 @@ def main():
     if 'SEX' not in d.columns:
         raise SystemExit(f'ABORT: {args.covar} has no SEX column; the model uses it.')
 
+    # Optional depth covariate: the same MeanDP that tuning.rv's minAC model adjusts for.
+    if args.add_depth == 'true':
+        if not args.depth:
+            raise SystemExit('ABORT: --add-depth true needs --depth')
+        dp = pd.read_csv(args.depth, sep='\t', dtype={'SampleID': str}).set_index('SampleID')['MeanDP']
+        d['MEAN_DEPTH'] = d['IID'].map(dp)
+        n_nodp = int(d['MEAN_DEPTH'].isna().sum())
+        if n_nodp:
+            raise SystemExit(f'ABORT: {n_nodp} genotyped sample(s) have no MeanDP in {args.depth}.')
+        d['MEAN_DEPTH'] = (d['MEAN_DEPTH'] - d['MEAN_DEPTH'].mean()) / d['MEAN_DEPTH'].std()
+
     front = ['FID', 'IID', args.pheno_col]
     rest = [c for c in d.columns if c not in front]
 
@@ -150,6 +165,7 @@ def main():
             'source_pheno': args.pheno,
             'source_covar': args.covar,
             'source_fam': args.fam,
+            'depth_covariate': args.depth if args.add_depth == 'true' else None,
         }, fh, indent=2)
 
     print(f'[prep_pheno_cov] {len(d):,} sample(s): {n_case:,} case / {n_ctrl:,} control '

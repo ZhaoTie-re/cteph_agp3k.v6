@@ -3,7 +3,7 @@ nextflow.enable.dsl = 2
 // ═══════════════════════════════════════════════════════════════════════════
 // assoc_gene — gene-based rare-variant association on one canonical variant
 // map: rvtest CMC and SKAT-O under a fixed-effects logistic model, three nested
-// cohorts, two nested impact strata, and a tiered robustness deliverable.
+// cohorts, two nested impact strata, and a cross-cohort consistency tier per gene.
 //
 // Three design points, in the order they matter:
 //
@@ -20,12 +20,13 @@ nextflow.enable.dsl = 2
 //      enter at p = 1). Neither rule is corrected across methods or cohorts:
 //      they test the same genes on the same samples, not independent
 //      hypotheses. BH q < 0.05 is "called"; Bonferroni is the stricter tier.
-//   3. ROBUSTNESS IS TIERED, NOT BINARY, AND IT IS NOT REPLICATION. The three
+//   3. CONSISTENCY IS TIERED, NOT BINARY, AND IT IS NOT REPLICATION. The three
 //      cohorts are strictly nested (full_mainland has 20 more cases than
 //      narrow_mainland; the difference is controls), and the two strata are
 //      nested. A gene called in all three cohorts has survived adding
-//      controls. ROBUSTNESS counts that on the cohort axis, reports the tier,
-//      and every figure sidecar says what the count means.
+//      controls. ROBUSTNESS counts that on the cohort axis as a cross-cohort
+//      consistency tier, and every figure sidecar says what the count means. The tier is not robustness to the platform confound: the cohorts
+//      share their cases and the case/control platform split.
 //
 // Per cohort:
 //
@@ -109,7 +110,13 @@ params.Strata = [
 params.NPcs      = 10
 params.PcLabel   = 'bbj_mainland'
 params.PhenoName = 'PHENO1'
-params.CovarName = 'sex,' + (1..params.NPcs).collect { "pc${it}_avg" }.join(',')
+// Optional: the sample mean depth (tuning.rv's MeanDP, z-scored within the cohort) as one more covariate, the
+// depth term of tuning.rv's minAC model. Off by default; --DepthCovar true adds `mean_depth` to the model (pair it
+// with its own --out_dir so the default results stay in place).
+params.DepthCovar = false
+params.DepthTpl   = "${params.TuningDir}/@@COHORT@@/00.precheck/metrics/sample_metrics.txt.gz"
+params.CovarName = 'sex,' + (1..params.NPcs).collect { "pc${it}_avg" }.join(',') +
+                   (params.DepthCovar.toString() == 'true' ? ',mean_depth' : '')
 
 // Missing genotypes are imputed to the mean (2 x AF). It is rvtest's own
 // default, passed explicitly so the log gate in RVTEST can assert it took
@@ -233,7 +240,7 @@ process PREP_PHENO_COV {
     publishDir { "${params.out_dir}/${cohort}/00.prep" }, mode: 'copy'
 
     input:
-    tuple val(cohort), path(pheno), path(covar), path(fam)
+    tuple val(cohort), path(pheno), path(covar), path(fam), path(depth)
     path script
 
     output:
@@ -246,6 +253,7 @@ process PREP_PHENO_COV {
     source activate ${params.conda_env}
     python3 ${script} \
         --pheno ${pheno} --covar ${covar} --fam ${fam} \
+        --depth ${depth} --add-depth ${params.DepthCovar} \
         --cohort ${cohort} --pheno-col ${params.PhenoName} \
         --out-rvt-pheno pheno_rvt.tsv \
         --out-rvt-covar covar_rvt.tsv \
@@ -1186,7 +1194,8 @@ workflow {
     // ── STAGE 0 ────────────────────────────────────────────────────────────
     ch_pc_in = ch_callset.map { c, _bed, _bim, fam ->
         tuple(c, file(tpl(params.PhenoTpl, c), checkIfExists: true),
-                 file(tpl(params.CovarTpl, c), checkIfExists: true), fam)
+                 file(tpl(params.CovarTpl, c), checkIfExists: true), fam,
+                 file(tpl(params.DepthTpl, c), checkIfExists: true))
     }
     PREP_PHENO_COV(ch_pc_in, script_file('prep_pheno_cov.py'))
     ch_coding = PREP_PHENO_COV.out.pc.map { c, _rp, _rc, j -> tuple(c, j) }
@@ -1366,7 +1375,7 @@ workflow {
   "missing_genotypes": "${params.ImputeMethod} (rvtest's default, passed explicitly and asserted from the log). Immaterial for CMC, whose collapse casts genotypes to int; used by the SKAT-O kernel.",
   "significance": "Per (cohort, stratum): Bonferroni alpha / n_genes_mapped with the denominator fixed at MERGE_MAP before any p-value exists (genes below min_num_var are excluded from the count), and Benjamini-Hochberg over exactly that family with genes rvtest did not return entering at p = 1. BH q < alpha is 'called'; Bonferroni is reported as the stricter tier. Because both rules share alpha and n, every Bonferroni call is a BH call (asserted in SCAN). No correction across methods or cohorts: they test the same genes on the same samples.",
   "alpha": ${params.Alpha},
-  "robustness": "Tier 1 = called (BH) in every cohort and by both methods in at least one; Tier 2 = called in every cohort by at least one method; Tier 3 = called in at least two cohorts. Computed per (gene, stratum); Bonferroni never enters the rule. Descriptive, not a decision rule: no threshold, no p-value, no multiple-testing price.",
+  "consistency_tier": "Cross-cohort consistency tier (not replication; not robustness to the platform confound, which every cohort shares). Tier 1 = called (BH) in every cohort and by both methods in at least one; Tier 2 = called in every cohort by at least one method; Tier 3 = called in at least two cohorts. Computed per (gene, stratum); Bonferroni never enters the rule. Descriptive, not a decision rule: no threshold, no p-value, no multiple-testing price.",
   "report_cohort": "${params.ReportCohort}",
   "carrier_mac_maf": "Per gene: carriers = samples with >= 1 minor-allele copy at any mapped variant, counted per group from a direct decode of tested.bed and cross-checked against plink2 --freq counts per variant; cumulative MAC per group from plink2 --freq counts; cumulative MAF = MAC / (2 * N_group). The minor allele is decided once on the pooled counts and applied to both groups, as rvtest does.",
   "span_overlap_rule": "rvtest's setFile carries one 1-bp range per variant, and a tabix interval matches a record over [POS, POS+len(REF)-1], so a multi-base-REF record is counted twice when a later mapped variant sits inside its span. scan.py predicts the over-count exactly and classifies such genes explained_by_span_overlap; the map identity stays an equality.",
@@ -1378,7 +1387,7 @@ workflow {
 
 | layer | where |
 |---|---|
-| deliverable: robust genes | `_comparison/robust_genes/summary_table.md` (+ `summary_table.<cohort>.tsv`, `tiers.tsv`, `evidence.tsv`, `variant_detail.tsv`, `multi_carrier_detail.tsv`) |
+| deliverable: consistency tiers | `_comparison/robust_genes/summary_table.md` (+ `summary_table.<cohort>.tsv`, `tiers.tsv`, `evidence.tsv`, `variant_detail.tsv`, `multi_carrier_detail.tsv`) |
 | main figure | `figures/04.robust_genes/robust_genes.png` |
 | per-gene figures (Tier 1 and 2) | `figures/05.genes/<GENE>.png`, `index.tsv` |
 | other figure families | `figures/01.variant_sets/`, `figures/02.gene_scan/`, `figures/03.calibration/` — one `README.md` each |

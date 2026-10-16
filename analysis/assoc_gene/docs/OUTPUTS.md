@@ -145,14 +145,15 @@ return is `not_significant` (it entered the BH family at p = 1).
 n_cohorts_called cohorts_called n_cohorts_called_cmc n_cohorts_called_skato n_cohorts_both_methods
 called_bonferroni_anywhere n_cohorts_mapped cohorts_not_in_map min_p_cmc min_p_skato best_cohort
 n_multi_site_carriers_case_max n_multi_site_carriers_control_max note`. `note` carries
-`cmc_or_na:<cohorts>` and/or `multi_site_carriers`.
+`cmc_or_na:<cohorts>` and/or `multi_site_carriers`. `tier` is the cross-cohort consistency tier
+(METHODS §6).
 
 **`summary_table.<cohort>.tsv`** (one per cohort) and **`summary_table.md`** (`params.ReportCohort`) —
 Tier 1 and 2 genes, one row per gene, one block per stratum. Block columns, prefixed `<stratum>.`:
 
 | column | format | source |
 |---|---|---|
-| `tier` | `1` / `2` / `3` / `0` / `—` | the stratum's own tier; `0` = tested but called in < 2 cohorts; `—` = not in this cohort's map |
+| `tier` | `1` / `2` / `3` / `0` / `—` | the stratum's own consistency tier; `0` = tested but called in < 2 cohorts; `—` = not in this cohort's map |
 | `n_variants` | integer | `gene_index` `n_var_map` |
 | `carriers_case`, `carriers_control` | `10 (2.28%)` = carriers (% of the group) | `set_stats` |
 | `mac_case`, `mac_control` | integer | `set_stats` |
@@ -164,7 +165,7 @@ Tier 1 and 2 genes, one row per gene, one block per stratum. Block columns, pref
 | `multi_site_carriers` | `4 / 22` = case / control samples with ≥ 2 sites | `set_stats` |
 
 `—` fills a block when the gene is not in that cohort's map for the stratum. The `.md` carries the
-definitions, the tier legend and the nested-cohort caveat under the tables.
+definitions, the consistency-tier legend and the nested-cohort caveat under the tables.
 
 **`gene_windows.tsv`** — `gene_symbol set_name chrom start end`, one row per Tier 1/2 gene: the
 window whose Ensembl 86 gene models the per-gene figure draws (the variant span padded by

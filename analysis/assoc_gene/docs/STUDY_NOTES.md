@@ -99,12 +99,19 @@ rows per gene with the burden term first and no labels (`Model.h:961`); SkatO's 
 N_INFORMATIVE NumVar NumPolyVar Q rho Pvalue`; a constant covariate is refused; `--impute` accepts only
 `mean`, `hwe`, `drop` and an unrecognised value silently exits 0 (`Main.cpp:1002-1013` has no `else`).
 
-## 12. Tiers on the reference data (BH-called, MinNumVar = 2)
+## 12. Consistency tiers on the reference data (BH-called, MinNumVar = 2)
+
+Run of 2026-10-08 (tuning.rv knee 0.04, minAC 2).
 
 | stratum | Tier 1 | Tier 2 | Tier 3 |
 |---|---|---|---|
-| moderate_high | OSBP, STBD1 | JAK2, PIK3C2G, RPH3A | NKD2, P2RY2, PES1, SCFD1 |
-| low_moderate_high | — | PIK3C2G, RPH3A, STBD1 | CD248, PES1, SCAMP3, SCFD1 |
+| moderate_high | OSBP, STBD1 | JAK2, RPH3A | NKD2, P2RY2, PES1, PIK3C2G, SCFD1 |
+| low_moderate_high | — | RPH3A | CD248, PES1, PIK3C2G, SCAMP3 |
+
+The tier was renamed from "robustness tier" to "cross-cohort consistency tier" on 2026-10-09; file and
+process names (`robust_genes/`, `ROBUSTNESS`) are unchanged. No genomic-control adjustment is applied: the
+source of the residual inflation (METHODS §4.4) is not yet known, and a global correction would treat it
+as uniform bias.
 
 To be re-read from `results/_comparison/robust_genes/tiers.tsv` after each run.
 

@@ -2,15 +2,17 @@
 
 Three nested cohorts × two impact strata × two statistics (CMC burden, SKAT-O) under one fixed-effect
 logistic model (sex + 10 ancestry PCs), with the multiple-testing denominator fixed before any test, a
-robustness tier per gene across cohorts and statistics, a publication summary table and a main figure
-for the robust genes.
+cross-cohort consistency tier per gene across cohorts and statistics, a publication summary table and a
+main figure for the tiered genes.
 
 ## What it establishes — and what it does not
 
 * Per (cohort, stratum, method): which genes are **called** (BH q < 0.05 over the mapped genes) and which
   also clear Bonferroni (α / `n_genes_mapped`).
-* Per (gene, stratum): a **tier** — Tier 1 called in every cohort and by both statistics somewhere,
-  Tier 2 called in every cohort, Tier 3 called in ≥ 2 cohorts.
+* Per (gene, stratum): a **cross-cohort consistency tier** — Tier 1 called in every cohort and by both
+  statistics somewhere, Tier 2 called in every cohort, Tier 3 called in ≥ 2 cohorts. It describes how
+  consistently a call recurs; it is not replication and not robustness to the platform confound, which
+  all three cohorts share.
 * For Tier 1/2 genes: variants, carriers, cumulative MAC and MAF per group, SKAT-O ρ and p, CMC OR
   (95 % CI) and p, and the number of samples carrying more than one site of the gene.
 

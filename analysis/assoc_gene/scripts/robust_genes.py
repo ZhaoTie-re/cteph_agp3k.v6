@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # ---------------------------------------------------------------------------
 # Purpose : The deliverable. Every gene x cohort x stratum x method in ONE
-#           evidence table; a robustness TIER per (gene, stratum); and, for the
-#           tiered genes, the publication summary table -- one row per gene, one
-#           block per stratum, in the layout the manuscript uses.
+#           evidence table; a cross-cohort CONSISTENCY TIER per (gene, stratum);
+#           and, for the tiered genes, the publication summary table -- one row
+#           per gene, one block per stratum, in the layout the manuscript uses.
 #
-#           WHAT "ROBUST" MEANS HERE, AND WHAT IT DOES NOT. The scan already paid
+#           WHAT THE TIER MEANS, AND WHAT IT DOES NOT. The scan already paid
 #           alpha / n_genes_mapped per cohort x stratum and called a gene when
 #           BH q < alpha (Bonferroni is reported as the stricter tier, and never
 #           enters the rule). This step introduces NO new threshold and NO new
@@ -22,7 +22,11 @@
 #           almost entirely in controls), so "called in every cohort" means the
 #           signal survives ADDING CONTROLS. That is a sample-selection
 #           sensitivity analysis, and it is not replication; every table this
-#           step writes says so in its own caption.
+#           step writes says so in its own caption. The tier measures how
+#           CONSISTENT a call is across the cohorts and statistics. It is not a
+#           robustness to the platform confound: the cohorts share their cases
+#           and the case/control platform split, so an artefact of it would be
+#           called in every cohort alike.
 #
 #           not_in_map IS A STATE, NOT AN ABSENCE. The gene sets are not nested
 #           across cohorts: a gene can have >= MinNumVar variants in one cohort's
@@ -99,7 +103,7 @@ TIER_COLUMNS = ('gene_symbol', 'set_name', 'chrom', 'stratum', 'tier', 'n_cohort
 BLOCK_COLUMNS = ('tier', 'n_variants', 'carriers_case', 'carriers_control', 'mac_case',
                  'mac_control', 'maf_case', 'maf_control', 'skato_rho', 'skato_p',
                  'cmc_or_95ci', 'cmc_p', 'multi_site_carriers')
-BLOCK_HEADERS = ('Tier', 'Variants', 'Carriers case (%)', 'Carriers control (%)', 'MAC case',
+BLOCK_HEADERS = ('Consistency tier', 'Variants', 'Carriers case (%)', 'Carriers control (%)', 'MAC case',
                  'MAC control', 'MAF case', 'MAF control', 'SKAT-O rho', 'SKAT-O P',
                  'CMC OR (95% CI)', 'CMC P', 'Multi-site carriers case / control')
 SUMMARY_TIERS = (1, 2)
@@ -505,7 +509,7 @@ def main():
     rc = args.report_cohort
     n_case, n_ctrl, n_all = n_of[rc]
     with open(f'{args.out_summary_prefix}.md', 'w') as fh:
-        fh.write(f'# Robust genes — {rc}\n\n')
+        fh.write(f'# Cross-cohort consistency of gene calls — {rc}\n\n')
         fh.write(f'{n_all:,} samples ({n_case:,} cases, {n_ctrl:,} controls). '
                  f'{len(order)} gene(s) at Tier 1 or Tier 2 in at least one stratum.\n\n')
         if not order:
@@ -530,13 +534,16 @@ def main():
                  '(case / control); CMC counts each once, MAC counts every site. '
                  f'{DASH} = the gene is not in this cohort\'s map for that stratum, or the '
                  'value is undefined.\n\n')
-        fh.write('**Tiers.** A gene is *called* in a cohort x stratum x method when '
-                 f'Benjamini-Hochberg q < {args.alpha:g} over that cell\'s mapped genes. '
+        fh.write('**Consistency tiers.** A gene is *called* in a cohort x stratum x method '
+                 f'when Benjamini-Hochberg q < {args.alpha:g} over that cell\'s mapped genes. '
                  'Tier 1 = called in every cohort and by both methods in at least one; '
                  'Tier 2 = called in every cohort by at least one method; Tier 3 = called '
                  'in at least two cohorts; 0 = tested in this stratum but called in fewer '
-                 'than two cohorts. The tier shown is the stratum\'s own; a gene is listed '
-                 'because it reaches Tier 1 or 2 in at least one stratum.\n\n')
+                 'than two cohorts. The tier describes how consistently a call recurs across '
+                 'the nested cohorts and the two statistics; it is not evidence of '
+                 'association beyond the calls themselves. The tier shown is the stratum\'s '
+                 'own; a gene is listed because it reaches Tier 1 or 2 in at least one '
+                 'stratum.\n\n')
         fh.write('**Caveat.** The three cohorts are nested and differ almost entirely in '
                  'controls; agreement across them shows the signal survives adding controls '
                  'and is a sample-selection sensitivity analysis, not replication. Cases and '

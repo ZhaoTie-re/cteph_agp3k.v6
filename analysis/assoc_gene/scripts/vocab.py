@@ -10,9 +10,10 @@
 #           colour and marker that means something in this component is defined
 #           here once and imported.
 #
-#           TIER MEANS THE ROBUSTNESS TIER. Tier 1 / 2 / 3 are the integers
-#           robust_genes.tier_of assigns to a (gene, stratum) from the BH calls
-#           across cohorts and statistics. plot_style.TIER_STYLE and
+#           TIER MEANS THE CROSS-COHORT CONSISTENCY TIER. Tier 1 / 2 / 3 are the
+#           integers robust_genes.tier_of assigns to a (gene, stratum) from the BH
+#           calls across cohorts and statistics: how consistently a call recurs,
+#           not evidence beyond the calls. plot_style.TIER_STYLE and
 #           plot_style.tier_lines belong to the variant components (genome-wide
 #           / suggestive peaks on a -log10 P axis) and are never imported here:
 #           a figure that drew them would be making a claim this component does

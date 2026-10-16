@@ -522,7 +522,7 @@ def main():
                  f'Tier 2 gene ({", ".join(index_df["gene_symbol"]) or "none"}). One document '
                  'covers the family; each gene is one row of the tables below.'),
         title='Per-gene detail — Tier 1 and Tier 2 genes',
-        question=('Which variants make up each robust gene\'s set, where are its carriers, and '
+        question=('Which variants make up each tiered gene\'s set, where are its carriers, and '
                   'does the burden effect hold in every cell of the design?'),
         panels=[
             ('a', 'Variants and carrier frequency, one strip per cohort',

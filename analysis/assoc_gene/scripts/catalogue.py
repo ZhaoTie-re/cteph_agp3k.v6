@@ -169,7 +169,7 @@ def _gene_scan(a, df):
             'a gene a CTEPH gene — cases and controls were sequenced on different platforms '
             'with no overlap, so every P carries that confound and a called gene is a candidate. '
             'Which candidates survive the change of statistic and the addition of controls is '
-            'the question of the robust-genes figure.'),
+            'the question of the cross-cohort consistency figure.'),
         numbers=[('members (cohort x stratum)', len(df)), ('alpha', a.alpha),
                  ('MinNumVar', a.min_num_var)],
         tables=[('Per-scan values', df)],

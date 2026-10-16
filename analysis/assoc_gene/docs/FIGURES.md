@@ -49,7 +49,7 @@ Defined once in `scripts/vocab.py` and imported by every figure:
 | cohorts | `narrow`, `intermediate`, `full` — the run's tags with their shared suffix stripped (`plot_style.shorten`), never typed by hand. The cohort is always given **position**: a row in `robust_genes`, a strip in `genes/<GENE>` (a). Where hue is also free it is reinforced by **`plot_style.COHORT_RAMP`**, narrowest darkest; it is never carried by marker size, and never by a channel that already means something else |
 | cell states | `Bonferroni + BH` (● `ACCENT`), `BH only` (● `ACCENT_LT`), `tested, not called` (· `DATA`), `not in map` (× `REFERENCE`). **× means `not in map` in every panel of a figure**, and the key lists only the states that figure actually draws — `not_in_map` is usually absent from `robust_genes`, because a gene missing from a cohort's map cannot be called there and so rarely reaches a tier; the README carries the count either way. A cell that WAS tested but has no effect estimate — one group holds no minor allele, so rvtest's Wald fit is unbounded — is `n.e.`, never ×: it keeps its state in the evidence matrix, and only the effect-size panel has nothing to draw |
 | groups | cases `ACCENT` (red), controls `DATA` (blue), wherever the two are contrasted |
-| tier | the **robustness tier** 1 / 2 / 3 from `robust_genes.tier_of` (0 = tested, called in fewer than two cohorts), one grey channel throughout: the boxed number, the bar in the matrix's right gutter and the row band all deepen with the tier (`TIER_FILL`, `TIER_BAND`). `plot_style.TIER_STYLE` and `tier_lines` are the variant components' genome-wide / suggestive tiers and are never used here |
+| tier | the **cross-cohort consistency tier** 1 / 2 / 3 from `robust_genes.tier_of` (0 = tested, called in fewer than two cohorts), one grey channel throughout: the boxed number, the bar in the matrix's right gutter and the row band all deepen with the tier (`TIER_FILL`, `TIER_BAND`). `plot_style.TIER_STYLE` and `tier_lines` are the variant components' genome-wide / suggestive tiers and are never used here |
 | impact | snpEff's own colours, in the variant-set figure only |
 | λ | `λ_GC` is the only calibration number drawn; its split by set size (`n_var = 2` against `≥ 3`) is in `scan_qc.tsv` and the README tables |
 | gene names on a scan | the label set **is** the rejection set: every gene with `significant_bh == 1` and no other, capped by `MaxLabelGenes`; a panel that called nothing names nothing and says so where the BH line would be. Always written vertically (`rotation=90`), so every panel of the family is labelled the same way |
@@ -63,8 +63,8 @@ Defined once in `scripts/vocab.py` and imported by every figure:
 | `variant_sets` | of the minAC-passing call set, what enters a gene set, under which consequence, and how many sets each stratum can test — the **denominator**, before any test |
 | `gene_scan` | where does each scan show association, are both statistics calibrated, and do they agree about the genes they single out |
 | `calibration` | is the null calibrated in every cohort × variant-set cell, and does that change as controls are added or the filter loosens |
-| `robust_genes` | which genes survive a change of statistic and the addition of controls, how large is their burden effect, and how many people carry it |
-| `genes/<GENE>` | which variants make up a robust gene's set, where are its carriers, and does the effect hold in every cell |
+| `robust_genes` | which gene calls recur across the statistics and the nested cohorts, how large is their burden effect, and how many people carry it |
+| `genes/<GENE>` | which variants make up a tiered gene's set, where are its carriers, and does the effect hold in every cell |
 
 ## Collisions are prevented by measurement
 
@@ -92,7 +92,7 @@ so the model panel is not stranded in the white space the forest below it needs.
 * No per-gene sidecars, no per-gene figures for Tier 3: the evidence matrix shows every tiered gene;
   the detail figures are for the genes the summary table reports.
 * No "cells calling / cells tested" bars and no denominator bar panel: both are columns of
-  `tiers.tsv` and `denominators.tsv`, tabulated in the robust-genes README.
+  `tiers.tsv` and `denominators.tsv`, tabulated in the consistency-tier figure's README.
 * No stratum-membership fill encoding in the lollipop: membership is a function of impact by
   construction, and the impact marker already says it.
 * No neighbouring genes in the gene model panel: only the tested gene and genes overlapping it. The

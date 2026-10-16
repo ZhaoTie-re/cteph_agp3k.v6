@@ -34,7 +34,7 @@ Observed against expected −log10 P for CMC burden and SKAT-O over the genes ea
 
 ## Interpretation
 
-λ_GC spans 1.15–1.25 over the 6 cells. Read across a row: the cohorts are nested and differ almost entirely in controls, so a trend as the sample set widens is a statement about the controls added, not a replication. Read down a column: the variant sets are nested, and the wider set's extra genes carry only LOW-impact variants. Within a cell the two curves share genes, samples and denominator, so their difference is the statistic. λ is reported, not targeted: the statistic is a count over a handful of minor alleles, and its median-based λ is inflated by the two-variant genes (table column lambda_gc_nvar2 against lambda_gc_nvar_ge3); the residual 1.1–1.2 over larger sets is consistent with the platform confound and cannot be separated from it here (METHODS §4.4).
+λ_GC spans 1.16–1.24 over the 6 cells. Read across a row: the cohorts are nested and differ almost entirely in controls, so a trend as the sample set widens is a statement about the controls added, not a replication. Read down a column: the variant sets are nested, and the wider set's extra genes carry only LOW-impact variants. Within a cell the two curves share genes, samples and denominator, so their difference is the statistic. λ is reported, not targeted: the statistic is a count over a handful of minor alleles, and its median-based λ is inflated by the two-variant genes (table column lambda_gc_nvar2 against lambda_gc_nvar_ge3); the residual 1.1–1.2 over larger sets is consistent with the platform confound and cannot be separated from it here (METHODS §4.4).
 
 ## Values in this rendering
 
@@ -43,7 +43,7 @@ Observed against expected −log10 P for CMC burden and SKAT-O over the genes ea
 | cohorts | 3 |
 | variant sets | 2 |
 | cells drawn | 6 |
-| lambda_GC range | 1.15–1.25 |
+| lambda_GC range | 1.16–1.24 |
 
 ## Full statistics
 
@@ -51,12 +51,12 @@ Observed against expected −log10 P for CMC burden and SKAT-O over the genes ea
 
 | cohort | stratum | n_genes_mapped | bonferroni_threshold | lambda_gc_cmc | lambda_gc_nvar2_cmc | lambda_gc_nvar_ge3_cmc | lambda_gc_skato | lambda_gc_nvar2_skato | lambda_gc_nvar_ge3_skato |
 |---|---|---|---|---|---|---|---|---|---|
-| narrow_mainland | low_moderate_high | 14,557 | 3.435e-06 | 1.164 | 1.367 | 1.126 | 1.237 | 1.275 | 1.227 |
-| intermediate_mainland | low_moderate_high | 15,009 | 3.331e-06 | 1.185 | 1.504 | 1.139 | 1.246 | 1.371 | 1.229 |
-| full_mainland | low_moderate_high | 15,691 | 3.187e-06 | 1.176 | 1.495 | 1.136 | 1.226 | 1.207 | 1.228 |
-| narrow_mainland | moderate_high | 10,832 | 4.616e-06 | 1.152 | 1.328 | 1.102 | 1.215 | 1.239 | 1.204 |
-| intermediate_mainland | moderate_high | 11,436 | 4.372e-06 | 1.154 | 1.376 | 1.094 | 1.172 | 1.209 | 1.162 |
-| full_mainland | moderate_high | 12,378 | 4.039e-06 | 1.181 | 1.44 | 1.111 | 1.164 | 1.173 | 1.161 |
+| narrow_mainland | low_moderate_high | 14,848 | 3.367e-06 | 1.176 | 1.353 | 1.15 | 1.232 | 1.276 | 1.22 |
+| intermediate_mainland | low_moderate_high | 15,219 | 3.285e-06 | 1.189 | 1.468 | 1.151 | 1.243 | 1.333 | 1.229 |
+| full_mainland | low_moderate_high | 15,829 | 3.159e-06 | 1.176 | 1.432 | 1.142 | 1.221 | 1.174 | 1.231 |
+| narrow_mainland | moderate_high | 11,192 | 4.467e-06 | 1.165 | 1.339 | 1.119 | 1.22 | 1.232 | 1.215 |
+| intermediate_mainland | moderate_high | 11,720 | 4.266e-06 | 1.163 | 1.384 | 1.103 | 1.184 | 1.215 | 1.169 |
+| full_mainland | moderate_high | 12,554 | 3.983e-06 | 1.167 | 1.407 | 1.096 | 1.172 | 1.147 | 1.181 |
 
 ## How to read it
 

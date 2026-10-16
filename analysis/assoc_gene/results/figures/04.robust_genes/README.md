@@ -31,8 +31,8 @@ The fraction of controls (blue) and of cases (red) carrying at least one qualify
 | genes reaching a tier | 11 |
 | genes drawn | 11 |
 | Tier 1 genes | 2 |
-| Tier 2 genes | 3 |
-| Tier 3 genes | 6 |
+| Tier 2 genes | 2 |
+| Tier 3 genes | 7 |
 | report cohort | full_mainland |
 | N case / N control | 438 / 2,630 |
 | cells not in a cohort's map | 0 |
@@ -47,28 +47,26 @@ The fraction of controls (blue) and of cases (red) carrying at least one qualify
 |---|---|---|---|---|---|---|---|---|---|
 | STBD1 | moderate_high | 1 | 3 | narrow_mainland,intermediate_mainland,full_mainland | 2 | 1 | — | 7.22605e-08 | 1.41108e-07 |
 | OSBP | moderate_high | 1 | 3 | narrow_mainland,intermediate_mainland,full_mainland | 1 | 1 | — | 3.54112e-07 | 3.21117e-07 |
-| STBD1 | low_moderate_high | 2 | 3 | narrow_mainland,intermediate_mainland,full_mainland | 0 | 1 | — | 4.10249e-06 | 8.88365e-07 |
-| PIK3C2G | low_moderate_high | 2 | 3 | narrow_mainland,intermediate_mainland,full_mainland | 0 | 1 | — | 0.00047545 | 3.48259e-07 |
 | RPH3A | low_moderate_high | 2 | 3 | narrow_mainland,intermediate_mainland,full_mainland | 0 | 1 | — | 0.000479202 | 5.44525e-07 |
 | JAK2 | moderate_high | 2 | 3 | narrow_mainland,intermediate_mainland,full_mainland | 0 | 1 | — | 0.17174 | 1.31438e-06 |
-| PIK3C2G | moderate_high | 2 | 3 | narrow_mainland,intermediate_mainland,full_mainland | 0 | 1 | — | 0.000203921 | 4.1323e-07 |
 | RPH3A | moderate_high | 2 | 3 | narrow_mainland,intermediate_mainland,full_mainland | 0 | 1 | — | 0.000110518 | 3.908e-07 |
-| SCAMP3 | low_moderate_high | 3 | 2 | intermediate_mainland,full_mainland | 1 | 1 | — | 2.75881e-06 | 4.15802e-06 |
+| SCAMP3 | low_moderate_high | 3 | 2 | intermediate_mainland,full_mainland | 0 | 0 | — | 6.21681e-06 | 5.25248e-06 |
 | CD248 | low_moderate_high | 3 | 2 | narrow_mainland,intermediate_mainland | 0 | 1 | — | 0.0100787 | 2.02765e-06 |
-| SCFD1 | low_moderate_high | 3 | 2 | narrow_mainland,full_mainland | 0 | 0 | — | 0.0381582 | 1.02818e-05 |
+| PIK3C2G | low_moderate_high | 3 | 2 | narrow_mainland,intermediate_mainland | 0 | 1 | — | 0.00018114 | 9.58337e-07 |
 | PES1 | low_moderate_high | 3 | 2 | narrow_mainland,intermediate_mainland | 0 | 0 | — | 0.000147683 | 1.09234e-05 |
 | NKD2 | moderate_high | 3 | 2 | narrow_mainland,intermediate_mainland | 0 | 0 | — | 5.91929e-05 | 6.18644e-06 |
-| P2RY2 | moderate_high | 3 | 2 | intermediate_mainland,full_mainland | 1 | 0 | — | 1.30515e-05 | 1.60768e-05 |
-| SCFD1 | moderate_high | 3 | 2 | narrow_mainland,full_mainland | 0 | 0 | — | 0.0183765 | 1.83712e-05 |
+| P2RY2 | moderate_high | 3 | 2 | intermediate_mainland,full_mainland | 0 | 0 | — | 1.30515e-05 | 1.60768e-05 |
+| PIK3C2G | moderate_high | 3 | 2 | narrow_mainland,intermediate_mainland | 0 | 1 | — | 0.000146711 | 1.89795e-06 |
+| SCFD1 | moderate_high | 3 | 2 | narrow_mainland,full_mainland | 0 | 0 | — | 0.0338767 | 2.2038e-05 |
 | PES1 | moderate_high | 3 | 2 | narrow_mainland,intermediate_mainland | 0 | 0 | — | 4.71219e-05 | 8.65008e-06 |
 
 **Odds ratios drawn in (b)**
 
 | gene_symbol | stratum | cohort | or | or_l95 | or_u95 | cmc_state | cmc_p | n_var_map | skato_p |
 |---|---|---|---|---|---|---|---|---|---|
-| STBD1 | low_moderate_high | narrow_mainland | 6.946 | 2.729 | 17.68 | not_significant | 4.10249e-06 | 5 | 6.72217e-06 |
+| STBD1 | low_moderate_high | narrow_mainland | 4.184 | 1.835 | 9.536 | not_significant | 0.000261914 | 7 | 7.27832e-05 |
 | STBD1 | moderate_high | narrow_mainland | 9.978 | 2.931 | 33.96 | not_significant | 1.31634e-05 | 3 | 2.13224e-05 |
-| STBD1 | low_moderate_high | intermediate_mainland | 4.767 | 2.178 | 10.44 | not_significant | 2.03095e-05 | 6 | 1.32989e-05 |
+| STBD1 | low_moderate_high | intermediate_mainland | 3.881 | 1.836 | 8.203 | not_significant | 0.000147344 | 7 | 4.14423e-05 |
 | STBD1 | moderate_high | intermediate_mainland | 7.349 | 2.705 | 19.96 | called_bh_only | 7.1974e-06 | 3 | 1.20885e-05 |
 | STBD1 | low_moderate_high | full_mainland | 4.059 | 1.984 | 8.304 | not_significant | 3.66104e-05 | 8 | 8.88365e-07 |
 | STBD1 | moderate_high | full_mainland | 9.601 | 3.565 | 25.86 | called_bonferroni | 7.22605e-08 | 3 | 1.41108e-07 |
@@ -78,12 +76,6 @@ The fraction of controls (blue) and of cases (red) carrying at least one qualify
 | OSBP | moderate_high | intermediate_mainland | 19.39 | 4.047 | 92.87 | called_bonferroni | 3.54112e-07 | 2 | 3.21117e-07 |
 | OSBP | low_moderate_high | full_mainland | 2.767 | 1.349 | 5.672 | not_significant | 0.0039365 | 6 | 0.00323611 |
 | OSBP | moderate_high | full_mainland | 7.105 | 2.53 | 19.95 | not_significant | 1.93294e-05 | 2 | 2.08318e-05 |
-| PIK3C2G | low_moderate_high | narrow_mainland | 1.968 | 1.078 | 3.591 | not_significant | 0.0251171 | 15 | 8.45814e-07 |
-| PIK3C2G | moderate_high | narrow_mainland | 2.648 | 1.361 | 5.153 | not_significant | 0.00305426 | 10 | 4.1323e-07 |
-| PIK3C2G | low_moderate_high | intermediate_mainland | 2.377 | 1.37 | 4.124 | not_significant | 0.00155852 | 17 | 3.48259e-07 |
-| PIK3C2G | moderate_high | intermediate_mainland | 2.674 | 1.437 | 4.979 | not_significant | 0.00130649 | 11 | 5.64051e-07 |
-| PIK3C2G | low_moderate_high | full_mainland | 2.252 | 1.413 | 3.591 | not_significant | 0.00047545 | 21 | 5.7749e-06 |
-| PIK3C2G | moderate_high | full_mainland | 2.566 | 1.535 | 4.289 | not_significant | 0.000203921 | 12 | 1.11519e-05 |
 | RPH3A | low_moderate_high | narrow_mainland | 2.199 | 1.307 | 3.701 | not_significant | 0.00244435 | 11 | 1.80208e-05 |
 | RPH3A | moderate_high | narrow_mainland | 2.615 | 1.475 | 4.637 | not_significant | 0.000693429 | 7 | 1.97181e-05 |
 | RPH3A | low_moderate_high | intermediate_mainland | 2.314 | 1.405 | 3.809 | not_significant | 0.000723272 | 11 | 1.13239e-06 |
@@ -98,7 +90,7 @@ The fraction of controls (blue) and of cases (red) carrying at least one qualify
 | JAK2 | moderate_high | full_mainland | 1.564 | 0.7657 | 3.194 | not_significant | 0.21622 | 7 | 1.31438e-06 |
 | SCAMP3 | low_moderate_high | narrow_mainland | 2.534 | 1.572 | 4.085 | not_significant | 8.66446e-05 | 8 | 0.000139187 |
 | SCAMP3 | moderate_high | narrow_mainland | 2.099 | 1.094 | 4.027 | not_significant | 0.0230561 | 5 | 0.0536292 |
-| SCAMP3 | low_moderate_high | intermediate_mainland | 2.9 | 1.826 | 4.606 | called_bonferroni | 2.75881e-06 | 8 | 4.15802e-06 |
+| SCAMP3 | low_moderate_high | intermediate_mainland | 2.778 | 1.755 | 4.398 | not_significant | 6.21681e-06 | 9 | 5.25248e-06 |
 | SCAMP3 | moderate_high | intermediate_mainland | 2.363 | 1.262 | 4.428 | not_significant | 0.0058082 | 5 | 0.0144526 |
 | SCAMP3 | low_moderate_high | full_mainland | 2.522 | 1.633 | 3.896 | not_significant | 1.71334e-05 | 10 | 2.05815e-05 |
 | SCAMP3 | moderate_high | full_mainland | 2.234 | 1.223 | 4.081 | not_significant | 0.00737174 | 5 | 0.018589 |
@@ -108,12 +100,12 @@ The fraction of controls (blue) and of cases (red) carrying at least one qualify
 | CD248 | moderate_high | intermediate_mainland | 0.7135 | 0.08599 | 5.92 | not_significant | 0.753406 | 2 | 0.848813 |
 | CD248 | low_moderate_high | full_mainland | 2.151 | 1.057 | 4.379 | not_significant | 0.0307607 | 6 | 0.000300587 |
 | CD248 | moderate_high | full_mainland | 0.5714 | 0.07202 | 4.534 | not_significant | 0.591708 | 2 | 0.719939 |
-| SCFD1 | low_moderate_high | narrow_mainland | 2.273 | 0.9913 | 5.213 | not_significant | 0.0471149 | 4 | 1.94136e-05 |
-| SCFD1 | moderate_high | narrow_mainland | 2.679 | 1.149 | 6.248 | not_significant | 0.0183765 | 3 | 1.83712e-05 |
-| SCFD1 | low_moderate_high | intermediate_mainland | 1.869 | 0.8853 | 3.946 | not_significant | 0.0960194 | 5 | 0.000170785 |
-| SCFD1 | moderate_high | intermediate_mainland | 2.164 | 1.012 | 4.627 | not_significant | 0.0417087 | 4 | 0.00016009 |
-| SCFD1 | low_moderate_high | full_mainland | 1.947 | 1.026 | 3.696 | not_significant | 0.0381582 | 6 | 1.02818e-05 |
-| SCFD1 | moderate_high | full_mainland | 1.991 | 0.9624 | 4.119 | not_significant | 0.0586716 | 4 | 2.2038e-05 |
+| PIK3C2G | low_moderate_high | narrow_mainland | 2.16 | 1.293 | 3.608 | not_significant | 0.00269776 | 17 | 6.16206e-06 |
+| PIK3C2G | moderate_high | narrow_mainland | 2.685 | 1.549 | 4.655 | not_significant | 0.000277324 | 12 | 4.74807e-06 |
+| PIK3C2G | low_moderate_high | intermediate_mainland | 2.471 | 1.517 | 4.023 | not_significant | 0.00018114 | 18 | 9.58337e-07 |
+| PIK3C2G | moderate_high | intermediate_mainland | 2.708 | 1.589 | 4.614 | not_significant | 0.000146711 | 12 | 1.89795e-06 |
+| PIK3C2G | low_moderate_high | full_mainland | 1.788 | 1.202 | 2.66 | not_significant | 0.00368389 | 22 | 0.00183574 |
+| PIK3C2G | moderate_high | full_mainland | 1.866 | 1.223 | 2.846 | not_significant | 0.00333132 | 13 | 0.00251989 |
 | PES1 | low_moderate_high | narrow_mainland | 2.236 | 1.454 | 3.437 | not_significant | 0.000183236 | 8 | 1.09234e-05 |
 | PES1 | moderate_high | narrow_mainland | 2.789 | 1.67 | 4.656 | not_significant | 5.01841e-05 | 4 | 8.65008e-06 |
 | PES1 | low_moderate_high | intermediate_mainland | 2.192 | 1.449 | 3.317 | not_significant | 0.000147683 | 8 | 1.4951e-05 |
@@ -129,9 +121,15 @@ The fraction of controls (blue) and of cases (red) carrying at least one qualify
 | P2RY2 | low_moderate_high | narrow_mainland | 2.841 | 1.238 | 6.522 | not_significant | 0.0108683 | 3 | 0.00959046 |
 | P2RY2 | moderate_high | narrow_mainland | not estimable | NA | NA | not_significant | 0.000102812 | 2 | 0.000140924 |
 | P2RY2 | low_moderate_high | intermediate_mainland | 3.117 | 1.413 | 6.876 | not_significant | 0.00319724 | 3 | 0.00242745 |
-| P2RY2 | moderate_high | intermediate_mainland | not estimable | NA | NA | called_bh_only | 1.30515e-05 | 2 | 1.60768e-05 |
+| P2RY2 | moderate_high | intermediate_mainland | not estimable | NA | NA | not_significant | 1.30515e-05 | 2 | 1.60768e-05 |
 | P2RY2 | low_moderate_high | full_mainland | 3.275 | 1.582 | 6.778 | not_significant | 0.000767725 | 5 | 0.000634595 |
 | P2RY2 | moderate_high | full_mainland | 9.416 | 2.541 | 34.9 | not_significant | 6.49379e-05 | 4 | 2.08325e-05 |
+| SCFD1 | low_moderate_high | narrow_mainland | 2.019 | 1.017 | 4.008 | not_significant | 0.0409923 | 6 | 4.23166e-05 |
+| SCFD1 | moderate_high | narrow_mainland | 2.309 | 1.046 | 5.097 | not_significant | 0.0338767 | 4 | 2.49508e-05 |
+| SCFD1 | low_moderate_high | intermediate_mainland | 1.956 | 1.008 | 3.793 | not_significant | 0.0435738 | 6 | 0.000137265 |
+| SCFD1 | moderate_high | intermediate_mainland | 2.164 | 1.012 | 4.627 | not_significant | 0.0417087 | 4 | 0.00016009 |
+| SCFD1 | low_moderate_high | full_mainland | 1.947 | 1.026 | 3.696 | not_significant | 0.0381582 | 6 | 1.02818e-05 |
+| SCFD1 | moderate_high | full_mainland | 1.991 | 0.9624 | 4.119 | not_significant | 0.0586716 | 4 | 2.2038e-05 |
 
 **Carriers drawn in (c)**
 
@@ -143,9 +141,6 @@ The fraction of controls (blue) and of cases (red) carrying at least one qualify
 | OSBP | moderate_high | narrow_mainland | 8 | 418 | 1.914 | 2 | 1,747 | 0.114 | 2 |
 | OSBP | moderate_high | intermediate_mainland | 8 | 428 | 1.869 | 2 | 2,049 | 0.098 | 2 |
 | OSBP | moderate_high | full_mainland | 8 | 438 | 1.826 | 8 | 2,630 | 0.304 | 2 |
-| PIK3C2G | moderate_high | narrow_mainland | 15 | 418 | 3.589 | 26 | 1,747 | 1.488 | 10 |
-| PIK3C2G | moderate_high | intermediate_mainland | 16 | 428 | 3.738 | 33 | 2,049 | 1.611 | 11 |
-| PIK3C2G | moderate_high | full_mainland | 22 | 438 | 5.023 | 60 | 2,630 | 2.281 | 12 |
 | RPH3A | moderate_high | narrow_mainland | 21 | 418 | 5.024 | 35 | 1,747 | 2.003 | 7 |
 | RPH3A | moderate_high | intermediate_mainland | 22 | 428 | 5.14 | 39 | 2,049 | 1.903 | 7 |
 | RPH3A | moderate_high | full_mainland | 22 | 438 | 5.023 | 51 | 2,630 | 1.939 | 7 |
@@ -158,9 +153,9 @@ The fraction of controls (blue) and of cases (red) carrying at least one qualify
 | CD248 | moderate_high | narrow_mainland | 1 | 418 | 0.239 | 7 | 1,747 | 0.401 | 2 |
 | CD248 | moderate_high | intermediate_mainland | 1 | 428 | 0.234 | 7 | 2,049 | 0.342 | 2 |
 | CD248 | moderate_high | full_mainland | 1 | 438 | 0.228 | 10 | 2,630 | 0.38 | 2 |
-| SCFD1 | moderate_high | narrow_mainland | 9 | 418 | 2.153 | 17 | 1,747 | 0.973 | 3 |
-| SCFD1 | moderate_high | intermediate_mainland | 10 | 428 | 2.336 | 25 | 2,049 | 1.22 | 4 |
-| SCFD1 | moderate_high | full_mainland | 10 | 438 | 2.283 | 36 | 2,630 | 1.369 | 4 |
+| PIK3C2G | moderate_high | narrow_mainland | 22 | 418 | 5.263 | 40 | 1,747 | 2.29 | 12 |
+| PIK3C2G | moderate_high | intermediate_mainland | 22 | 428 | 5.14 | 46 | 2,049 | 2.245 | 12 |
+| PIK3C2G | moderate_high | full_mainland | 31 | 438 | 7.078 | 107 | 2,630 | 4.068 | 13 |
 | PES1 | moderate_high | narrow_mainland | 27 | 418 | 6.459 | 44 | 1,747 | 2.519 | 4 |
 | PES1 | moderate_high | intermediate_mainland | 27 | 428 | 6.308 | 52 | 2,049 | 2.538 | 4 |
 | PES1 | moderate_high | full_mainland | 4 | 438 | 0.913 | 19 | 2,630 | 0.722 | 3 |
@@ -170,17 +165,20 @@ The fraction of controls (blue) and of cases (red) carrying at least one qualify
 | P2RY2 | moderate_high | narrow_mainland | 5 | 418 | 1.196 | 0 | 1,747 | 0 | 2 |
 | P2RY2 | moderate_high | intermediate_mainland | 5 | 428 | 1.168 | 0 | 2,049 | 0 | 2 |
 | P2RY2 | moderate_high | full_mainland | 6 | 438 | 1.37 | 4 | 2,630 | 0.152 | 4 |
+| SCFD1 | moderate_high | narrow_mainland | 10 | 418 | 2.392 | 21 | 1,747 | 1.202 | 4 |
+| SCFD1 | moderate_high | intermediate_mainland | 10 | 428 | 2.336 | 25 | 2,049 | 1.22 | 4 |
+| SCFD1 | moderate_high | full_mainland | 10 | 438 | 2.283 | 36 | 2,630 | 1.369 | 4 |
 
 **Denominator per cohort × variant set**
 
 | cohort | stratum | n_genes_mapped | bonferroni_threshold |
 |---|---|---|---|
-| intermediate_mainland | low_moderate_high | 15009 | 3.33133453261e-06 |
-| intermediate_mainland | moderate_high | 11436 | 4.37215809724e-06 |
-| full_mainland | low_moderate_high | 15691 | 3.18654005481e-06 |
-| full_mainland | moderate_high | 12378 | 4.03942478591e-06 |
-| narrow_mainland | low_moderate_high | 14557 | 3.43477364842e-06 |
-| narrow_mainland | moderate_high | 10832 | 4.61595273264e-06 |
+| full_mainland | low_moderate_high | 15829 | 3.15875923937e-06 |
+| full_mainland | moderate_high | 12554 | 3.9827943285e-06 |
+| narrow_mainland | low_moderate_high | 14848 | 3.36745689655e-06 |
+| narrow_mainland | moderate_high | 11192 | 4.46747676912e-06 |
+| intermediate_mainland | low_moderate_high | 15219 | 3.28536697549e-06 |
+| intermediate_mainland | moderate_high | 11720 | 4.2662116041e-06 |
 
 ## How to read it
 

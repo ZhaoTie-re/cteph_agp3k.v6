@@ -144,16 +144,16 @@ def main():
     if not genes:
         fig = plt.figure(figsize=(S.COL_DOUBLE, 2.0))
         ax = fig.add_subplot(111)
-        ax.text(0.5, 0.5, 'no gene reached a robustness tier', ha='center', va='center',
+        ax.text(0.5, 0.5, 'no gene reached a consistency tier', ha='center', va='center',
                 transform=ax.transAxes, color=S.INK_SOFT)
         ax.set_axis_off()
-        S.caption_block(fig, plot_h=2.0, title='No gene reaches a robustness tier.',
+        S.caption_block(fig, plot_h=2.0, title='No gene reaches a consistency tier.',
                         panels=['No tiered gene.'], notes='README.md', margin_axes=[ax])
         fig.savefig(a.out_png)
         plt.close(fig)
         figure_doc.write_doc(a.out_png, out_path=a.out_md,
                              subject=f'**Figure file:** `{Path(a.out_png).name}`',
-                             title='Robust genes', question='Which genes reach a tier?',
+                             title='Cross-cohort consistency of gene calls', question='Which genes reach a tier?',
                              panels=[('a', 'None', 'No gene was called in two or more cohorts.')],
                              methods_ref=METHODS_REF)
         print('[plot_robust_genes] no tiered gene')
@@ -442,7 +442,7 @@ def main():
                                else None) for c in cohorts} - {None}) > 1)
     S.caption_block(
         fig, plot_h=plot_h,
-        title=(f'{len(order)} gene(s) reach a robustness tier: {n_t[1]} Tier 1, {n_t[2]} Tier 2, '
+        title=(f'{len(order)} gene(s) reach a consistency tier: {n_t[1]} Tier 1, {n_t[2]} Tier 2, '
                f'{n_t[3]} Tier 3.'),
         panels=[
             'Rows are gene × cohort. Cell state per statistic in both variant sets; the boxed '
@@ -541,8 +541,8 @@ def main():
     figure_doc.write_doc(
         a.out_png, out_path=a.out_md,
         subject=f'**Figure file:** `{Path(a.out_png).name}`',
-        title='Robust genes — tiers, effect sizes and carriers',
-        question=('Which genes survive a change of statistic and the addition of controls, how '
+        title='Cross-cohort consistency of gene calls — tiers, effect sizes and carriers',
+        question=('Which gene calls recur across the statistics and the nested cohorts, how '
                   'strong is their burden effect, and how many people carry it?'),
         panels=[
             ('a', 'Evidence in every cell, and the tier per variant set',
@@ -596,9 +596,10 @@ def main():
              'the summary table.'),
         ],
         interpretation=(
-            f'{len(order)} gene(s) reach a tier. Tier 1 is the strongest reading this design '
-            'offers; Tier 2 drops the both-statistics condition; Tier 3 asks only for two '
-            'cohorts. Two caveats outrank the tiers. The cohorts are nested and differ almost '
+            f'{len(order)} gene(s) reach a tier. The tier measures how consistently a call recurs: '
+            'Tier 1 is the most consistent reading this design offers; Tier 2 drops the '
+            'both-statistics condition; Tier 3 asks only for two cohorts. Two caveats outrank '
+            'the tiers. The cohorts are nested and differ almost '
             'entirely in controls, so agreement across them shows the signal survives adding '
             'controls — a sample-selection sensitivity analysis, not replication. And the '
             'variant sets are nested, so a gene tiered in both is one finding tested twice on '

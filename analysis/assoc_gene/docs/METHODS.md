@@ -1,8 +1,8 @@
 # Methods — `assoc_gene`
 
 Gene-based rare-variant association for CTEPH, three nested cohorts, two impact strata, two statistics
-(CMC burden and SKAT-O) under one fixed-effect logistic model, with a robustness tier per gene and a
-publication summary table for the robust genes.
+(CMC burden and SKAT-O) under one fixed-effect logistic model, with a cross-cohort consistency tier per
+gene and a publication summary table for the tiered genes.
 
 ---
 
@@ -105,8 +105,8 @@ line.
 
 Cases and controls were sequenced on different platforms with zero overlap (all cases DNBSeq or NovaSeq,
 all controls HiSeq X 15×). No covariate can remove that confound, and it is present in every p-value
-this component produces. **No gene here is established as a CTEPH gene; a robust gene is a candidate
-that survived the internal checks below.**
+this component produces. **No gene here is established as a CTEPH gene; a tiered gene is a candidate
+whose call recurs across the internal checks below.**
 
 ## 4. Statistics
 
@@ -187,7 +187,7 @@ exactly the tested samples.
   minor alleles. Every such sample is listed in `multi_carriers.tsv`, and the tiered genes' rows are
   collected in `_comparison/robust_genes/multi_carrier_detail.tsv`.
 
-## 6. Robustness tiers
+## 6. Cross-cohort consistency tiers
 
 `robust_genes.tier_of(called, n_cohorts)` is a pure function over the BH calls of one (gene, stratum):
 
@@ -201,14 +201,18 @@ Tier 3  = any in ≥ 2 cohorts
 Bonferroni never enters the rule; it is reported as `called_bonferroni_anywhere`. A gene not in a
 cohort's map cannot count as called there, so Tier 1 and 2 require presence in every map. The summary
 table and the per-gene figures carry Tier 1 and 2 genes; Tier 3 appears in `tiers.tsv` and in the
-robust-genes figure's evidence matrix.
+consistency-tier figure's evidence matrix (`04.robust_genes`).
 
 The rule introduces no new threshold and no new p-value. It asks one further question of a call the scan
-already made: does it survive a change of statistic and the addition of controls.
+already made: does it recur under a change of statistic and the addition of controls. The tier therefore
+measures **consistency**, not evidence beyond the calls. The cohorts share their cases and the case /
+control platform split, so a platform artefact would be called in every cohort alike: a high tier is not
+robustness to the confound (§3), which the downstream down-sampling and platform analyses address.
 
 ## 7. Scope and limits
 
-* Not replication (nested cohorts, §1). Not free of the platform confound (§3).
+* Not replication (nested cohorts, §1). Not free of the platform confound (§3); the consistency tier
+  does not address it.
 * A gene-set p-value says nothing about which variant carries the signal; the per-gene figures and
   `variant_detail.tsv` are the only variant-level statements made, and they are descriptive.
 * The two strata are nested, so a gene tiered in both is one finding tested on overlapping sets.
