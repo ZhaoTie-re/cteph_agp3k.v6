@@ -8,7 +8,8 @@ state **just before** that day's edit.
 | `…xlsx.bak-20260716` | original (2026-05-07 data), before any edit |
 | `…xlsx.bak-20260729` | after edit 1, before edit 2 |
 | `…xlsx.bak-20260824` | after edit 2, before edit 3 |
-| `…xlsx` (current) | after edit 3 |
+| `…xlsx.bak-20261006` | after edit 3, before edit 4 |
+| `…xlsx` (current) | after edit 4 |
 
 All edits touch data only; no rows added or removed (3,655 rows throughout).
 
@@ -112,12 +113,60 @@ the path convention is the deliberate choice: the two directories above are the 
 
 ---
 
+## Edit 4 — 2026-10-06 · `Age_at_DNA_Collection` placeholder `0` → blank
+
+`Age_at_DNA_Collection` column, 66 rows. Every one is an `AGP3K` control with `Flag_JHRPv6 = True`:
+HTLV-1 64, Control_ACC 2. The column has no other zero, and no other numeric column holds a zero.
+
+**These zeros meant "age unknown", not age 0.** The AGP3K age/sex release is
+`/LARGE1/gr10478/pub/JHRPv1/sample/AGP3K_agesex20211202rel.tsv`. It leaves exactly these 66 samples blank
+(NA), and agrees with this sheet for every other one of the 3,135 controls:
+
+| project | n | agreement |
+|---|---|---|
+| BBJ, ACC, HTLV-1, lung cancer | all | exact |
+| Nagahama | 1,321 | within 1 year; the release keeps one decimal, this sheet floors it |
+
+Sex agrees for all 3,135. Independent checks agree as well:
+- BBJ `BBJ_demographics.txt.gz` (AGE.years): 993 BBJ controls, identical;
+- Nagahama SampleList rev14, `age at 1st follow-up`: all within 1 year.
+
+Effect on `Flag_JHRPv6 = True` controls:
+
+| | mean ± SD | n | missing |
+|---|---|---|---|
+| before (zeros counted as age 0) | 58.46 ± 16.35 | 3,135 | 0 |
+| after | 59.71 ± 14.07 | 3,069 | 66 |
+
+The AGP3K release itself gives 59.90 ± 14.07 for the same 3,069, because it keeps the decimal Nagahama
+ages. Cases are unchanged: 64.75 ± 12.16, 68 blank.
+
+Verified against `.bak-20261006`:
+- 3,655 × 37 cells;
+- only these 66 cells differ (`0` → empty);
+- no cell changed its stored type (IDs with leading zeros are still text).
+
+### Consumers
+
+- `wgs.auto.par/select.auto.par.v6.nf` passes this column (`params.age_col`) to
+  `build_popgmm_cov_pheno_from_sscore.py`, which writes the `*.sex_age.tsv` covariates.
+  - Before this edit, those files carried the 66 controls with AGE = 0, and AGE_Z was computed with them.
+  - From now on the script drops them: age-NA samples are written to `age_na.fid_iid`.
+  - No analysis under `analysis/`, `tuning.*` or `integration/` uses the `sex_age` covariates, so no
+    reported result changes.
+  - The workbook is referenced by path string, not staged, so `-resume` does not re-run anything because
+    of this edit. The existing `12_model_inputs/*/sex_age` files keep the zeros until that step is re-run.
+- `hla.typing`, `assoc_hla`, `tuning.rv` and the `tuning.sample_qc` figure scripts also read the
+  workbook. None of them uses age.
+
+---
+
 ## Reproduce any comparison
 
 ```python
 import pandas as pd
 cur = pd.read_excel("cteph_agp3k.v6.20260507.xlsx")
-bak = pd.read_excel("cteph_agp3k.v6.20260507.xlsx.bak-20260729")   # or .bak-20260716
+bak = pd.read_excel("cteph_agp3k.v6.20260507.xlsx.bak-20261006")   # or any earlier .bak-<date>
 cur = cur.reindex(columns=bak.columns)
 for col in bak.columns:
     ne = ~((cur[col] == bak[col]) | (cur[col].isna() & bak[col].isna()))
@@ -131,7 +180,13 @@ for col in bak.columns:
 drop is not a data difference — rewriting the workbook drops redundant style
 caches.
 
-The current file is **468 KB**, and that jump *is* data. Before edit 3, 3,135 of
+`.bak-20261006` (after edit 3) is **468 KB**, and that jump *is* data. Before edit 3, 3,135 of
 the `Cram_Path` cells held the same short string (`/mnt/…/cram/hg38/`), which the
 workbook stores once in its shared-string table. They now hold 3,135 distinct
 full paths. Nothing else grew.
+
+The current file (after edit 4) is **296 KB**. That drop is again only the rewrite. Edit 4 was
+checked cell by cell against `.bak-20261006`:
+- only the 66 age cells differ;
+- every `Cram_Path` is unchanged;
+- no cell changed its stored type.
