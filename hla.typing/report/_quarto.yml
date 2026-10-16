@@ -13,7 +13,7 @@ format:
     theme: cosmo
     toc: true
     toc-depth: 3
-    toc-location: left
+    toc-location: right
     toc-expand: 2
     number-sections: true
     embed-resources: true
@@ -21,6 +21,7 @@ format:
     df-print: kable
     code-fold: true
     css: report.css
+    include-after-body: sidebar.html
 
 execute:
   echo: false

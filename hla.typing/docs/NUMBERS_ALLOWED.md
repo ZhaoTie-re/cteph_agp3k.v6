@@ -129,7 +129,6 @@ run its own checks.
 # ===========================================================================
 
 # --- IMGT alignment structure and the P-group translation (METHODS 11, 13) ---
-25,290       # two-field names in hla_nom_p.txt, asserted single-valued
 326,922      # the global registry count behind HLA-HD's freq_data prior
 120,000      # rows a per-(sample, allele) long form would produce
 151          # exon-groups affected by IMGT's exon-boundary convention
@@ -142,8 +141,6 @@ run its own checks.
 96.2         # per cent outside the ARD
 21,700       # residue differences P-group collapsing would delete
 76           # per cent of DRB4 chromosomes carrying DRB4*01:03
-0.5430       # frequency of the DRB4 null allele in the reference
-0.625        # the low end of r before the P-group translation
 0.991        # the high end
 186          # chromosomes the 1000 Genomes panel types at DQB1, of 210
 

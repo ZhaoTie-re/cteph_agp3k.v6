@@ -181,6 +181,8 @@ scripts/
                          per case/control group and per gene
   allele_freq_check.py   control allele frequencies vs one reference panel, matched
                          on IPD-IMGT P groups. Run once per panel
+  quality_tables.py      one quality row per column of each matrix, so an analyst
+                         can decide what to test without re-deriving it
   build_facts.py         every number this component's prose is allowed to quote,
                          derived from the published tables into _run_info/facts.json
                          (--reference-jmorp additionally measures the cost of not

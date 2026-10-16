@@ -55,6 +55,9 @@ def parse_args():
     p.add_argument('--reference-jmorp', default=None,
                    help='the jMorp allele-frequency CSV; with it, the cost of NOT '
                         'translating to P groups is measured rather than asserted')
+    p.add_argument('--pgroups', default=None,
+                   help='IPD-IMGT/HLA hla_nom_p.txt; with it, the P-group facts the '
+                        'harmonisation section quotes are measured rather than typed')
     p.add_argument('--control-group', default='AGP3K',
                    help="the manifest group whose frequencies are compared")
     p.add_argument('--out', required=True)
@@ -427,26 +430,50 @@ def main():
     # ---- the residue matrix's own shape, which OUTPUTS.md describes ---------
     # These moved when the cohort did -- a position that was polymorphic in 3,569
     # samples need not be in 3,101 -- so they are derived rather than remembered.
-    rdo = pd.read_csv(R / '04.residues/residue_dosage.tsv', sep='\t',
-                      dtype=SAMPLE_ID).set_index('sample_id')
-    rnum = rdo.apply(pd.to_numeric, errors='coerce')
-    DROP = {'DRB3', 'DRB4', 'DRB5'}          # OPEN_QUESTIONS section 1
-    by_pos = {}
-    for col in rnum.columns:
-        gene, position, _aa = col.split(':', 2)
-        if gene in DROP:
-            continue
-        by_pos.setdefault(f'{gene}:{position}', []).append(col)
-    psum = pd.DataFrame({k: rnum[v].sum(axis=1) for k, v in by_pos.items()})
-    eq2 = (psum == 2)
-    und = 1 - eq2.mean(axis=0)
-    put('n_usable_positions', num(len(by_pos)), len(by_pos))
-    put('share_positions_summing_to_2', pct(eq2.to_numpy().mean()),
-        float(eq2.to_numpy().mean()))
+    # These come from residue_quality.tsv rather than being recomputed here. They
+    # were computed here first, and publishing only the summary is what left the
+    # component with no per-residue quality at all -- the table now carries the
+    # per-position rate and this reads it back.
+    rq = pd.read_csv(R / '05.qc/residue_quality.tsv', sep='\t')
+    pos = rq[rq.gene_dosage_valid == 1].drop_duplicates(['gene', 'position'])
+    und = pos.set_index(pos.gene + ':' + pos.position.astype(str))[
+        'position_undetermined_rate']
+    put('n_usable_positions', num(len(und)), len(und))
+    put('share_positions_summing_to_2', pct(1 - und.mean()), float(1 - und.mean()))
     put('median_undetermined_rate', pct(und.median(), 4), float(und.median()))
     put('n_positions_over_5pct', num((und > 0.05).sum()), int((und > 0.05).sum()))
     put('worst_undetermined_position', str(und.idxmax()))
     put('worst_undetermined_rate', pct(und.max()), float(und.max()))
+
+    # ---- what the two quality tables say, in the shape the report quotes -----
+    # Bands, not a threshold: the tables deliberately carry no usable/unusable
+    # verdict, so the prose describes the distribution and leaves the line to the
+    # analysis. MAC is the count of cohort chromosomes carrying the column.
+    aq = pd.read_csv(R / '05.qc/allele_quality.tsv', sep='\t')
+    put('n_alleles_scored', num(len(aq)), len(aq))
+    put('n_residues_scored', num(len(rq)), len(rq))
+    for name, sel in (('singleton', aq.n_chr_total == 1),
+                      ('under_10', aq.n_chr_total < 10),
+                      ('at_least_10', aq.n_chr_total >= 10)):
+        put(f'n_alleles_mac_{name}', num(sel.sum()), int(sel.sum()))
+    share = aq.loc[aq.n_chr_total >= 10, 'n_chr_total'].sum() / aq.n_chr_total.sum()
+    put('share_chr_on_alleles_mac_at_least_10', pct(share), float(share))
+    amb = aq.n_chr_ambiguous > 0
+    put('n_alleles_touched_by_ambiguity', num(amb.sum()), int(amb.sum()))
+    put('share_chr_from_ambiguity',
+        pct(aq.n_chr_ambiguous.sum() / aq.n_chr_total.sum()),
+        float(aq.n_chr_ambiguous.sum() / aq.n_chr_total.sum()))
+    put('n_alleles_dosage_invalid', num((aq.gene_dosage_valid == 0).sum()),
+        int((aq.gene_dosage_valid == 0).sum()))
+    for name, sel in (('singleton', rq.n_chr_total == 1),
+                      ('at_least_10', rq.n_chr_total >= 10)):
+        put(f'n_residues_mac_{name}', num(sel.sum()), int(sel.sum()))
+    one = rq.n_alleles_carrying <= 1
+    put('n_residues_one_allele', num(one.sum()), int(one.sum()))
+    put('median_alleles_per_residue', f'{rq.n_alleles_carrying.median():.0f}',
+        float(rq.n_alleles_carrying.median()))
+    put('n_residues_dosage_invalid', num((rq.gene_dosage_valid == 0).sum()),
+        int((rq.gene_dosage_valid == 0).sum()))
 
     pg = R / '05.qc/allele_pgroup_map.tsv'
     if pg.is_file():
@@ -514,6 +541,70 @@ def main():
                     dead.append(g)
             put('n_loci_unmatched_without_pgroups_jmorp', num(len(dead)), len(dead))
             put('loci_unmatched_without_pgroups_jmorp', ', '.join(dead))
+
+        # ---- the null-allele mechanism at DRB4, measured -------------------
+        # The P-group logic is IMPORTED from allele_freq_check.py rather than
+        # written again here. A second copy is exactly how the number in the
+        # prose and the number in the pipeline would come to disagree.
+        if a.pgroups and a.reference_jmorp:
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                'afc', Path(__file__).resolve().parent / 'allele_freq_check.py')
+            afc = importlib.util.module_from_spec(spec)
+            argv, sys.argv = sys.argv, ['allele_freq_check.py']
+            spec.loader.exec_module(afc)
+            sys.argv = argv
+            pmap = afc.load_pgroups(a.pgroups)
+            put('n_pgroup_names_checked', num(len(pmap)), len(pmap))
+
+            rf = pd.read_csv(a.reference_jmorp)
+            chk = pd.read_csv(R / '05.qc/allele_frequency_check.tsv', sep='\t')
+            g = 'DRB4'
+            sub = rf[rf.gene == g]
+            counts, kept, nulls = {}, 0, {}
+            for _, r in sub.iterrows():
+                nm = str(r['allele']).split('*', 1)[1]
+                c = int(r['count'])
+                if nm.rstrip('P').endswith('N'):
+                    nulls[str(r['allele'])] = c
+                    continue
+                k = (str(r['allele']) if nm.endswith('P')
+                     else afc.to_pgroup(f'{g}*{nm}', pmap))
+                counts[k] = counts.get(k, 0) + c
+                kept += c
+            total = kept + sum(nulls.values())
+            worst = max(nulls, key=nulls.get)
+            put(f'null_allele_{g}_jmorp', worst)
+            put(f'freq_null_allele_{g}_jmorp', f'{nulls[worst] / total:.3f}',
+                nulls[worst] / total)
+            # r if the null were left in: the reference then spends more than half
+            # its chromosomes on an allele we never call, and the correlation
+            # collapses. This is the counterfactual the DRB4 paragraph quotes.
+            ours = dict(zip(chk[chk.gene == g].allele, chk[chk.gene == g].freq_ctrl))
+            ref_with = {k: c / total for k, c in counts.items()}
+            ref_with.update({k: c / total for k, c in nulls.items()})
+            keys = sorted(set(ref_with) | set(ours))
+            v1 = np.array([ref_with.get(k, 0.0) for k in keys])
+            v2 = np.array([float(ours.get(k, 0.0)) for k in keys])
+            rr = float(np.corrcoef(v1, v2)[0, 1])
+            put(f'r_with_null_{g}_jmorp', f'{rr:.3f}', rr)
+
+        # ---- how far apart the two denominators are, locus by locus --------
+        # The prose used to say every locus but DRB3 agreed to within 0.7 points.
+        # It does not: DRB4 is an order of magnitude further out, for a reason
+        # that is understood, and saying so is the whole contrast.
+        sm = pd.read_csv(R / '05.qc/allele_frequency_summary.tsv', sep='\t')
+        if {'frac_chr_ctrl', 'frac_chr_ref'} <= set(sm.columns):
+            gap = (sm.frac_chr_ctrl - sm.frac_chr_ref).abs() * 100.0
+            sm = sm.assign(gap_pp=gap)
+            for _, r in sm.iterrows():
+                put(f"denominator_gap_{r['gene']}_jmorp", f"{r['gap_pp']:.1f}",
+                    float(r['gap_pp']))
+            rest = sm[(sm.comparable == 1) & (sm.gene != 'DRB4')]
+            put('denominator_gap_max_other_jmorp', f"{rest.gap_pp.max():.1f}",
+                float(rest.gap_pp.max()))
+            put('locus_denominator_gap_max_other_jmorp',
+                str(rest.loc[rest.gap_pp.idxmax(), 'gene']))
 
     out = {'_note': 'Generated by build_facts.py. Every number this component writes into prose '
                     'comes from here; nothing is hand-typed. See verify.sh.',

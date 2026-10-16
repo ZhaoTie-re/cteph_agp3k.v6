@@ -116,10 +116,10 @@ the frequency spectrum would move, and no call-rate metric would notice.
 | **DRB4** | **0.991** | | | | |
 
 DRB4 needed one correction to get there: jMorp assigns every chromosome an allele and uses the
-null `DRB4*03:01N` — 0.5430 of all chromosomes — for "this haplotype carries no functional
+null `DRB4*03:01N` — 0.543 of all chromosomes — for "this haplotype carries no functional
 DRB4", which is what this pipeline records as `not_typed` and leaves out of its denominator.
-That single entry was the entire discrepancy (`max|Δ|` = 0.5430 exactly); dropping nulls and
-renormalising moves DRB4 from *r* = 0.625 to 0.991, and the carriage rates then agree
+That single entry was the entire discrepancy (`max|Δ|` = 0.543 exactly); dropping nulls and
+renormalising moves DRB4 from *r* = 0.624 to 0.991, and the carriage rates then agree
 independently — ours 0.4018, jMorp non-null 0.4565.
 
 **DRB3 is NOT COMPARABLE, and the reason is now known.** Earlier versions of this section said

@@ -280,11 +280,11 @@ Four things about it are load-bearing:
   frequencies are in the table beside, never as the comparison.
 - **Denominators are read per locus, never assumed to be 2*n*.** jMorp's are uniform at
   122,848; the 1000 Genomes panel's are not (its DQB1 is typed on 186 of 210). And jMorp
-  encodes gene absence as a **null allele** — `DRB4*03:01N`, 0.5430 of all chromosomes, meaning
+  encodes gene absence as a **null allele** — `DRB4*03:01N`, 0.543 of all chromosomes, meaning
   the haplotype carries no functional DRB4, which is what this component records as
   `not_typed`. Nulls are dropped and the rest renormalised, or the two sides are not the same
   quantity: that single entry is the whole DRB4 gap, and removing it moves DRB4 from
-  *r* = 0.625 to 0.991.
+  *r* = 0.624 to 0.991.
 
 **This is not an accuracy measurement.** It compares population frequencies; it cannot say
 a given sample was typed correctly, and a set of errors preserving the spectrum is

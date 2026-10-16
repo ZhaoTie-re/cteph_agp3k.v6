@@ -197,6 +197,12 @@ params.FlagLoci          = 'DRB3'
 
 params.TruthPopulation   = 'JPT'    // 1kg_wide only; the only Japanese population there
 params.ControlGroup      = 'AGP3K'  // the `group` value that is a population sample
+
+// The three genes whose dosage columns cannot be read like the others: a
+// hemizygous call is written as two copies of one allele, so those columns say 2
+// where the truth is 1. Named here rather than hard-coded in the quality table so
+// that the defect has ONE definition; see docs/OPEN_QUESTIONS.md section 1.
+params.NoDosageGenes     = 'DRB3,DRB4,DRB5'
 // ONE LOCUS LIST PER PANEL, and they must not be shared. A locus the panel does not
 // carry scores as entirely unconfirmed rather than as absent, so running the 13-locus
 // list against the 5-locus panel reports 62.8 % unconfirmed instead of 10.4 % — a
@@ -620,6 +626,49 @@ process ALLELE_FREQ_CHECK {
 
 /* STEP 11 · PLOT_TYPING_QC  -> figures/ — one standalone figure, so it carries its
  * own document rather than a family catalogue. */
+process QUALITY_TABLES {
+    executor 'slurm'
+    queue    'gr10478b'
+    time     '1h'
+    tag      'quality'
+    publishDir "${params.out_dir}/05.qc", mode: 'copy'
+
+    input:
+    tuple path(allele_dosage), path(residue_dosage), path(reference_dir),
+          path(pgroup_map), path(ambiguity), path(gene_qc), path(summary),
+          path(manifest)
+    path script
+    path helpers
+
+    output:
+    path('allele_quality.tsv'),  emit: allele_quality
+    path('residue_quality.tsv'), emit: residue_quality
+
+    script:
+    // `helpers` stages allele_freq_check.py and residue_matrix.py beside the
+    // script, which imports wilson() and the reference index from them rather
+    // than carrying a second copy of either.
+    """
+    set -euo pipefail
+    source activate ${params.conda_env}
+    python3 ${script} \\
+        --allele-dosage ${allele_dosage} \\
+        --residue-dosage ${residue_dosage} \\
+        --reference-dir ${reference_dir} \\
+        --pgroup-map ${pgroup_map} \\
+        --ambiguity ${ambiguity} \\
+        --gene-qc ${gene_qc} \\
+        --summary ${summary} \\
+        --manifest ${manifest} \\
+        --control-group ${params.ControlGroup} \\
+        --no-dosage-genes '${params.NoDosageGenes}' \\
+        --field-depth ${params.AlleleFieldDepth} \\
+        --out-allele allele_quality.tsv \\
+        --out-residue residue_quality.tsv
+    """
+}
+
+
 process PLOT_TYPING_QC {
     executor 'slurm'
     queue    'gr10478b'
@@ -866,6 +915,22 @@ workflow {
                          .combine(
                      ch_freq.secondary.map { _m, _c, summary, _sm, _pg -> summary }),
                      script_file('plot_allele_freq.py'))
+
+    // -- [12b] one quality row per column of each matrix -----------------------
+    // The tables an analyst needs to decide whether a column is worth testing.
+    // They carry no verdict: the counts and the flags are published and where the
+    // line falls is the analysis's decision, not this component's.
+    QUALITY_TABLES(RESIDUE_MATRIX.out.allele_dosage
+                       .combine(RESIDUE_MATRIX.out.dosage)
+                       .combine(BUILD_RESIDUE_REF.out.ref)
+                       .combine(ch_freq.primary.map { _m, _c, _s, _sm, pg -> pg })
+                       .combine(COLLECT_ALLELES.out.ambiguity)
+                       .combine(TYPING_QC.out.gene_qc)
+                       .combine(ch_freq.primary.map { _m, _c, s, _sm, _pg -> s })
+                       .combine(BUILD_MANIFEST.out.manifest),
+                   script_file('quality_tables.py'),
+                   channel.value([script_file('allele_freq_check.py'),
+                                  script_file('residue_matrix.py')]))
 
     // -- [13] the confound, drawn, under both panels ----------------------------
     PLOT_TYPING_CONFOUND(ch_freq.primary.map   { _m, _c, _s, smp, _pg -> smp }

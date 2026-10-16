@@ -1,0 +1,264 @@
+<!-- The two rails, and the page search.
+
+     Included after the body by _quarto.yml, so BOTH language editions get them
+     from one file and cannot drift apart.
+
+     LEFT  the chapters: where you are in the document.
+     RIGHT the current chapter's sections: where you are in this chapter.
+
+     The right rail is not a second table of contents. It is Quarto's own
+     `nav#TOC`, left exactly where Quarto put it and re-presented with CSS. That
+     matters: the TOC carries `data-scroll-target` and Quarto's
+     IntersectionObserver already keeps `a.nav-link.active` pointing at the
+     heading you are reading. Re-implementing scroll-spy would be strictly worse
+     than reading the one this page already ships.
+
+     The search is written here rather than switched on in Quarto because
+     Quarto's search is a website-project feature that needs a separate index
+     file next to the page. This report has to stay ONE self-contained .html --
+     verify.sh checks every figure is embedded in it and it is opened straight
+     off disk -- so the search runs against the rendered DOM instead. While a
+     term is being searched the right rail drops out of chapter scope and shows
+     every matching heading, because a search that could only find things in the
+     chapter you happen to be standing in would be a worse search. -->
+<div id="report-rail" hidden>
+  <form id="rr-form" role="search" onsubmit="return false;">
+    <input id="rr-q" type="search" autocomplete="off" spellcheck="false" aria-label="search">
+    <div id="rr-status" aria-live="polite"></div>
+  </form>
+  <nav id="rr-main"></nav>
+</div>
+<div id="rr-here" hidden></div>
+<script>
+(function () {
+  var root = document.documentElement;
+  var zh = (root.getAttribute('lang') || '').toLowerCase().indexOf('zh') === 0;
+  var T = zh
+    ? { ph: '在本页中搜索…', hint: '回车跳到下一处，Shift+回车上一处，Esc 清除',
+        none: '没有匹配', of: ' / ', matches: ' 处', contents: '目录',
+        here: '本章', found: '搜索结果', alone: '本章没有分小节' }
+    : { ph: 'Search this page…', hint: 'Enter for next, Shift+Enter for previous, Esc to clear',
+        none: 'no match', of: ' of ', matches: ' matches', contents: 'Contents',
+        here: 'In this section', found: 'Search results', alone: 'no subsections' };
+
+  var rail = document.getElementById('report-rail');
+  var here = document.getElementById('rr-here');
+  var content = document.getElementById('quarto-content');
+  var main = document.getElementById('quarto-document-content');
+  var margin = document.getElementById('quarto-margin-sidebar');
+  var toc = document.getElementById('TOC');
+  if (!rail || !content || !main) return;
+
+  // ---- where the left rail lives -----------------------------------------
+  // Wide: a grid item in the page's left column. Narrow: Quarto collapses to one
+  // column and every grid item lands in the same row, so a rail left in the grid
+  // would be drawn straight through the article. Below the breakpoint it goes
+  // inside the article instead, as its first block.
+  var wide = window.matchMedia('(min-width: 992px)');
+  function place() {
+    if (wide.matches) {
+      content.insertBefore(rail, content.firstChild);
+      content.classList.add('has-report-rail');
+    } else {
+      main.insertBefore(rail, main.firstChild);
+      content.classList.remove('has-report-rail');
+    }
+  }
+  place();
+  if (wide.addEventListener) wide.addEventListener('change', place);
+  else if (wide.addListener) wide.addListener(place);
+  rail.hidden = false;
+
+  // ---- left rail: the chapters -------------------------------------------
+  var nav = document.getElementById('rr-main');
+  var tops = toc ? toc.querySelectorAll('#TOC > ul > li') : [];
+  var head = document.createElement('div');
+  head.className = 'rr-head';
+  head.textContent = T.contents;
+  nav.appendChild(head);
+  var chapters = [];
+  Array.prototype.forEach.call(tops, function (li) {
+    var a = li.querySelector('a');
+    if (!a || a.parentNode !== li) return;
+    var c = a.cloneNode(true);          // the href is an anchor; it just works
+    c.removeAttribute('id');
+    c.className = 'rr-chapter';
+    nav.appendChild(c);
+    chapters.push({ li: li, link: c });
+  });
+
+  // ---- right rail: this chapter only -------------------------------------
+  if (toc && margin) {
+    margin.insertBefore(here, toc);
+    here.hidden = false;
+    toc.classList.add('rr-scoped');
+  }
+
+  function topLevel(el) {
+    var li = el.closest('li');
+    while (li && li.parentElement && li.parentElement.parentElement !== toc) {
+      li = li.parentElement.closest('li');
+    }
+    return li;
+  }
+
+  var current = null;
+  function label(text, alone) {
+    here.textContent = '';
+    var t = document.createElement('span');
+    t.className = 'rr-head';
+    t.textContent = text;
+    here.appendChild(t);
+    here.classList.toggle('rr-alone', !!alone);
+    if (alone) {
+      var n = document.createElement('span');
+      n.className = 'rr-none';
+      n.textContent = T.alone;
+      here.appendChild(n);
+    }
+  }
+
+  function syncChapter() {
+    if (!toc || toc.classList.contains('rr-search')) return;
+    var act = toc.querySelector('a.nav-link.active');
+    var li = act ? topLevel(act) : (chapters[0] && chapters[0].li);
+    if (!li || li === current) return;
+    current = li;
+    var was = toc.querySelector('li.rr-here');
+    if (was) was.classList.remove('rr-here');
+    li.classList.add('rr-here');
+    var own = li.querySelector('a');
+    label(own ? own.textContent.replace(/\s+/g, ' ').trim() : T.here,
+          !li.querySelector('ul'));
+    chapters.forEach(function (c) {
+      c.link.classList.toggle('rr-current', c.li === li);
+    });
+  }
+
+  // Driving the rails from verify.sh needs this synchronously: a
+  // MutationObserver callback is a microtask and does not run until the calling
+  // script has finished, so a test that set `.active` and read the DOM straight
+  // back would read it before the rail had reacted.
+  rail.syncChapter = syncChapter;
+
+  if (toc) {
+    new MutationObserver(syncChapter).observe(toc, {
+      attributes: true, attributeFilter: ['class'], subtree: true
+    });
+    syncChapter();
+  }
+
+  // ---- the page search ----------------------------------------------------
+  var q = document.getElementById('rr-q');
+  var status = document.getElementById('rr-status');
+  q.placeholder = T.ph;
+  q.title = T.hint;
+
+  var hits = [], cur = -1, timer = null;
+
+  function unmark() {
+    var marks = main.querySelectorAll('mark.rr-hit');
+    for (var i = 0; i < marks.length; i++) {
+      var m = marks[i];
+      m.parentNode.replaceChild(document.createTextNode(m.textContent), m);
+    }
+    if (marks.length) main.normalize();
+    hits = []; cur = -1;
+  }
+
+  function mark(term) {
+    var low = term.toLowerCase(), targets = [];
+    var walk = document.createTreeWalker(main, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (n) {
+        var p = n.parentNode ? n.parentNode.nodeName : '';
+        if (p === 'SCRIPT' || p === 'STYLE' || p === 'MARK') return NodeFilter.FILTER_REJECT;
+        // On a narrow screen the rail lives inside the article; it is navigation,
+        // not text being searched.
+        if (rail.contains(n)) return NodeFilter.FILTER_REJECT;
+        return n.nodeValue.toLowerCase().indexOf(low) === -1
+          ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    for (var n = walk.nextNode(); n; n = walk.nextNode()) targets.push(n);
+    for (var i = 0; i < targets.length; i++) {
+      var node = targets[i], s = node.nodeValue, ls = s.toLowerCase();
+      var frag = document.createDocumentFragment(), from = 0, at;
+      while ((at = ls.indexOf(low, from)) !== -1) {
+        if (at > from) frag.appendChild(document.createTextNode(s.slice(from, at)));
+        var m = document.createElement('mark');
+        m.className = 'rr-hit';
+        m.textContent = s.slice(at, at + term.length);
+        frag.appendChild(m);
+        from = at + term.length;
+      }
+      if (from < s.length) frag.appendChild(document.createTextNode(s.slice(from)));
+      node.parentNode.replaceChild(frag, node);
+    }
+    hits = [].slice.call(main.querySelectorAll('mark.rr-hit'));
+  }
+
+  // While searching the right rail leaves chapter scope and becomes the result
+  // list: every heading whose own text or whose children match.
+  function filterToc(term) {
+    if (!toc) return;
+    var items = toc.querySelectorAll('li');
+    var low = term.toLowerCase();
+    for (var i = 0; i < items.length; i++) {
+      if (!term) { items[i].classList.remove('rr-off'); continue; }
+      var links = items[i].querySelectorAll('a'), keep = false;
+      for (var j = 0; j < links.length && !keep; j++)
+        keep = links[j].textContent.toLowerCase().indexOf(low) !== -1;
+      items[i].classList.toggle('rr-off', !keep);
+    }
+  }
+
+  function show() {
+    if (!q.value) { status.textContent = ''; return; }
+    if (!hits.length) { status.textContent = T.none; return; }
+    status.textContent = (cur < 0 ? hits.length + T.matches
+                                  : (cur + 1) + T.of + hits.length);
+  }
+
+  function go(step) {
+    if (!hits.length) return;
+    if (cur >= 0) hits[cur].classList.remove('rr-cur');
+    cur = (cur + step + hits.length) % hits.length;
+    hits[cur].classList.add('rr-cur');
+    hits[cur].scrollIntoView({ block: 'center', behavior: 'smooth' });
+    show();
+  }
+
+  function run() {
+    unmark();
+    var term = q.value.trim();
+    filterToc(term);
+    if (toc) {
+      toc.classList.toggle('rr-search', !!term);
+      toc.classList.toggle('rr-scoped', !term);
+    }
+    if (term) label(T.found, false);
+    else { current = null; syncChapter(); }
+    if (term.length >= 2) mark(term);
+    show();
+  }
+
+  // The one hook: verify.sh drives the search and the rails through this in a
+  // headless browser, because navigation that silently stops working looks
+  // exactly like navigation that works.
+  rail.runSearch = run;
+
+  q.addEventListener('input', function () {
+    clearTimeout(timer);
+    timer = setTimeout(run, 160);
+  });
+  q.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); go(e.shiftKey ? -1 : 1); }
+    else if (e.key === 'Escape') { q.value = ''; run(); q.blur(); }
+  });
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault(); q.focus(); q.select();
+    }
+  });
+})();
+</script>

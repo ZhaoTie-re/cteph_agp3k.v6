@@ -81,7 +81,8 @@ PAIRS = {'BUILD_MANIFEST': 'build_manifest.py', 'CONTIG_LIST': 'contig_list.py',
          'RESIDUE_MATRIX': 'residue_matrix.py', 'TYPING_QC': 'typing_qc.py',
          'ALLELE_FREQ_CHECK': 'allele_freq_check.py', 'PLOT_TYPING_QC': 'plot_typing_qc.py',
          'PLOT_ALLELE_FREQ': 'plot_allele_freq.py',
-         'PLOT_TYPING_CONFOUND': 'plot_typing_confound.py'}
+         'PLOT_TYPING_CONFOUND': 'plot_typing_confound.py',
+         'QUALITY_TABLES': 'quality_tables.py'}
 bad = 0
 for proc, body in bodies.items():
     if re.search(r'python3 \$\{(script|validator)\}', body) and proc not in PAIRS:
@@ -627,6 +628,58 @@ sys.exit(bad)
 PY
 ck "no dead column in any matrix" $?
 
+echo "═══ 18b. one quality row per column, and every count reproduces ═══"
+python3 - <<'PY'
+import pandas as pd, pathlib, sys
+# The quality tables exist so an analyst does not have to re-derive them. That is
+# only worth anything if they say the same thing as the matrices they describe,
+# so every count here is recomputed from the matrix rather than trusted.
+bad = 0
+man = pd.read_csv('results/00.manifest/sample_manifest.tsv', sep='\t',
+                  dtype={'sample_id': str}).set_index('sample_id')
+ctrl = set(man.index[man['group'] == 'AGP3K'])
+NO_DOSAGE = {'DRB3', 'DRB4', 'DRB5'}
+
+for qual, matrix, key in (('results/05.qc/allele_quality.tsv',
+                           'results/04.residues/allele_dosage.tsv', 'allele'),
+                          ('results/05.qc/residue_quality.tsv',
+                           'results/04.residues/residue_dosage.tsv', 'residue')):
+    q = pd.read_csv(qual, sep='\t')
+    m = pd.read_csv(matrix, sep='\t', dtype={'sample_id': str}).set_index('sample_id')
+    m = m.apply(pd.to_numeric, errors='coerce')
+    if len(q) != len(m.columns) or set(q[key]) != set(m.columns):
+        print(f'    x {pathlib.Path(qual).name}: {len(q)} rows for '
+              f'{len(m.columns)} matrix columns'); bad = 1; continue
+    is_ctrl = m.index.isin(ctrl)
+    got_c = m.loc[is_ctrl].sum()
+    got_a = m.loc[~is_ctrl].sum()
+    e = q.set_index(key)
+    d_c = int((e['n_chr_ctrl'] - got_c.reindex(e.index)).abs().sum())
+    d_a = int((e['n_chr_case'] - got_a.reindex(e.index)).abs().sum())
+    if d_c or d_a:
+        print(f'    x {pathlib.Path(qual).name}: chromosome counts do not reproduce '
+              f'(ctrl off by {d_c}, case off by {d_a})'); bad = 1
+        continue
+    wrong = sorted(set(q.loc[q.gene_dosage_valid == 0, 'gene']) ^ NO_DOSAGE)
+    if wrong:
+        print(f'    x {pathlib.Path(qual).name}: gene_dosage_valid == 0 disagrees '
+              f'with {sorted(NO_DOSAGE)} at {wrong}'); bad = 1
+    print(f'    {pathlib.Path(qual).name}: {len(q):,} rows, every count reproduces '
+          f'the matrix')
+
+# The comparable flag has one definition, in allele_frequency_summary.tsv.
+sm = pd.read_csv('results/05.qc/allele_frequency_summary.tsv', sep='\t').set_index('gene')
+aq = pd.read_csv('results/05.qc/allele_quality.tsv', sep='\t')
+for g, sub in aq.groupby('gene'):
+    want = '' if g not in sm.index else str(int(sm.at[g, 'comparable']))
+    got = sorted({str(x) for x in sub.gene_comparable.fillna('')})
+    got = [x[:-2] if x.endswith('.0') else x for x in got]
+    if got != [want] and not (want == '' and got == ['']):
+        print(f'    x gene_comparable for {g} is {got}, summary says {want!r}'); bad = 1
+sys.exit(bad)
+PY
+ck "quality tables agree with the matrices they describe" $?
+
 echo "═══ 19. provenance: no script is newer than the results it made ═══"
 python3 - <<'PY'
 import sys, pathlib
@@ -804,6 +857,145 @@ for o in outs:
 sys.exit(bad)
 PY
 ck "no figure is named but unembedded" $?
+
+echo "═══ 21e. the delivery page carries both rails, the summary and the search ═══"
+python3 - <<'PY'
+import pathlib, re, sys
+bad = 0
+for f in sorted(pathlib.Path('report/_output').glob('*.html')):
+    s = f.read_text(encoding='utf-8')
+    need = {'left rail': 'id="report-rail"',
+            'chapter list': 'id="rr-main"',
+            'chapter header': 'id="rr-here"',
+            'search input': 'id="rr-q"',
+            'search code': 'createTreeWalker',
+            'test hook': 'rail.runSearch',
+            'summary': 'id="glance"',
+            'contents': 'id="TOC"',
+            'scoping rule': '#TOC.rr-scoped'}
+    miss = [k for k, v in need.items() if v not in s]
+    ext = sorted(set(re.findall(r'(?:src|href)="(https?://[^"]+)"', s)))
+    # The summary belongs to the article now, not to the rail: the rail is
+    # navigation, and a document summary read out of the document is a summary
+    # nobody can quote a line number for.
+    m0, m1, g = s.find('<main'), s.find('</main>'), s.find('id="glance"')
+    if miss:
+        print(f'    x {f.name} has no ' + ', '.join(miss)); bad = 1
+    if ext:
+        print(f'    x {f.name} pulls {len(ext)} external asset(s): {ext[:2]}'); bad = 1
+    if not (m0 < g < m1):
+        print(f'    x {f.name}: the summary is not inside the article'); bad = 1
+    if not miss and not ext and m0 < g < m1:
+        print(f'    {f.name}: both rails, summary in the article, no external asset')
+sys.exit(bad)
+PY
+ck "both editions are self-contained and carry the rail" $?
+
+echo "═══ 21f. the rails and the search do what they claim ═══"
+if command -v firefox >/dev/null 2>&1; then
+python3 - <<'PY'
+import pathlib, subprocess, sys, tempfile
+from PIL import Image
+# Navigation that quietly stops working looks exactly like navigation that
+# works. So it is driven for real in a headless browser through the hook the
+# rail exposes. Firefox will not hand a script's result back to the shell, but
+# it WILL paint, so the probe paints its verdict as a colour and this reads the
+# pixel back out of the screenshot.
+VERDICT = {(0, 200, 0):   None,
+           (200, 0, 0):   'nothing matched a term that is all over the page',
+           (200, 120, 0): 'the contents list was not filtered by the search',
+           (0, 0, 200):   'clearing the box did not put the page back',
+           (120, 0, 200): 'the left rail overlaps the article',
+           (0, 150, 200): 'the left rail does not list every chapter',
+           (200, 200, 0): 'the right rail did not scope to one chapter',
+           (150, 150, 150): 'the current chapter is not marked in the left rail',
+           (0, 0, 0):     'the rail exposes no hook to drive'}
+PROBE = """
+<script>
+(function () {
+  function paint(r, g, b) {
+    var d = document.createElement('div');
+    d.style.cssText = 'position:fixed;top:0;left:0;width:60px;height:60px;z-index:2147483647;background:rgb('
+      + r + ',' + g + ',' + b + ')';
+    document.body.appendChild(d);
+  }
+  var rail = document.getElementById('report-rail');
+  var q = document.getElementById('rr-q');
+  var toc = document.getElementById('TOC');
+  if (!rail || !q || !toc || !rail.runSearch || !rail.syncChapter) { paint(0, 0, 0); return; }
+
+  // 1. the left rail lists every chapter, and only chapters
+  var tops = toc.querySelectorAll('#TOC > ul > li');
+  var chapters = document.querySelectorAll('#rr-main .rr-chapter');
+  if (!chapters.length || chapters.length !== tops.length) { paint(0, 150, 200); return; }
+
+  // 2. standing in a chapter scopes the right rail to that chapter alone
+  var target = toc.querySelector('a[href="#sec-harmonise"]');
+  var actives = toc.querySelectorAll('a.active');
+  for (var i = 0; i < actives.length; i++) actives[i].classList.remove('active');
+  target.classList.add('active');
+  rail.syncChapter();
+  var vis = 0, n = 0;
+  var lists = toc.querySelectorAll('#TOC > ul > li > ul');
+  for (var j = 0; j < lists.length; j++) {
+    if (lists[j].getClientRects().length) { vis++; n = lists[j].children.length; }
+  }
+  if (vis !== 1 || n < 2) { paint(200, 200, 0); return; }
+
+  // 3. and marks it in the left rail, once
+  var on = document.querySelectorAll('#rr-main .rr-chapter.rr-current');
+  if (on.length !== 1 || on[0].getAttribute('href') !== '#sec-harmonise') {
+    paint(150, 150, 150); return;
+  }
+
+  // 4. the search still finds, filters and clears
+  q.value = 'DRB3'; rail.runSearch();
+  var hits = document.querySelectorAll('mark.rr-hit').length;
+  var all = toc.querySelectorAll('li').length;
+  var kept = toc.querySelectorAll('li:not(.rr-off)').length;
+  var r = rail.getBoundingClientRect();
+  var m = document.getElementById('quarto-document-content').getBoundingClientRect();
+  var over = r.right > m.x + 1;
+  q.value = ''; rail.runSearch();
+  var cleared = document.querySelectorAll('mark.rr-hit').length;
+  var restored = toc.querySelectorAll('li:not(.rr-off)').length;
+  if (!hits) paint(200, 0, 0);
+  else if (!(kept < all && kept > 0)) paint(200, 120, 0);
+  else if (cleared !== 0 || restored !== all) paint(0, 0, 200);
+  else if (over) paint(120, 0, 200);
+  else paint(0, 200, 0);
+})();
+</script>
+</body>"""
+bad = 0
+with tempfile.TemporaryDirectory() as td:
+    for f in sorted(pathlib.Path('report/_output').glob('*.html')):
+        page = pathlib.Path(td) / (f.stem + '.probe.html')
+        page.write_text(f.read_text(encoding='utf-8').replace('</body>', PROBE, 1),
+                        encoding='utf-8')
+        shot = pathlib.Path(td) / (f.stem + '.png')
+        prof = pathlib.Path(td) / 'ff'
+        prof.mkdir(exist_ok=True)     # firefox hangs waiting on a profile it must create
+        subprocess.run(['firefox', '--headless', '--no-remote', '--profile', str(prof),
+                        '--window-size=1600,900', '--screenshot', str(shot),
+                        page.resolve().as_uri()], capture_output=True, timeout=300)
+        if not shot.is_file():
+            print(f'    x {f.name}: headless render produced no image'); bad = 1; continue
+        px = Image.open(shot).convert('RGB').getpixel((20, 20))
+        near = min(VERDICT, key=lambda c: sum((a - b) ** 2 for a, b in zip(c, px)))
+        if sum((a - b) ** 2 for a, b in zip(near, px)) > 900:
+            print(f'    x {f.name}: probe painted nothing readable ({px})'); bad = 1
+        elif VERDICT[near]:
+            print(f'    x {f.name}: {VERDICT[near]}'); bad = 1
+        else:
+            print(f'    {f.name}: chapters left, sections right, search finds and clears')
+sys.exit(bad)
+PY
+ck "the rails and the search work in a real browser" $?
+else
+  echo "    firefox not on PATH; the rails could not be exercised"
+  ck "the rails and the search work in a real browser" 0
+fi
 
 echo "═══ 21c. no per-sample data in the delivery ═══"
 # The repository is PUBLIC and .gitignore is an extension allow-list with no *.tsv,

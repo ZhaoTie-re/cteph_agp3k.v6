@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="ZHAO TIE">
-<meta name="dcterms.date" content="2026-09-07">
+<meta name="dcterms.date" content="2026-09-08">
 
 <title>HLA typing for the CTEPH / AGP3K cohort</title>
 <style>
@@ -2217,13 +2217,99 @@ font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Source Han Sans 
 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 line-height: 1.75;
 }
+
+#report-rail {
+margin: 0 0 1.6rem 0;
+padding-bottom: 1.1rem;
+border-bottom: 1px solid #E3E6E9;
+}
+
+@media (min-width: 992px) {
+#quarto-content.has-report-rail {
+grid-template-columns:
+[screen-start] 1.5em [screen-start-inset] 5fr
+[page-start] 30px [page-start-inset] minmax(0px, 270px)
+[body-start-outset] 30px [body-start] 1.5em
+[body-content-start] minmax(420px, calc(820px - 3em)) [body-content-end]
+1.5em [body-end] 40px [body-end-outset] minmax(0px, 230px)
+[page-end-inset] 40px [page-end] 5fr [screen-end-inset] 1.5em [screen-end];
+}
+#report-rail {
+grid-column: page-start-inset / body-start-outset;
+grid-row: content-top / page-bottom;
+position: sticky;
+top: 0;
+align-self: start;
+max-height: 100vh;
+overflow-y: auto;
+overscroll-behavior: contain;
+margin-bottom: 0;
+padding: 1.4rem 0.5rem 2rem 0;
+border-bottom: none;
+font-size: 0.86rem;
+}
+}
+
+#rr-form { margin: 0 0 1.3rem 0; }
+#rr-q {
+width: 100%; box-sizing: border-box;
+padding: 0.4rem 0.6rem;
+border: 1px solid #C6CBD1; border-radius: 4px;
+background: #FFF; color: #21262B; font-size: 0.88rem; line-height: 1.4;
+}
+#rr-q:focus { outline: none; border-color: #2780E3;
+box-shadow: 0 0 0 2px rgba(39, 128, 227, .18); }
+#rr-status { min-height: 1.2em; margin-top: 0.3rem;
+font-size: 0.78rem; color: #6C757D; }
+
+.rr-head {
+display: block;
+font-size: 0.72rem; font-weight: 600; letter-spacing: .06em;
+text-transform: uppercase; color: #8A9199;
+margin: 0 0 0.5rem 0;
+}
+#rr-here .rr-head { text-transform: none; letter-spacing: 0;
+font-size: 0.82rem; color: #454A50; }
+.rr-none { display: block; font-size: 0.78rem; color: #9AA0A6;
+font-style: italic; }
+
+#rr-main .rr-chapter {
+display: block;
+padding: 0.26rem 0.4rem 0.26rem 0.7rem;
+margin-left: -0.7rem;
+border-left: 2px solid transparent;
+color: #454A50; text-decoration: none; line-height: 1.35;
+}
+#rr-main .rr-chapter:hover { color: #2780E3; background: #F4F6F8; }
+#rr-main .rr-chapter .header-section-number {
+display: inline-block; min-width: 1.3em;
+color: #9AA0A6; font-variant-numeric: tabular-nums;
+}
+#rr-main .rr-chapter.rr-current {
+color: #1B1F23; font-weight: 600;
+border-left-color: #2780E3; background: #F4F8FD;
+}
+#rr-main .rr-chapter.rr-current .header-section-number { color: #2780E3; }
+
+#TOC #toc-title { display: none; }
+#TOC.rr-scoped > ul > li > a { display: none; }
+#TOC.rr-scoped > ul > li > ul { display: none !important; }
+#TOC.rr-scoped > ul > li.rr-here > ul { display: block !important; }
+#TOC.rr-search > ul > li > a { display: block; }
+#TOC.rr-search > ul > li > ul { display: block !important; }
+#rr-here { margin: 0 0 0.35rem 0; }
+
+.rr-off { display: none !important; }
+mark.rr-hit { background: #FFF1A8; color: inherit; padding: 0 .05em;
+border-radius: 2px; }
+mark.rr-cur { background: #FFC947; box-shadow: 0 0 0 2px #FFC947; }
 </style>
 </head>
 
 <body class="quarto-light">
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
-<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
   <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
     <h2 id="toc-title">Table of contents</h2>
    
@@ -2231,16 +2317,31 @@ line-height: 1.75;
   <li><a href="#what-this-document-is" id="toc-what-this-document-is" class="nav-link active" data-scroll-target="#what-this-document-is"><span class="header-section-number">1</span> What this document is</a></li>
   <li><a href="#sec-primer" id="toc-sec-primer" class="nav-link" data-scroll-target="#sec-primer"><span class="header-section-number">2</span> HLA in five minutes</a>
   <ul class="collapse">
-  <li><a href="#what-the-hla-genes-do" id="toc-what-the-hla-genes-do" class="nav-link" data-scroll-target="#what-the-hla-genes-do"><span class="header-section-number">2.1</span> What the HLA genes do</a></li>
-  <li><a href="#what-typing-means-and-why-it-is-harder-than-reading-a-snp" id="toc-what-typing-means-and-why-it-is-harder-than-reading-a-snp" class="nav-link" data-scroll-target="#what-typing-means-and-why-it-is-harder-than-reading-a-snp"><span class="header-section-number">2.2</span> What “typing” means, and why it is harder than reading a SNP</a></li>
-  <li><a href="#how-to-read-an-allele-name" id="toc-how-to-read-an-allele-name" class="nav-link" data-scroll-target="#how-to-read-an-allele-name"><span class="header-section-number">2.3</span> How to read an allele name</a></li>
-  <li><a href="#residues-and-why-they-are-often-the-better-test" id="toc-residues-and-why-they-are-often-the-better-test" class="nav-link" data-scroll-target="#residues-and-why-they-are-often-the-better-test"><span class="header-section-number">2.4</span> Residues, and why they are often the better test</a></li>
-  <li><a href="#why-a-gene-can-be-present-on-one-chromosome-and-absent-from-the-other" id="toc-why-a-gene-can-be-present-on-one-chromosome-and-absent-from-the-other" class="nav-link" data-scroll-target="#why-a-gene-can-be-present-on-one-chromosome-and-absent-from-the-other"><span class="header-section-number">2.5</span> Why a gene can be present on one chromosome and absent from the other</a></li>
+  <li><a href="#where-these-genes-are" id="toc-where-these-genes-are" class="nav-link" data-scroll-target="#where-these-genes-are"><span class="header-section-number">2.1</span> Where these genes are</a>
+  <ul class="collapse">
+  <li><a href="#you-have-two-copies-of-chromosome-6-and-that-is-the-unit-everything-is-counted-in" id="toc-you-have-two-copies-of-chromosome-6-and-that-is-the-unit-everything-is-counted-in" class="nav-link" data-scroll-target="#you-have-two-copies-of-chromosome-6-and-that-is-the-unit-everything-is-counted-in"><span class="header-section-number">2.1.1</span> You have two copies of chromosome 6, and that is the unit everything is counted in</a></li>
+  </ul></li>
+  <li><a href="#class-i-and-class-ii-do-the-same-job-on-different-threats" id="toc-class-i-and-class-ii-do-the-same-job-on-different-threats" class="nav-link" data-scroll-target="#class-i-and-class-ii-do-the-same-job-on-different-threats"><span class="header-section-number">2.2</span> Class I and class II do the same job on different threats</a></li>
+  <li><a href="#why-this-is-the-most-variable-region-in-the-genome" id="toc-why-this-is-the-most-variable-region-in-the-genome" class="nav-link" data-scroll-target="#why-this-is-the-most-variable-region-in-the-genome"><span class="header-section-number">2.3</span> Why this is the most variable region in the genome</a></li>
+  <li><a href="#the-mhc-is-inherited-in-blocks" id="toc-the-mhc-is-inherited-in-blocks" class="nav-link" data-scroll-target="#the-mhc-is-inherited-in-blocks"><span class="header-section-number">2.4</span> The MHC is inherited in blocks</a></li>
+  <li><a href="#typing-is-a-matching-problem-not-a-base-call" id="toc-typing-is-a-matching-problem-not-a-base-call" class="nav-link" data-scroll-target="#typing-is-a-matching-problem-not-a-base-call"><span class="header-section-number">2.5</span> Typing is a matching problem, not a base call</a></li>
+  <li><a href="#what-a-call-is-here-and-why-short-reads-make-it-hard" id="toc-what-a-call-is-here-and-why-short-reads-make-it-hard" class="nav-link" data-scroll-target="#what-a-call-is-here-and-why-short-reads-make-it-hard"><span class="header-section-number">2.6</span> What “a call” is here, and why short reads make it hard</a></li>
+  <li><a href="#how-to-read-an-allele-name" id="toc-how-to-read-an-allele-name" class="nav-link" data-scroll-target="#how-to-read-an-allele-name"><span class="header-section-number">2.7</span> How to read an allele name</a></li>
+  <li><a href="#why-this-delivery-stops-at-two-fields" id="toc-why-this-delivery-stops-at-two-fields" class="nav-link" data-scroll-target="#why-this-delivery-stops-at-two-fields"><span class="header-section-number">2.8</span> Why this delivery stops at two fields</a></li>
+  <li><a href="#the-antigen-recognition-domain" id="toc-the-antigen-recognition-domain" class="nav-link" data-scroll-target="#the-antigen-recognition-domain"><span class="header-section-number">2.9</span> The antigen recognition domain</a></li>
+  <li><a href="#residues-and-why-they-are-often-the-better-test" id="toc-residues-and-why-they-are-often-the-better-test" class="nav-link" data-scroll-target="#residues-and-why-they-are-often-the-better-test"><span class="header-section-number">2.10</span> Residues, and why they are often the better test</a></li>
+  <li><a href="#genes-you-may-not-have-drb3-drb4-and-drb5" id="toc-genes-you-may-not-have-drb3-drb4-and-drb5" class="nav-link" data-scroll-target="#genes-you-may-not-have-drb3-drb4-and-drb5"><span class="header-section-number">2.11</span> Genes you may not have: DRB3, DRB4 and DRB5</a></li>
   </ul></li>
   <li><a href="#what-you-are-getting" id="toc-what-you-are-getting" class="nav-link" data-scroll-target="#what-you-are-getting"><span class="header-section-number">3</span> What you are getting</a></li>
-  <li><a href="#which-people-these-cover" id="toc-which-people-these-cover" class="nav-link" data-scroll-target="#which-people-these-cover"><span class="header-section-number">4</span> Which people these cover</a></li>
+  <li><a href="#sec-people" id="toc-sec-people" class="nav-link" data-scroll-target="#sec-people"><span class="header-section-number">4</span> Which people these cover</a></li>
   <li><a href="#how-the-typing-was-done" id="toc-how-the-typing-was-done" class="nav-link" data-scroll-target="#how-the-typing-was-done"><span class="header-section-number">5</span> How the typing was done</a></li>
-  <li><a href="#sec-completeness" id="toc-sec-completeness" class="nav-link" data-scroll-target="#sec-completeness"><span class="header-section-number">6</span> How complete is it?</a></li>
+  <li><a href="#sec-completeness" id="toc-sec-completeness" class="nav-link" data-scroll-target="#sec-completeness"><span class="header-section-number">6</span> How complete is it?</a>
+  <ul class="collapse">
+  <li><a href="#what-you-are-looking-at" id="toc-what-you-are-looking-at" class="nav-link" data-scroll-target="#what-you-are-looking-at"><span class="header-section-number">6.1</span> What you are looking at</a></li>
+  <li><a href="#what-to-conclude" id="toc-what-to-conclude" class="nav-link" data-scroll-target="#what-to-conclude"><span class="header-section-number">6.2</span> What to conclude</a></li>
+  <li><a href="#what-this-figure-cannot-tell-you" id="toc-what-this-figure-cannot-tell-you" class="nav-link" data-scroll-target="#what-this-figure-cannot-tell-you"><span class="header-section-number">6.3</span> What this figure cannot tell you</a></li>
+  <li><a href="#why-by-platform-and-not-by-casecontrol" id="toc-why-by-platform-and-not-by-casecontrol" class="nav-link" data-scroll-target="#why-by-platform-and-not-by-casecontrol"><span class="header-section-number">6.4</span> Why by platform, and not by case/control</a></li>
+  </ul></li>
   <li><a href="#sec-harmonise" id="toc-sec-harmonise" class="nav-link" data-scroll-target="#sec-harmonise"><span class="header-section-number">7</span> How two sources of allele frequencies are made comparable</a>
   <ul class="collapse">
   <li><a href="#three-sources-three-ways-of-writing-the-same-allele" id="toc-three-sources-three-ways-of-writing-the-same-allele" class="nav-link" data-scroll-target="#three-sources-three-ways-of-writing-the-same-allele"><span class="header-section-number">7.1</span> Three sources, three ways of writing the same allele</a></li>
@@ -2252,19 +2353,35 @@ line-height: 1.75;
   <li><a href="#denominators-what-is-left-out-and-why" id="toc-denominators-what-is-left-out-and-why" class="nav-link" data-scroll-target="#denominators-what-is-left-out-and-why"><span class="header-section-number">7.7</span> Denominators: what is left out, and why</a></li>
   <li><a href="#sec-drb3" id="toc-sec-drb3" class="nav-link" data-scroll-target="#sec-drb3"><span class="header-section-number">7.8</span> Where this fails: HLA-DRB3</a></li>
   </ul></li>
-  <li><a href="#sec-frequencies" id="toc-sec-frequencies" class="nav-link" data-scroll-target="#sec-frequencies"><span class="header-section-number">8</span> Do the calls agree with published data?</a></li>
+  <li><a href="#sec-frequencies" id="toc-sec-frequencies" class="nav-link" data-scroll-target="#sec-frequencies"><span class="header-section-number">8</span> Do the calls agree with published data?</a>
+  <ul class="collapse">
+  <li><a href="#reading-the-figure-panel-by-panel" id="toc-reading-the-figure-panel-by-panel" class="nav-link" data-scroll-target="#reading-the-figure-panel-by-panel"><span class="header-section-number">8.1</span> Reading the figure, panel by panel</a></li>
+  <li><a href="#a-caution-about-panel-b" id="toc-a-caution-about-panel-b" class="nav-link" data-scroll-target="#a-caution-about-panel-b"><span class="header-section-number">8.2</span> A caution about panel (b)</a></li>
+  <li><a href="#the-per-locus-record" id="toc-the-per-locus-record" class="nav-link" data-scroll-target="#the-per-locus-record"><span class="header-section-number">8.3</span> The per-locus record</a></li>
+  </ul></li>
   <li><a href="#sec-confound" id="toc-sec-confound" class="nav-link" data-scroll-target="#sec-confound"><span class="header-section-number">9</span> The one real quality problem</a>
   <ul class="collapse">
   <li><a href="#why-panel-d-matters-more-than-it-looks" id="toc-why-panel-d-matters-more-than-it-looks" class="nav-link" data-scroll-target="#why-panel-d-matters-more-than-it-looks"><span class="header-section-number">9.1</span> Why panel (d) matters more than it looks</a></li>
   <li><a href="#what-is-left-and-what-it-means-for-you" id="toc-what-is-left-and-what-it-means-for-you" class="nav-link" data-scroll-target="#what-is-left-and-what-it-means-for-you"><span class="header-section-number">9.2</span> What is left, and what it means for you</a></li>
   </ul></li>
-  <li><a href="#sec-support" id="toc-sec-support" class="nav-link" data-scroll-target="#sec-support"><span class="header-section-number">10</span> What these calls can and cannot support</a></li>
-  <li><a href="#sec-glossary" id="toc-sec-glossary" class="nav-link" data-scroll-target="#sec-glossary"><span class="header-section-number">11</span> Glossary</a></li>
+  <li><a href="#sec-support" id="toc-sec-support" class="nav-link" data-scroll-target="#sec-support"><span class="header-section-number">10</span> Data quality, and how to run the association</a>
+  <ul class="collapse">
+  <li><a href="#what-the-quality-evidence-adds-up-to" id="toc-what-the-quality-evidence-adds-up-to" class="nav-link" data-scroll-target="#what-the-quality-evidence-adds-up-to"><span class="header-section-number">10.1</span> What the quality evidence adds up to</a></li>
+  <li><a href="#quality-per-allele-and-per-residue" id="toc-quality-per-allele-and-per-residue" class="nav-link" data-scroll-target="#quality-per-allele-and-per-residue"><span class="header-section-number">10.2</span> Quality per allele and per residue</a></li>
+  <li><a href="#running-the-association" id="toc-running-the-association" class="nav-link" data-scroll-target="#running-the-association"><span class="header-section-number">10.3</span> Running the association</a></li>
+  </ul></li>
+  <li><a href="#sec-glossary" id="toc-sec-glossary" class="nav-link" data-scroll-target="#sec-glossary"><span class="header-section-number">11</span> Glossary</a>
+  <ul class="collapse">
+  <li><a href="#the-biology" id="toc-the-biology" class="nav-link" data-scroll-target="#the-biology"><span class="header-section-number">11.1</span> The biology</a></li>
+  <li><a href="#naming-an-allele" id="toc-naming-an-allele" class="nav-link" data-scroll-target="#naming-an-allele"><span class="header-section-number">11.2</span> Naming an allele</a></li>
+  <li><a href="#what-a-call-is" id="toc-what-a-call-is" class="nav-link" data-scroll-target="#what-a-call-is"><span class="header-section-number">11.3</span> What a call is</a></li>
+  <li><a href="#the-comparison-with-published-data" id="toc-the-comparison-with-published-data" class="nav-link" data-scroll-target="#the-comparison-with-published-data"><span class="header-section-number">11.4</span> The comparison with published data</a></li>
+  <li><a href="#the-statistics" id="toc-the-statistics" class="nav-link" data-scroll-target="#the-statistics"><span class="header-section-number">11.5</span> The statistics</a></li>
+  <li><a href="#the-sequencing" id="toc-the-sequencing" class="nav-link" data-scroll-target="#the-sequencing"><span class="header-section-number">11.6</span> The sequencing</a></li>
+  </ul></li>
   
   </ul>
 </nav>
-</div>
-<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
 </div>
 <main class="content" id="quarto-document-content">
 
@@ -2288,7 +2405,7 @@ line-height: 1.75;
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 7, 2026</p>
+      <p class="date">September 8, 2026</p>
     </div>
   </div>
   
@@ -2300,7 +2417,7 @@ line-height: 1.75;
 </header>
 
 
-<div class="callout callout-style-default callout-note callout-titled">
+<div id="glance" class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
@@ -2365,40 +2482,181 @@ line-height: 1.75;
 </div>
 <section id="what-this-document-is" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> What this document is</h1>
-<p>You are being handed a set of <strong>HLA genotypes</strong> for 3,101 people — 439 CTEPH cases and 2,662 AGP3K controls — so that you can test whether any of them associates with disease.</p>
-<p>This document has one job: to let you use those genotypes <strong>without having to trust them blindly</strong>. It says what was measured, how completely, how well it agrees with published data, and — most importantly — the two specific ways it can mislead you if you are not careful. Sections 6 to 8 are the quality evidence; §9 is the part to read before you design an analysis.</p>
+<p>You are being handed a set of <strong>HLA genotypes</strong> for 3,101 people — 439 CTEPH cases and 2,662 AGP3K controls — so that you can test whether any of them associates with disease. <strong>CTEPH</strong> is chronic thromboembolic pulmonary hypertension, the disease under study; <strong>AGP3K</strong> is the Japanese cohort the controls are drawn from.</p>
+<p>This document has one job: to let you use those genotypes <strong>without having to trust them blindly</strong>. It says what was measured, how completely, how well it agrees with published data, and — most importantly — the two specific ways it can mislead you if you are not careful. <a href="#sec-completeness" class="quarto-xref">Section 6</a> through <a href="#sec-confound" class="quarto-xref">Section 9</a> are the quality evidence; <a href="#sec-support" class="quarto-xref">Section 10</a> is the part to read before you design an analysis.</p>
 </section>
 <section id="sec-primer" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> HLA in five minutes</h1>
-<p>Skip this section if you already know what <code>A*24:02</code> means.</p>
-<section id="what-the-hla-genes-do" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="what-the-hla-genes-do"><span class="header-section-number">2.1</span> What the HLA genes do</h2>
-<p>Your immune system has to tell “self” from “not self”. The proteins that do the actual showing-of-evidence are made by a cluster of genes on chromosome 6 called <strong>HLA</strong> (Human Leukocyte Antigen). An HLA protein picks up a short fragment of a protein from inside or outside the cell and <strong>displays it on the cell surface</strong>, where T cells inspect it. Which fragments a given HLA protein can hold is determined by the shape of its binding groove.</p>
-<p>Two consequences follow, and they are why HLA matters to a genetics study:</p>
-<ul>
-<li><strong>HLA is the most variable region in the human genome.</strong> There are tens of thousands of known versions of some of these genes, because a population that all carried the same version could be wiped out by one pathogen that evaded it.</li>
-<li><strong>Because the variation changes which fragments get displayed, HLA is associated with more diseases than any other locus</strong> — autoimmune disease, infection, transplant rejection, drug reactions. If a disease has an immune component, HLA is worth testing.</li>
-</ul>
+<p>Skip this section if you already know what <code>A*24:02</code> means. Everything after it assumes you have read it — the gene names, the notation, the two different ways a call can be missing, and why DRB3 keeps coming back.</p>
+<section id="where-these-genes-are" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="where-these-genes-are"><span class="header-section-number">2.1</span> Where these genes are</h2>
+<p>The <strong>HLA</strong> genes (Human Leukocyte Antigen) are not scattered around the genome. They sit together on the short arm of chromosome 6, at band 6p21.3, inside a region called the <strong>MHC</strong> (Major Histocompatibility Complex): roughly three to four megabases, and one of the most gene-dense stretches of the human genome. MHC is the generic name for that region in any species; HLA is what the human copy of it is called.</p>
+<p>The region is conventionally read in three blocks along the chromosome. Starting from the centromeric end: the <strong>class II</strong> genes (DP, DM, DO, DQ, DR), then a <strong>class III</strong> block that contains no HLA genes at all but is packed with other immune genes — complement, TNF — and then the <strong>class I</strong> genes, B and C, then E, then A, with the non-classical G and F furthest towards the telomere. Class III matters here only because it sits between the other two and is inherited with them.</p>
+<p>This delivery types 33 genes from that region and turns 19 of them into amino-acid residues. The difference is not a quality filter: the rest are pseudogenes — DRB2, DRB6–DRB9, DPA2 and the class I pseudogenes H, J, K, L, T, V, W and Y — and IPD-IMGT publishes no protein alignment for a gene that makes no protein.</p>
+<section id="you-have-two-copies-of-chromosome-6-and-that-is-the-unit-everything-is-counted-in" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="you-have-two-copies-of-chromosome-6-and-that-is-the-unit-everything-is-counted-in"><span class="header-section-number">2.1.1</span> You have two copies of chromosome 6, and that is the unit everything is counted in</h3>
+<p>One copy came from each parent, so you carry <strong>two copies of every gene in this region</strong>, and the two copies can carry different alleles — that is what it means to be heterozygous.</p>
+<p>From <a href="#sec-completeness" class="quarto-xref">Section 6</a> onward, every count in this document is per <strong>chromosome copy</strong>, not per person. The 2,662 controls therefore contribute twice that many copies at a locus where everyone was typed. So a figure of a few thousand “control chromosomes” is not a few thousand different chromosomes: it is this cohort, counted twice over. Frequencies have to be counted that way, because a person carries an allele zero, one or two times and counting heads would throw that distinction away.</p>
+<p>It also explains a number that otherwise looks broken. DRB3, DRB4 and DRB5 are missing outright from many copies (below), so their denominator is not the full count — DRB3 is called on 47.7 % of control chromosomes, and only the copies that actually carry the gene are counted. That difference is the whole of <a href="#sec-drb3" class="quarto-xref">Section 7.8</a>.</p>
 </section>
-<section id="what-typing-means-and-why-it-is-harder-than-reading-a-snp" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="what-typing-means-and-why-it-is-harder-than-reading-a-snp"><span class="header-section-number">2.2</span> What “typing” means, and why it is harder than reading a SNP</h2>
-<p>For an ordinary variant you read one position and report one of two letters. HLA does not work that way. The genes are so variable that the question is not “which letter is at this position” but <strong>“which of the thousands of known versions of this gene is this?”</strong> — and you have two of them, one from each parent.</p>
-<p>So HLA typing is a <em>matching</em> problem: take the sequencing reads from the HLA region, compare them against a catalogue of every known version, and decide which two versions explain the reads best. That catalogue is called <strong>IPD-IMGT/HLA</strong>, and the version used here is pinned so it cannot change under the study.</p>
 </section>
-<section id="how-to-read-an-allele-name" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="how-to-read-an-allele-name"><span class="header-section-number">2.3</span> How to read an allele name</h2>
-<p>A version of an HLA gene is called an <strong>allele</strong>, and its name looks like this:</p>
+<section id="class-i-and-class-ii-do-the-same-job-on-different-threats" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="class-i-and-class-ii-do-the-same-job-on-different-threats"><span class="header-section-number">2.2</span> Class I and class II do the same job on different threats</h2>
+<p>An HLA protein holds a short fragment of another protein — a <strong>peptide</strong> — in a groove on its outer surface and displays it, so that passing T cells can inspect what the cell is carrying. That is the whole function. The two classes differ in where the peptide came from, which cells do the displaying, and who is watching.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>class I</th>
+<th>class II</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>classical genes</td>
+<td>HLA-A, -B, -C</td>
+<td>HLA-DR, -DQ, -DP</td>
+</tr>
+<tr class="even">
+<td>how the molecule is built</td>
+<td>one variable α chain, plus β2-microglobulin, an invariant partner encoded outside the MHC entirely</td>
+<td>two chains, both encoded here: DRA + DRB1/3/4/5, DQA1 + DQB1, DPA1 + DPB1</td>
+</tr>
+<tr class="odd">
+<td>displayed by</td>
+<td>every nucleated cell</td>
+<td>antigen-presenting cells — dendritic cells, macrophages, B cells, thymic epithelium</td>
+</tr>
+<tr class="even">
+<td>peptide source</td>
+<td>proteins made <em>inside</em> the cell: its own, a virus’s, a tumour’s</td>
+<td>proteins taken in from <em>outside</em> and broken up in endosomes</td>
+</tr>
+<tr class="odd">
+<td>peptide shape</td>
+<td>short, groove closed at both ends</td>
+<td>longer, groove open at both ends</td>
+</tr>
+<tr class="even">
+<td>inspected by</td>
+<td>CD8 T cells</td>
+<td>CD4 T cells</td>
+</tr>
+<tr class="odd">
+<td>what a recognised peptide triggers</td>
+<td>kill this cell</td>
+<td>help — antibody production, cytokines, T-cell help</td>
+</tr>
+</tbody>
+</table>
+<p>Four of the genes typed here are class II but present nothing: <strong>DMA, DMB, DOA and DOB</strong> encode the machinery that loads and edits peptides onto the class II molecules rather than the molecules themselves. They are nearly invariant, which is why they contribute almost no testable positions in <a href="#fig-qc" class="quarto-xref">Figure 1</a> (d). The same is true of <strong>DRA</strong>: the DR α chain barely varies, so essentially all DR variation lives on the β chain — DRB1, and the DRB3/4/5 genes below.</p>
+<p>The class I genes <strong>HLA-E, -F and -G</strong> are called <em>non-classical</em>. They are far less variable than A, B and C and do specialised work — E reports on the health of the classical class I supply to natural killer cells, G is expressed at the maternal–foetal interface. They are typed here and they are informative about typing quality, but they are not where a classical disease association is expected to be.</p>
+</section>
+<section id="why-this-is-the-most-variable-region-in-the-genome" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="why-this-is-the-most-variable-region-in-the-genome"><span class="header-section-number">2.3</span> Why this is the most variable region in the genome</h2>
+<p>Which peptides an HLA molecule can hold is decided by the shape of its groove, and the groove is built from a handful of amino acids that line it. A population in which everyone carried the same groove could be emptied by a single pathogen whose peptides that groove cannot hold. Selection therefore rewards <strong>being different from your neighbour</strong>, and the result is a locus with tens of thousands of known versions, where the common ones are held at appreciable frequency for a very long time instead of drifting away.</p>
+<p>Two things follow that matter for the rest of this document. The variation is <strong>concentrated</strong>: it clusters in the exons that build the groove, and the rest of each gene is comparatively quiet. And because the variation changes what the immune system can see, HLA is associated with more diseases than any other region of the genome — autoimmunity, infection, transplant rejection, drug hypersensitivity. If a disease has an immune component, HLA is worth testing.</p>
+</section>
+<section id="the-mhc-is-inherited-in-blocks" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="the-mhc-is-inherited-in-blocks"><span class="header-section-number">2.4</span> The MHC is inherited in blocks</h2>
+<p>Recombination is suppressed across much of the MHC, so alleles at neighbouring genes are not inherited independently. They travel as <strong>haplotypes</strong> — fixed combinations that recur in a population far more often than chance would give — and the statistical shadow of that is <strong>linkage disequilibrium</strong>: knowing someone’s HLA-B allele tells you a great deal about their HLA-C and often about their DRB1. Some of these blocks are megabases long and population-specific; the Japanese haplotype carrying <code>A*24:02</code>, <code>C*12:02</code>, <code>B*52:01</code>, <code>DRB1*15:02</code> and <code>DQB1*06:01</code> together is a well-known example.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>What this costs you when you interpret a result
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>An HLA association is a statement about a <strong>block</strong>, not about a gene, until you do extra work to say otherwise. A signal at DQB1 may be carried by the DRB1 allele beside it, or by a class III gene between them. Two consequences are practical: <strong>you cannot localise a hit to one gene from association statistics alone</strong>, and the 3,125 residue columns in this delivery are nowhere near 3,125 independent tests. Conditional analysis — refitting with the strongest signal held fixed — is the usual next step, and it is honest about how rarely it separates neighbours cleanly.</p>
+</div>
+</div>
+</section>
+<section id="typing-is-a-matching-problem-not-a-base-call" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="typing-is-a-matching-problem-not-a-base-call"><span class="header-section-number">2.5</span> Typing is a matching problem, not a base call</h2>
+<p>For an ordinary variant you read one position and report one of two letters. HLA does not work that way. The genes are so variable that the useful question is not “which letter is at this position” but <strong>“which of the thousands of known versions of this gene is this?”</strong> — and you have two of them, one from each parent.</p>
+<p>So typing is a <em>matching</em> problem. Take the reads from the HLA region, compare them against a catalogue of every version anyone has ever deposited, and decide which pair of catalogue entries explains the reads best. The catalogue is <strong>IPD-IMGT/HLA</strong>, the international registry that both names alleles and publishes their sequences; this run used release 3.64.0, held as a fixed copy on our own disk. That pinning matters: the public catalogue is revised several times a year, alleles gain fields and occasionally get renamed, and a reference that moves under a study is not a reference.</p>
+<p>One property of matching is worth stating plainly, because <a href="#sec-confound" class="quarto-xref">Section 9</a> turns on it: <strong>a version that is not in the catalogue cannot be returned.</strong> A genuinely novel allele is never reported as novel; its reads are assigned to the closest catalogued neighbour.</p>
+</section>
+<section id="what-a-call-is-here-and-why-short-reads-make-it-hard" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="what-a-call-is-here-and-why-short-reads-make-it-hard"><span class="header-section-number">2.6</span> What “a call” is here, and why short reads make it hard</h2>
+<p>A <strong>call</strong> is the pair of catalogue alleles that best explains one person’s reads at one gene, produced by HLA-HD 1.7.1. It is not a base call and it carries no per-call probability. Three things make that hard to get right from short-read whole-genome sequencing.</p>
+<p>The differences that separate two alleles are spread along the gene, usually further apart than a single read or read pair spans, so which difference sits on which chromosome has to be inferred rather than seen. The reference genome carries <strong>one arbitrary version</strong> of each HLA gene, so reads from a divergent allele mismatch it badly and map somewhere else or nowhere at all — which is why the reads behind this delivery were pulled from every alternate and HLA-specific contig in the reference as well as from chromosome 6 itself. And the genes resemble one another: DRB1 and DRB3/4/5 are close paralogues, as are A, B and C and the class I pseudogenes beside them, so reads from one gene are readily attracted to another.</p>
+<p>When several catalogue pairs fit the reads equally well the program says so, and this dataset carries 2,558 such <strong>ambiguous</strong> results out of 102,333 (sample, gene) calls. That flag is the closest thing to a confidence score the method offers. <strong><code>failed</code> is the label that would mean something went wrong, and it occurs 0 times here.</strong></p>
+</section>
+<section id="how-to-read-an-allele-name" class="level2" data-number="2.7">
+<h2 data-number="2.7" class="anchored" data-anchor-id="how-to-read-an-allele-name"><span class="header-section-number">2.7</span> How to read an allele name</h2>
+<p>A version of an HLA gene is called an <strong>allele</strong>, and its name is a structured address, not an arbitrary label:</p>
 <pre><code>A * 24 : 02 : 01 : 03
 │   │    │    │    └── field 4: a difference outside the protein-coding part
 │   │    │    └─────── field 3: a DNA difference that does NOT change the protein
 │   │    └──────────── field 2: a difference that DOES change the protein
-│   └───────────────── field 1: the broad family, roughly the old serological type
-└───────────────────── the gene</code></pre>
-<p>The fields run from most consequential to least. <strong>Field 2 is where the protein changes</strong>, which is why this delivery reports alleles at <strong>two fields</strong> — <code>A*24:02</code> — and stops there. Reporting more fields would add digits that do not change the protein, would be less reliable, and could not be compared against published population data, which is also published at two fields.</p>
+│   └───────────────── field 1: the allele group, roughly the old serological type
+└───────────────────── the gene, also called the locus
+
+A * 24 : 09 N
+            └── expression suffix: this allele is transcribed but no protein
+                reaches the cell surface, so this chromosome presents nothing
+                at HLA-A — even though its name looks like an ordinary A*24</code></pre>
+<p>The fields run from most consequential to least, and every allele has at least the first two. The optional trailing letter is an <strong>expression suffix</strong>, and it overrides everything to its left:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>suffix</th>
+<th>means</th>
+<th>why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>N</code></td>
+<td><strong>null</strong> — no protein on the cell surface</td>
+<td>that chromosome is functionally empty at that gene, however normal the rest of the name looks</td>
+</tr>
+<tr class="even">
+<td><code>L</code></td>
+<td>low surface expression</td>
+<td>present, but at a level that may not behave like a full copy</td>
+</tr>
+<tr class="odd">
+<td><code>S</code></td>
+<td>secreted — the protein exists but is soluble, not on the membrane</td>
+<td>the same caveat, for a different reason</td>
+</tr>
+<tr class="even">
+<td><code>Q</code></td>
+<td>expression questionable, not yet established</td>
+<td>treat as unresolved rather than as either of the above</td>
+</tr>
+</tbody>
+</table>
+<p><code>N</code> is the one to remember. It is the mechanism behind the DRB4 discussion in <a href="#sec-harmonise" class="quarto-xref">Section 7</a>, where the reference panel uses a null allele to mean “this haplotype has no working DRB4”. Note also that <strong>the names in this delivery never carry a suffix</strong> — our caller does not write them (<a href="#sec-harmonise" class="quarto-xref">Section 7</a>) — so nothing in <code>allele_dosage.tsv</code> announces itself as null.</p>
 </section>
-<section id="residues-and-why-they-are-often-the-better-test" class="level2" data-number="2.4">
-<h2 data-number="2.4" class="anchored" data-anchor-id="residues-and-why-they-are-often-the-better-test"><span class="header-section-number">2.4</span> Residues, and why they are often the better test</h2>
-<p>A <strong>residue</strong> is one amino acid at one position in the protein. Because a <code>GENE:position: aminoacid</code> combination is shared by many different alleles, a residue test asks a more robust question than an allele test:</p>
+<section id="why-this-delivery-stops-at-two-fields" class="level2" data-number="2.8">
+<h2 data-number="2.8" class="anchored" data-anchor-id="why-this-delivery-stops-at-two-fields"><span class="header-section-number">2.8</span> Why this delivery stops at two fields</h2>
+<p><strong>Field 2 is where the protein changes</strong>, so it is the last field that changes what the molecule can display. Everything beyond it is either silent at the protein level (field 3) or outside the coding sequence entirely (field 4). This delivery therefore reports <code>A*24:02</code> and stops.</p>
+<p>That is a choice, but not much of one. Deeper fields are read from intronic and untranslated sequence that short-read data covers unevenly, so they are the least reliable part of a call: the deepest resolution reached anywhere in this dataset is field 3, and 0 calls carry a fourth. Published population data is written at two fields as well, so a deeper delivery could not have been compared against anything.</p>
+</section>
+<section id="the-antigen-recognition-domain" class="level2" data-number="2.9">
+<h2 data-number="2.9" class="anchored" data-anchor-id="the-antigen-recognition-domain"><span class="header-section-number">2.9</span> The antigen recognition domain</h2>
+<p>Not all of an HLA protein is doing the presenting. The part that forms the groove and contacts the peptide is the <strong>antigen recognition domain</strong> (ARD): the α1 and α2 segments for class I, the α1 or β1 segment for class II — in DNA terms, exons 2 and 3 for a class I gene and exon 2 for a class II gene.</p>
+<p>The ARD is the natural unit for asking whether two alleles are functionally the same, and IPD-IMGT uses it exactly that way: alleles whose protein is identical <strong>across the ARD</strong> are collected into a <strong>P group</strong>, named after the lowest-numbered member with a <code>P</code> appended. <code>DRB3*01:01P</code> is not an allele; it is a group of alleles that differ only outside the groove. Reference panels frequently publish at that resolution, which is what <a href="#sec-harmonise" class="quarto-xref">Section 7</a> is about. The genotypes you were given are not P-grouped.</p>
+</section>
+<section id="residues-and-why-they-are-often-the-better-test" class="level2" data-number="2.10">
+<h2 data-number="2.10" class="anchored" data-anchor-id="residues-and-why-they-are-often-the-better-test"><span class="header-section-number">2.10</span> Residues, and why they are often the better test</h2>
+<p>A <strong>residue</strong> is one amino acid at one position in the protein. Because a <code>GENE:position:aminoacid</code> combination is shared by many different alleles, a residue test asks a more robust question than an allele test:</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -2414,32 +2672,75 @@ line-height: 1.75;
 </thead>
 <tbody>
 <tr class="odd">
-<td>asks</td>
-<td>“do people with <code>DRB1*15:01</code> get the disease more?”</td>
-<td>“do people with a proline at DRB1 position 11 get it more?”</td>
+<td>what you regress on</td>
+<td>one column of <code>allele_dosage.tsv</code>, e.g. <code>DRB1*15:01</code></td>
+<td>one column of <code>residue_dosage.tsv</code>, e.g. <code>DRB1:11:P</code></td>
 </tr>
 <tr class="even">
-<td>number of things tested</td>
-<td>many, each rare</td>
-<td>fewer, each common</td>
+<td>the question it asks</td>
+<td>“do people carrying <code>DRB1*15:01</code> get the disease more?”</td>
+<td>“do people with a proline at DRB1 position 11 get it more?”</td>
 </tr>
 <tr class="odd">
+<td>number of things tested</td>
+<td>many, most of them rare</td>
+<td>fewer, most of them common</td>
+</tr>
+<tr class="even">
 <td>if one rare allele is mis-called</td>
 <td>that allele’s result is wrong</td>
-<td>usually unchanged, because the neighbouring allele has the same residue there</td>
+<td>usually unchanged — the allele it was confused with carries the same amino acid at most positions</td>
+</tr>
+<tr class="odd">
+<td>what it cannot do</td>
+<td>—</td>
+<td>name the allele responsible; a residue is shared across many</td>
 </tr>
 </tbody>
 </table>
-<p>Both are delivered. §9 says which to trust when they disagree.</p>
+<p>Concretely: this cohort carries 2,298 distinct two-field alleles, and the protein variation underneath them reduces to 1,297 varying amino-acid positions. The same evidence, in fewer and commoner columns.</p>
+<p>Positions are numbered as IPD-IMGT numbers them, on the mature protein, which is why you will see negative positions such as <code>A:-21:M</code> — those lie in the signal peptide that is cut off during processing. Both matrices are delivered; <a href="#sec-support" class="quarto-xref">Section 10</a> says which to trust when they disagree.</p>
 </section>
-<section id="why-a-gene-can-be-present-on-one-chromosome-and-absent-from-the-other" class="level2" data-number="2.5">
-<h2 data-number="2.5" class="anchored" data-anchor-id="why-a-gene-can-be-present-on-one-chromosome-and-absent-from-the-other"><span class="header-section-number">2.5</span> Why a gene can be present on one chromosome and absent from the other</h2>
-<p>Most genes come in two copies. Three of the HLA genes — <strong>DRB3, DRB4 and DRB5</strong> — do not: whether you carry them at all depends on which version of the neighbouring DRB1 you inherited. So a person can genuinely have <strong>one copy, or none</strong>. That is biology, not a sequencing failure, and it produces two of the outcome labels you will see in §6:</p>
+<section id="genes-you-may-not-have-drb3-drb4-and-drb5" class="level2" data-number="2.11">
+<h2 data-number="2.11" class="anchored" data-anchor-id="genes-you-may-not-have-drb3-drb4-and-drb5"><span class="header-section-number">2.11</span> Genes you may not have: DRB3, DRB4 and DRB5</h2>
+<p>Most genes come in two copies. The DR region does not work that way. Every haplotype carries DRA and DRB1, but whether it carries a <em>second</em> expressed β chain gene — and which one — depends on the DRB1 allele it carries. The haplotype groups have names of their own:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>haplotype group</th>
+<th>second β gene</th>
+<th>carried with DRB1 groups</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>DR51</td>
+<td>DRB5</td>
+<td><code>DRB1*15</code>, <code>DRB1*16</code></td>
+</tr>
+<tr class="even">
+<td>DR52</td>
+<td>DRB3</td>
+<td><code>DRB1*03</code>, <code>*11</code>, <code>*12</code>, <code>*13</code>, <code>*14</code></td>
+</tr>
+<tr class="odd">
+<td>DR53</td>
+<td>DRB4</td>
+<td><code>DRB1*04</code>, <code>*07</code>, <code>*09</code></td>
+</tr>
+<tr class="even">
+<td>—</td>
+<td>none</td>
+<td><code>DRB1*01</code>, <code>*08</code>, <code>*10</code></td>
+</tr>
+</tbody>
+</table>
+<p>So a person can genuinely carry <strong>two copies, one copy, or none</strong> of DRB3, DRB4 or DRB5, and the fraction of this cohort in whom each gene was found at all reflects exactly that: 0.4673 for DRB3, 0.5769 for DRB4 and 0.3612 for DRB5. That is biology, not a sequencing failure, and it produces two of the outcome labels you will see in <a href="#sec-completeness" class="quarto-xref">Section 6</a>:</p>
 <ul>
 <li><strong>hemizygous</strong> — one copy present, one genuinely absent.</li>
 <li><strong>not typed</strong> — the gene is absent from that person’s haplotype altogether.</li>
 </ul>
-<p>Neither means anything went wrong. <strong><code>failed</code> is the label that would mean something went wrong, and it occurs 0 times in this dataset.</strong></p>
+<p>Neither means anything went wrong. It does mean that the dosage columns for these three genes cannot be read like the others, that the reference comparison at DRB3 breaks down (<a href="#sec-drb3" class="quarto-xref">Section 7.8</a>), and that these are the genes <a href="#sec-support" class="quarto-xref">Section 10</a> tells you not to use.</p>
 </section>
 </section>
 <section id="what-you-are-getting" class="level1" data-number="3">
@@ -2487,7 +2788,7 @@ line-height: 1.75;
 </tr>
 </tbody>
 </table>
-<p>The first two are what you will regress on. The fourth is the safety check §8 tells you to apply before testing a rare allele.</p>
+<p>The first two are what you will regress on. The fourth is the safety check <a href="#sec-confound" class="quarto-xref">Section 9</a> tells you to apply before testing a rare allele.</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -2503,7 +2804,7 @@ line-height: 1.75;
 </div>
 </div>
 </section>
-<section id="which-people-these-cover" class="level1" data-number="4">
+<section id="sec-people" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> Which people these cover</h1>
 <p>Three filters were applied in order, and <strong>they are not the same kind of decision</strong>.</p>
 <div class="cell">
@@ -2560,7 +2861,7 @@ line-height: 1.75;
 </div>
 </div>
 <p>Step 2 is a <strong>quality</strong> decision: 23 people whose genome-wide heterozygosity was anomalous were dropped upstream. For HLA typing those are exactly the samples least likely to resolve cleanly into two versions of a gene, so inheriting that decision is the right thing to do.</p>
-<p>Step 3 is an <strong>ancestry</strong> decision, and it is the one worth understanding, because §8 depends on it. The only external check available for HLA calls is <em>“does the allele we called appear in a published Japanese reference panel?”</em>. A control who is not of the same ancestral background as that panel will fail that check for reasons that have nothing to do with typing quality. Restricting the cohort first removes that explanation by construction.</p>
+<p>Step 3 is an <strong>ancestry</strong> decision, and it is the one worth understanding, because <a href="#sec-confound" class="quarto-xref">Section 9</a> depends on it. The only external check available for HLA calls is <em>“does the allele we called appear in a published Japanese reference panel?”</em>. A control who is not of the same ancestral background as that panel will fail that check for reasons that have nothing to do with typing quality. Restricting the cohort first removes that explanation by construction.</p>
 <p>The 468 people removed at step 3 were typed, and their results are <strong>not deleted</strong> — they are kept under <code>results/_superseded.3569/</code>. Extending to a wider sample set later costs a re-run of one collection script, not a re-run of the typing.</p>
 </section>
 <section id="how-the-typing-was-done" class="level1" data-number="5">
@@ -2586,20 +2887,45 @@ Figure 1: Typing completeness, by sequencing platform and by gene. Read it by p
 </figcaption>
 </figure>
 </div>
-<p><strong>What you are looking at.</strong> Four views of “was a call produced, and how good was it”, none of which can tell you whether a call is <em>correct</em> — that is <a href="#sec-frequencies" class="quarto-xref">Section 8</a>.</p>
+<section id="what-you-are-looking-at" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="what-you-are-looking-at"><span class="header-section-number">6.1</span> What you are looking at</h2>
+<p>Four views of “was a call produced, and how good was it”, none of which can tell you whether a call is <em>correct</em> — that is <a href="#sec-frequencies" class="quarto-xref">Section 8</a>.</p>
 <div class="panels">
 <p><strong>(a) field resolution</strong> — For each sequencing platform, what fraction of calls resolved to 2 fields and what fraction to 3. Remember from <a href="#sec-primer" class="quarto-xref">Section 2</a> that field 2 is where the protein changes: a 2-field call is already enough for everything in this delivery, and a 3-field call is a bonus. The printed white number is the 2-field share, so <strong>a bigger number means slightly less resolved calls</strong>. The spread across platforms is 3.8 % on NovaSeq 30x to 10.3 % on DNBseq-G400RS 15x — real, but small.</p>
 <p><strong>(b) ambiguity</strong> — For each platform, how many samples had 0, 1, 2, 3 or 4+ genes where the program could not choose between several equally good answers. This is the closest thing to a per-call confidence score the method offers.</p>
 <p><strong>(c) outcome per gene</strong> — For each of the 19 genes that carry residues, the fraction of people in each outcome. <strong>This is the panel most likely to be misread.</strong> The three bars at the top — DRB5, DRB3, DRB4 — look bad and are not: their grey <code>not_typed</code> block is the biology from <a href="#sec-primer" class="quarto-xref">Section 2</a>, those genes being genuinely absent from many haplotypes. There is no <code>failed</code> category drawn because there were no failures.</p>
 <p><strong>(d) testable positions</strong> — How many amino-acid positions in each gene actually vary in this cohort, drawn on the same gene order as (c) so you can read a gene’s completeness and its usefulness together. HLA-A and HLA-B contribute the most testable positions; DMA, DOA, DRA and DOB contribute almost none.</p>
 </div>
-<p><strong>What to conclude.</strong> Completeness is essentially saturated, so it is a <em>weak</em> quality signal here: the call rate takes only 5 distinct values across the whole cohort and 97 % of people sit on two of them. That is why every panel is a composition rather than an average — an average over a saturated measurement hides the only variation there is.</p>
-<p><strong>What this figure cannot tell you.</strong> Whether any call is <em>right</em>. Every measurement here is about whether a call was produced and how finely, not whether it names the correct version of the gene.</p>
-<p><strong>Why by platform, and not by case/control.</strong> Every control was sequenced on one machine type and every case on a different one, with no overlap. Any case/control difference in these metrics is therefore inseparable from the machine, which is why the comparison is never drawn that way. This becomes the central issue in §8.</p>
+</section>
+<section id="what-to-conclude" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="what-to-conclude"><span class="header-section-number">6.2</span> What to conclude</h2>
+<p>Completeness is essentially saturated, so it is a <em>weak</em> quality signal here: the call rate takes only 5 distinct values across the whole cohort and 97 % of people sit on two of them. That is why every panel is a composition rather than an average — an average over a saturated measurement hides the only variation there is.</p>
+</section>
+<section id="what-this-figure-cannot-tell-you" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="what-this-figure-cannot-tell-you"><span class="header-section-number">6.3</span> What this figure cannot tell you</h2>
+<p>Whether any call is <em>right</em>. Every measurement here is about whether a call was produced and how finely, not whether it names the correct version of the gene.</p>
+</section>
+<section id="why-by-platform-and-not-by-casecontrol" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="why-by-platform-and-not-by-casecontrol"><span class="header-section-number">6.4</span> Why by platform, and not by case/control</h2>
+<p>Every control was sequenced on one machine type and every case on a different one, with no overlap. Any case/control difference in these metrics is therefore inseparable from the machine, which is why the comparison is never drawn that way. This becomes the central issue in <a href="#sec-confound" class="quarto-xref">Section 9</a>.</p>
+</section>
 </section>
 <section id="sec-harmonise" class="level1" data-number="7">
 <h1 data-number="7"><span class="header-section-number">7</span> How two sources of allele frequencies are made comparable</h1>
 <p><a href="#sec-frequencies" class="quarto-xref">Section 8</a> compares our allele frequencies with a published panel’s. Before it can, the two have to be talking about the same things. They are not, to begin with, and the work of making them so is worth understanding, because it is where one locus turns out to be uncomparable.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Three words the rest of this section rests on
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>An allele’s <strong>frequency</strong> is the share of <em>chromosomes</em> in a group that carry it: copies divided by chromosomes counted, not by people, because every person contributes two of them at every gene. The <strong>denominator</strong> is the set of chromosomes being divided by — and two frequencies can only be compared when both sides are dividing by the same kind of set. To <strong>renormalise</strong> is to rescale what is left after some chromosomes are taken out of that set, so that the frequencies still add up to one. Everything below is one of those three going right, and <a href="#sec-drb3" class="quarto-xref">Section 7.8</a> is one of them going wrong.</p>
+</div>
+</div>
 <section id="three-sources-three-ways-of-writing-the-same-allele" class="level2" data-number="7.1">
 <h2 data-number="7.1" class="anchored" data-anchor-id="three-sources-three-ways-of-writing-the-same-allele"><span class="header-section-number">7.1</span> Three sources, three ways of writing the same allele</h2>
 <table class="caption-top table">
@@ -2672,7 +2998,7 @@ Figure 1: Typing completeness, by sequencing platform and by gene. Read it by p
 <p>A frequency needs a denominator, and the two sources must use the same one.</p>
 <ul>
 <li><strong>Chromosomes where we made no call are excluded from ours.</strong> For DRB3, DRB4 and DRB5 that is most of them, and correctly so — <a href="#sec-primer" class="quarto-xref">Section 2</a> explains that those genes are genuinely absent from many haplotypes.</li>
-<li><strong>Null alleles are dropped from the reference and the rest renormalised.</strong> jMorp uses the null allele <code>DRB4*03:01N</code> — 0.543 of all its chromosomes — to mean “this haplotype has no working DRB4”. That is the same fact our data records as <em>not typed</em>. Keeping it would compare two different quantities; dropping it moves DRB4 from <em>r</em> = 0.625 to <em>r</em> = 0.9909.</li>
+<li><strong>Null alleles are dropped from the reference and the rest renormalised.</strong> jMorp uses the null allele DRB4<em>03:01N — 0.543 of all its chromosomes — to mean “this haplotype has no working DRB4”. That is the same fact our data records as </em>not typed<em>. Keeping it would compare two different quantities: the reference would be spending more than half its chromosomes on an allele we never call, and DRB4 would report </em>r* = 0.624. Dropping it and renormalising gives <em>r</em> = 0.9909.</li>
 </ul>
 </section>
 <section id="sec-drb3" class="level2" data-number="7.8">
@@ -2695,13 +3021,14 @@ Figure 1: Typing completeness, by sequencing platform and by gene. Read it by p
 </tbody>
 </table>
 <p>100 % is not possible: DRB3 exists only on one family of haplotypes. So the panel is assigning a real DRB3 allele to chromosomes that do not carry the gene, and they land mostly on the commonest one. Our denominator is the 47.7 % that do carry it.</p>
-<p>The two numbers are not the same quantity, so the correlation between them measures the mismatch and not the typing. <strong>DRB3 is therefore marked not comparable and excluded from the headline</strong>, drawn hollow in <a href="#fig-freq" class="quarto-xref">Figure 2</a> (b) and flagged with a dagger. Every other locus agrees with the reference to within 0.7 percentage points on this fraction; DRB3 differs by more than fifty.</p>
-<p>The test is mechanical, not a special case for DRB3: a locus is marked uncomparable when the reference covers essentially every chromosome while we call the gene on materially fewer. DRB4 is not caught by it, and should not be — its 0.457 is an honest fraction, not a saturated one.</p>
+<p>The two numbers are not the same quantity, so the correlation between them measures the mismatch and not the typing. <strong>DRB3 is therefore marked not comparable and excluded from the headline</strong>, drawn hollow in <a href="#fig-freq" class="quarto-xref">Figure 2</a> (b) and flagged with a dagger. Every other locus agrees with the reference to within 0.7 percentage points on this fraction — except DRB4, which is 11.2 points out for the reason just given, and DRB3, which is 52.3 points out with no such reason available.</p>
+<p>The test is mechanical, not a special case for DRB3: a locus is marked uncomparable when the reference covers essentially every chromosome while we call the gene on materially fewer. DRB4 is not caught by it, and should not be: the 45.6 % of reference chromosomes it puts on a real DRB4 allele is an honest fraction, not a saturated one.</p>
 </section>
 </section>
 <section id="sec-frequencies" class="level1" data-number="8">
 <h1 data-number="8"><span class="header-section-number">8</span> Do the calls agree with published data?</h1>
 <p>Completeness cannot see a call that was made confidently and is wrong. The only thing that can, without re-typing samples of known type, is this: <strong>if we call alleles correctly, the frequencies we observe in our controls should reproduce the frequencies published for a comparable population.</strong> If the typing were systematically picking the wrong version, the whole frequency spectrum would shift and no completeness metric would notice.</p>
+<p>Concordance below is reported as <em>r</em>: one number per locus for how closely our frequency for each shared allele tracks the reference’s, with 1 meaning every allele sits exactly on the diagonal. It is dominated by the few common alleles, so a high <em>r</em> is not a guarantee about the rare ones — which is what the second and third panels are for.</p>
 <p>Getting the two sources into the same namespace is <a href="#sec-harmonise" class="quarto-xref">Section 7</a>; this section reads the result.</p>
 <p><strong>11 of the 12 comparable loci reproduce the reference at a correlation of 0.983 or better.</strong> The 1 locus left out is HLA-DRB3, for the reason given in <a href="#sec-drb3" class="quarto-xref">Section 7.8</a>.</p>
 <div id="fig-freq" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -2714,13 +3041,18 @@ Figure 2: Our control allele frequencies against the reference panels. Panel (d
 </figcaption>
 </figure>
 </div>
+<section id="reading-the-figure-panel-by-panel" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="reading-the-figure-panel-by-panel"><span class="header-section-number">8.1</span> Reading the figure, panel by panel</h2>
 <div class="panels">
 <p><strong>(a) all loci pooled</strong> — One dot per allele. The horizontal position is the frequency the reference publishes; the vertical position is the frequency we observe in our controls. <strong>A dot on the dashed line means we and the reference agree.</strong> The vertical bars are 95 % confidence intervals on our estimate. Red dots are the two commonest alleles and the three furthest from the line, named so you can see which they are.</p>
 <p><strong>(b) concordance</strong> — For each locus separately, the correlation between the two sets of frequencies. The dotted line is 0.98, the level above which a locus is read at face value. Twelve of thirteen loci clear it comfortably; <strong>HLA-DRB3 does not</strong>, and is marked with a dagger.</p>
-<p><strong>(c) unconfirmed share</strong> — For each locus, the fraction of our control chromosomes carrying an allele the reference <strong>does not list at all</strong>. This is a different question from (b): a locus can have excellent correlation on the alleles both sources share and still put many chromosomes onto alleles the reference has never seen. Drawn on the same rows as (b) so the two can be read together.</p>
+<p><strong>(c) unconfirmed share</strong> — For each locus, the fraction of our control chromosome copies carrying an allele the reference <strong>does not list at all</strong>. This is a different question from (b): a locus can have excellent correlation on the alleles both sources share and still put many chromosomes onto alleles the reference has never seen. Drawn on the same rows as (b) so the two can be read together.</p>
 <p><strong>(d) the same loci under both panels</strong> — Panel (b) computed twice, once against each reference panel, at the five loci both panels carry. The number beside each dot is how many alleles that source and ours actually have in common. Two things to take from it: the two panels <strong>agree on concordance</strong> — which is why the finding in <a href="#sec-confound" class="quarto-xref">Section 9</a> does not depend on the choice of panel — and the smaller panel reaches that agreement on roughly a seventh of the evidence.</p>
 </div>
-<p><strong>A caution about (b) that the numbers themselves make plain.</strong> The table below reports <code>n_shared</code> — how many alleles the two sources actually have in common at each locus. It ranges from 114 at HLA-A down to <strong>2 at HLA-E</strong>. A correlation computed where only two alleles are shared is not meaningful, however high it looks. Read <code>r&quot;$r$&quot;</code> and <code>n_shared</code> together.</p>
+</section>
+<section id="a-caution-about-panel-b" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="a-caution-about-panel-b"><span class="header-section-number">8.2</span> A caution about panel (b)</h2>
+<p>The numbers themselves make it plain. The table below reports <code>n_shared</code> — how many alleles the two sources actually have in common at each locus. It ranges from 114 at HLA-A down to <strong>2 at HLA-E</strong>. A correlation computed where only two alleles are shared is not meaningful, however high it looks. Read <code>r&quot;$r$&quot;</code> and <code>n_shared</code> together.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>show the code that produced this number</summary>
@@ -2872,6 +3204,9 @@ Figure 2: Our control allele frequencies against the reference panels. Panel (d
 </table>
 </div>
 </div>
+</section>
+<section id="the-per-locus-record" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="the-per-locus-record"><span class="header-section-number">8.3</span> The per-locus record</h2>
 <div id="fig-loci" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-loci-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -2898,11 +3233,12 @@ Figure 3: The same comparison, one panel per locus. This is the record behind <
 </div>
 </div>
 </section>
+</section>
 <section id="sec-confound" class="level1" data-number="9">
 <h1 data-number="9"><span class="header-section-number">9</span> The one real quality problem</h1>
 <p>This is the section that most constrains what these genotypes can support.</p>
-<p>Define <strong>“unconfirmed”</strong> as: a chromosome carrying an allele that the reference panel does not list. Some unconfirmed calls are expected — no panel contains every rare allele. The problem is not the level. <strong>The problem is that the level differs between our cases and our controls.</strong></p>
-<p><strong>Controls: 4.63 % of called chromosomes. Cases: 3.53 %.</strong> A ratio of <strong>1.31</strong>, Fisher exact <em>P</em> = 1.89e-07.</p>
+<p>Define <strong>“unconfirmed”</strong> as: a chromosome copy carrying an allele that the reference panel does not list. Some unconfirmed calls are expected — no panel contains every rare allele. The problem is not the level. <strong>The problem is that the level differs between our cases and our controls.</strong></p>
+<p><strong>Controls: 4.63 % of called chromosomes. Cases: 3.53 %.</strong> A ratio of <strong>1.31</strong>, Fisher exact <em>P</em> = 1.89e-07. A <em>P</em> value is the chance of seeing a gap at least this wide if the two groups really had the same underlying rate, so a number this small means the gap is hard to put down to luck.</p>
 <div id="fig-confound" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-confound-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -2976,13 +3312,13 @@ Figure 4: Testing the two explanations that would make the case/control differe
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>A control whose ancestry differs from the reference panel’s would carry alleles the panel has not seen, for reasons unrelated to typing. That is why the cohort was restricted to a single ancestry cluster in §5 <strong>before</strong> any of these numbers were computed. Before that restriction the same comparison gave 4.74 % against 3.57 %, a ratio of 1.33. Removing the benign explanation left the finding essentially unchanged.</p>
+<p>A control whose ancestry differs from the reference panel’s would carry alleles the panel has not seen, for reasons unrelated to typing. That is why the cohort was restricted to a single ancestry cluster in <a href="#sec-people" class="quarto-xref">Section 4</a> <strong>before</strong> any of these numbers were computed. Before that restriction the same comparison gave 4.74 % against 3.57 %, a ratio of 1.33. Removing the benign explanation left the finding essentially unchanged.</p>
 </div>
 </div>
 </section>
 <section id="what-is-left-and-what-it-means-for-you" class="level2" data-number="9.2">
 <h2 data-number="9.2" class="anchored" data-anchor-id="what-is-left-and-what-it-means-for-you"><span class="header-section-number">9.2</span> What is left, and what it means for you</h2>
-<p>Not depth. Not the reference panel. Not ancestry. <strong>What remains is the sequencing platform</strong> — and every control was sequenced on one platform and every case on another, with no overlap at all. Platform, cohort and phenotype are perfectly confounded, so it is not possible from these data to say which of read length, library chemistry, alignment behaviour or batch is responsible.</p>
+<p>Not depth. Not the reference panel. Not ancestry. <strong>What remains is the sequencing platform</strong> — and every control was sequenced on one platform and every case on another, with no overlap at all. Platform, cohort and phenotype are perfectly <strong>confounded</strong> — they always change together in this data, so a difference could be caused by any of them and no statistic can tell them apart. It is not possible from these data to say which of read length, library chemistry, alignment behaviour or batch is responsible.</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -3000,15 +3336,214 @@ Figure 4: Testing the two explanations that would make the case/control differe
 </section>
 </section>
 <section id="sec-support" class="level1" data-number="10">
-<h1 data-number="10"><span class="header-section-number">10</span> What these calls can and cannot support</h1>
+<h1 data-number="10"><span class="header-section-number">10</span> Data quality, and how to run the association</h1>
+<p>Everything before this chapter is evidence. This one states what the evidence adds up to, gives you the two tables that carry it column by column, and says what to do with them.</p>
+<section id="what-the-quality-evidence-adds-up-to" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="what-the-quality-evidence-adds-up-to"><span class="header-section-number">10.1</span> What the quality evidence adds up to</h2>
+<p><strong>The typing itself is sound, and the one real problem is not in the typing.</strong></p>
+<p>0 (sample, gene) calls failed anywhere in the dataset, and completeness is so nearly saturated that it is a weak signal rather than a discriminating one — the call rate takes 5 distinct values across the whole cohort (<a href="#sec-completeness" class="quarto-xref">Section 6</a>). Against published Japanese frequencies, 11 of the 12 comparable loci reproduce the reference at <em>r</em> ≥ 0.98 (<a href="#sec-frequencies" class="quarto-xref">Section 8</a>). HLA-DRB3 is excluded from that count because the panel and this pipeline are not counting the same chromosome copies there, which is a defect of the comparison and not of the calls (<a href="#sec-drb3" class="quarto-xref">Section 7.8</a>).</p>
+<p><strong>The one real problem is that controls carry more unconfirmed alleles than cases</strong> — 4.63 % against 3.53 %, a ratio of 1.31 — and every explanation that would have made it disappear was tested and did not (<a href="#sec-confound" class="quarto-xref">Section 9</a>). What remains is the sequencing platform, which is perfectly confounded with case/control status. That is the fact this chapter’s advice is built around.</p>
+<p><strong>What is not established anywhere in this delivery.</strong> There is no per-sample accuracy measurement. The frequency check compares <em>population frequencies</em>, so a set of errors that happened to preserve the overall spectrum would be invisible to it. Settling that would require typing samples whose HLA type is already published, which is scoped and deferred in <code>docs/OPEN_QUESTIONS.md</code> §2.</p>
+</section>
+<section id="quality-per-allele-and-per-residue" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="quality-per-allele-and-per-residue"><span class="header-section-number">10.2</span> Quality per allele and per residue</h2>
+<p>Two tables answer “should I test this column?” for every column of the two matrices, one row each:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>file</th>
+<th>one row per</th>
+<th>rows</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>05.qc/allele_quality.tsv</code></td>
+<td>column of <code>allele_dosage.tsv</code></td>
+<td>2,298</td>
+</tr>
+<tr class="even">
+<td><code>05.qc/residue_quality.tsv</code></td>
+<td>column of <code>residue_dosage.tsv</code></td>
+<td>3,125</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Neither carries a usable/unusable verdict, deliberately.</strong> Where that line falls depends on the model you fit, so the tables publish the counts and the flags and leave the decision to you. The columns that matter most:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>column</th>
+<th>what it tells you</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>n_chr_ctrl</code>, <code>n_chr_case</code>, <code>n_chr_total</code></td>
+<td>how many chromosome <strong>copies</strong> carry this column — two per person, not one — the evidence behind any test of it</td>
+</tr>
+<tr class="even">
+<td><code>freq_ctrl</code>, <code>ci_lo_ctrl</code>, <code>ci_hi_ctrl</code></td>
+<td>the control frequency and its Wilson interval</td>
+</tr>
+<tr class="odd">
+<td><code>in_reference</code>, <code>freq_reference</code></td>
+<td>whether a published Japanese panel lists this allele, and at what frequency</td>
+</tr>
+<tr class="even">
+<td><code>n_chr_ambiguous</code>, <code>share_ambiguous</code></td>
+<td>how much of this allele’s support came from calls the program had to resolve itself (<code>docs/OPEN_QUESTIONS.md</code> §5)</td>
+</tr>
+<tr class="odd">
+<td><code>gene_comparable</code></td>
+<td>0 where the locus could not be checked against the panel at all</td>
+</tr>
+<tr class="even">
+<td><code>gene_dosage_valid</code></td>
+<td>0 for DRB3/4/5, whose dosages are wrong by construction</td>
+</tr>
+<tr class="odd">
+<td><code>n_alleles_carrying</code></td>
+<td><em>(residues)</em> how many of this cohort’s alleles carry this amino acid here</td>
+</tr>
+<tr class="even">
+<td><code>position_undetermined_rate</code></td>
+<td><em>(residues)</em> the share of samples whose dosages at this position do not sum to 2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The allele table is a long tail, and that is the single most important thing to know before testing it.</strong> Of 2,298 allele columns, 1,300 are carried by exactly one chromosome and 2,021 by fewer than ten. The 277 columns at ten or more carry 97.93 % of all chromosomes between them. So almost every column is rare and almost every chromosome is common — testing the whole matrix unfiltered means spending nearly all of your multiple-testing budget on columns that cannot reach significance.</p>
+<p>251 alleles have at least one chromosome from a resolved ambiguity, 2.93 % of all chromosomes. 281 allele columns and 601 residue columns belong to DRB3/4/5 and should be dropped outright.</p>
+<p><strong>The residue table is the opposite shape, which is why <a href="#sec-primer" class="quarto-xref">Section 2</a> recommends it.</strong> The median residue is carried by 18 different alleles in this cohort, so a mis-call to a neighbouring allele usually does not move it; 1,837 of 3,125 residue columns reach ten chromosomes, against 277 of the allele columns. 1,211 residues are carried by a single allele and inherit that allele’s fragility exactly.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>show the code that produced this number</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>aq <span class="ot">&lt;-</span> <span class="fu">tsv</span>(<span class="st">&quot;05.qc/allele_quality.tsv&quot;</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>rq <span class="ot">&lt;-</span> <span class="fu">tsv</span>(<span class="st">&quot;05.qc/residue_quality.tsv&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">table   =</span> <span class="fu">c</span>(<span class="st">&quot;allele_quality.tsv&quot;</span>, <span class="st">&quot;residue_quality.tsv&quot;</span>),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">columns =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(aq), <span class="fu">nrow</span>(rq)),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">MAC &gt;= 10</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">sum</span>(aq<span class="sc">$</span>n_chr_total <span class="sc">&gt;=</span> <span class="dv">10</span>), <span class="fu">sum</span>(rq<span class="sc">$</span>n_chr_total <span class="sc">&gt;=</span> <span class="dv">10</span>)),</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">singleton   =</span> <span class="fu">c</span>(<span class="fu">sum</span>(aq<span class="sc">$</span>n_chr_total <span class="sc">==</span> <span class="dv">1</span>), <span class="fu">sum</span>(rq<span class="sc">$</span>n_chr_total <span class="sc">==</span> <span class="dv">1</span>)),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">dosage invalid</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">sum</span>(aq<span class="sc">$</span>gene_dosage_valid <span class="sc">==</span> <span class="dv">0</span>), <span class="fu">sum</span>(rq<span class="sc">$</span>gene_dosage_valid <span class="sc">==</span> <span class="dv">0</span>)),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span> <span class="fu">kable</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">table</th>
+<th style="text-align: right;">columns</th>
+<th style="text-align: right;">MAC &gt;= 10</th>
+<th style="text-align: right;">singleton</th>
+<th style="text-align: right;">dosage invalid</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">allele_quality.tsv</td>
+<td style="text-align: right;">2298</td>
+<td style="text-align: right;">277</td>
+<td style="text-align: right;">1300</td>
+<td style="text-align: right;">281</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">residue_quality.tsv</td>
+<td style="text-align: right;">3125</td>
+<td style="text-align: right;">1837</td>
+<td style="text-align: right;">744</td>
+<td style="text-align: right;">601</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The positions the residue matrix is least sure of, worst first — a high rate means the reference could not place one of the two chromosomes at that position:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>show the code that produced this number</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">unique</span>(rq[rq<span class="sc">$</span>gene_dosage_valid <span class="sc">==</span> <span class="dv">1</span>, <span class="fu">c</span>(<span class="st">&quot;gene&quot;</span>, <span class="st">&quot;position&quot;</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                                            <span class="st">&quot;position_undetermined_rate&quot;</span>)])</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(p[<span class="fu">order</span>(<span class="sc">-</span>p<span class="sc">$</span>position_undetermined_rate), ], <span class="dv">8</span>) <span class="sc">|&gt;</span> <span class="fu">kable</span>(<span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">gene</th>
+<th style="text-align: right;">position</th>
+<th style="text-align: right;">position_undetermined_rate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">DQA1</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">0.237343</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">341</td>
+<td style="text-align: right;">0.109965</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">316</td>
+<td style="text-align: right;">0.109642</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">321</td>
+<td style="text-align: right;">0.109642</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">325</td>
+<td style="text-align: right;">0.109642</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">327</td>
+<td style="text-align: right;">0.109642</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">328</td>
+<td style="text-align: right;">0.109642</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">329</td>
+<td style="text-align: right;">0.109642</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="running-the-association" class="level2" data-number="10.3">
+<h2 data-number="10.3" class="anchored" data-anchor-id="running-the-association"><span class="header-section-number">10.3</span> Running the association</h2>
 <p><strong>In order of robustness, most to least.</strong></p>
 <ol type="1">
 <li><strong>Class I residues (A, B, C).</strong> Most robust. A mis-call to a rare version of the same family typically moves only a handful of the several hundred amino-acid positions, so a residue test barely notices it. If you run one analysis, run this one.</li>
 <li><strong>Class II residues (DRB1, DQB1, DPB1, DQA1, DPA1).</strong> A mis-call moves more positions here, but the class II unconfirmed shares are the smallest in the cohort — DQB1 at 0.94 % and DRB1 at 1.97 %.</li>
 <li><strong><code>allele_dosage.tsv</code>, common alleles.</strong> Sound, with the <code>in_reference</code> check above.</li>
-<li><strong><code>allele_dosage.tsv</code>, rare alleles.</strong> Least robust — a rare allele is precisely where the §8 differential lives.</li>
+<li><strong><code>allele_dosage.tsv</code>, rare alleles.</strong> Least robust — a rare allele is precisely where the <a href="#sec-confound" class="quarto-xref">Section 9</a> differential lives.</li>
 <li><strong>DRB3, DRB4 and DRB5 dosages. Do not use them.</strong> See the box below.</li>
 </ol>
+<p>And five things about this particular cohort that change what you should do:</p>
+<ul>
+<li><strong>Filter with the quality tables, not by eye.</strong> Join <code>allele_quality.tsv</code> or <code>residue_quality.tsv</code> onto your columns and choose a <code>n_chr_total</code> floor explicitly. Whatever floor you pick, state it: the tables give you the numbers precisely so that the choice is visible in your methods rather than buried in a script.</li>
+<li><strong>You cannot adjust for platform.</strong> Every control was sequenced on one machine type and every case on another, with no overlap (<a href="#sec-confound" class="quarto-xref">Section 9</a>), so platform is not a covariate available to you — a model cannot separate an effect from a variable that is a perfect copy of the outcome. Any result that would change if platform changed has to be reported as such, not adjusted away.</li>
+<li><strong>Ancestry is already handled, and is also not a covariate.</strong> The cohort was restricted to a single ancestry cluster before any of these numbers were computed (<a href="#sec-people" class="quarto-xref">Section 4</a>), which is why the unconfirmed comparison is meaningful at all.</li>
+<li><strong>A hit names a block, not a gene.</strong> Recombination is suppressed across the MHC (<a href="#sec-primer" class="quarto-xref">Section 2</a>), so a signal at one locus routinely appears at its neighbours. Conditional analysis — refitting with the strongest signal held fixed — is the expected next step, and it separates neighbours less often than people expect.</li>
+<li><strong>Residue columns are not independent tests.</strong> There are 3,125 of them, and nothing like that many degrees of freedom: they are built from 2,298 alleles, and neighbouring positions on the same molecule move together. A Bonferroni correction over the raw column count is far too strict, and treating the columns as independent is far too loose.</li>
+</ul>
+<p>Report <code>n_chr_total</code> beside every result you present. It is the number that decides whether a result deserves attention, and it is now one join away.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -3020,14 +3555,16 @@ Figure 4: Testing the two explanations that would make the case/control differe
 </div>
 <div class="callout-body-container callout-body">
 <p><a href="#sec-primer" class="quarto-xref">Section 2</a> explained that these three genes are genuinely present or absent from a haplotype. A person carrying one copy is hemizygous — but the pipeline writes a hemizygous call as <strong>two copies of the same allele</strong>, so those columns read 2 where the truth is 1.</p>
-<p>The other 19 genes’ residue columns are unaffected. If a DRB3/4/5 result matters, derive presence/absence from <code>03.alleles/allele_calls.tsv</code> directly rather than from the dosage matrix.</p>
+<p>The other 19 genes’ residue columns are unaffected. Both quality tables mark every affected column with <code>gene_dosage_valid = 0</code>: 281 allele columns and 601 residue columns. If a DRB3/4/5 result matters, derive presence/absence from <code>03.alleles/allele_calls.tsv</code> directly rather than from the dosage matrix.</p>
 </div>
 </div>
-<p><strong>What is not established anywhere in this delivery.</strong> There is no per-sample accuracy measurement. The frequency check compares <em>population frequencies</em>, so a set of errors that happens to preserve the overall spectrum would be invisible to it. Settling that would require typing samples whose HLA type is already published, which is scoped and deferred in <code>docs/OPEN_QUESTIONS.md</code> §2.</p>
+</section>
 </section>
 <section id="sec-glossary" class="level1" data-number="11">
 <h1 data-number="11"><span class="header-section-number">11</span> Glossary</h1>
-<p>Terms used in this document, in the figures, and as column names in the delivered files.</p>
+<p>Every term this document, its figures and the delivered column names use, grouped by the part of the problem it belongs to. Nothing here is assumed knowledge: if a word in the report is not in this table, it is ordinary English.</p>
+<section id="the-biology" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="the-biology"><span class="header-section-number">11.1</span> The biology</h2>
 <table class="glossary caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -3048,14 +3585,83 @@ Figure 4: Testing the two explanations that would make the case/control differe
 <td>the gene cluster on chromosome 6 whose proteins display protein fragments to T cells</td>
 </tr>
 <tr class="even">
+<td>MHC</td>
+<td>主要组织相容性复合体</td>
+<td>the region of chromosome 6, at band 6p21.3, that the HLA genes sit in</td>
+</tr>
+<tr class="odd">
+<td>class I</td>
+<td>I 类</td>
+<td>HLA-A, -B, -C (and E, F, G): on every nucleated cell, displaying fragments of what is <em>inside</em> it, inspected by CD8 T cells</td>
+</tr>
+<tr class="even">
+<td>class II</td>
+<td>II 类</td>
+<td>HLA-DR, -DQ, -DP: on immune cells only, displaying fragments taken in from <em>outside</em>, inspected by CD4 T cells</td>
+</tr>
+<tr class="odd">
+<td>peptide</td>
+<td>肽段</td>
+<td>the short protein fragment an HLA molecule holds in its groove and displays</td>
+</tr>
+<tr class="even">
+<td>haplotype</td>
+<td>单倍型</td>
+<td>the whole set of alleles inherited together on one chromosome from one parent</td>
+</tr>
+<tr class="odd">
+<td>linkage disequilibrium</td>
+<td>连锁不平衡</td>
+<td>neighbouring HLA alleles travel together far more often than chance, so a signal at one gene routinely appears at its neighbours</td>
+</tr>
+<tr class="even">
+<td>DR51 / DR52 / DR53</td>
+<td>DR51 / DR52 / DR53</td>
+<td>the older names for the haplotype groups that carry DRB5, DRB3 and DRB4 respectively</td>
+</tr>
+<tr class="odd">
+<td>antigen recognition domain (ARD)</td>
+<td>抗原识别域</td>
+<td>the part of the protein that forms the groove and touches the peptide; exons 2–3 for class I, exon 2 for class II</td>
+</tr>
+<tr class="even">
+<td>residue</td>
+<td>残基</td>
+<td>one amino acid at one position in the protein</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="naming-an-allele" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="naming-an-allele"><span class="header-section-number">11.2</span> Naming an allele</h2>
+<table class="glossary caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>term</th>
+<th>中文</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
 <td>allele</td>
 <td>等位基因</td>
 <td>one specific known version of a gene</td>
 </tr>
+<tr class="even">
+<td>genotype</td>
+<td>基因型</td>
+<td>what a person actually carries at one place in the genome — here a <em>pair</em> of alleles, not a single DNA letter</td>
+</tr>
 <tr class="odd">
-<td>typing</td>
-<td>分型</td>
-<td>deciding which two known versions of a gene a person carries</td>
+<td>locus</td>
+<td>位点</td>
+<td>a fixed place in the genome; in this document, one HLA gene</td>
 </tr>
 <tr class="even">
 <td>field</td>
@@ -3068,24 +3674,63 @@ Figure 4: Testing the two explanations that would make the case/control differe
 <td>the resolution used throughout this delivery, e.g. <code>A*24:02</code></td>
 </tr>
 <tr class="even">
-<td>residue</td>
-<td>残基</td>
-<td>one amino acid at one position in the protein</td>
+<td>serological type</td>
+<td>血清型</td>
+<td>the pre-DNA way of typing HLA, by testing blood against antibodies; those older names survive as field 1</td>
 </tr>
 <tr class="odd">
-<td>dosage</td>
-<td>剂量</td>
-<td>how many copies (0, 1 or 2) a person carries</td>
+<td>expression suffix</td>
+<td>表达后缀</td>
+<td>the trailing <code>N</code>, <code>L</code>, <code>S</code> or <code>Q</code> on some allele names, describing whether and how the protein reaches the cell surface</td>
 </tr>
 <tr class="even">
-<td>diplotype</td>
-<td>双体型</td>
-<td>the unordered pair of amino acids at one position</td>
+<td>null allele</td>
+<td>空等位基因</td>
+<td>an allele written with a trailing <code>N</code>: the gene copy is there in the DNA but makes no working protein</td>
 </tr>
 <tr class="odd">
-<td>locus</td>
-<td>位点</td>
-<td>one HLA gene, considered as a place in the genome</td>
+<td>P group</td>
+<td>P 组</td>
+<td>alleles whose protein is identical across the ARD, collected under the lowest-numbered member with a <code>P</code> appended; how the reference panels name things</td>
+</tr>
+<tr class="even">
+<td>IPD-IMGT/HLA</td>
+<td>IPD-IMGT/HLA</td>
+<td>the international catalogue of known HLA alleles, both names and sequences</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="what-a-call-is" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="what-a-call-is"><span class="header-section-number">11.3</span> What a call is</h2>
+<table class="glossary caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>term</th>
+<th>中文</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>typing</td>
+<td>分型</td>
+<td>deciding which two known versions of a gene a person carries</td>
+</tr>
+<tr class="even">
+<td>call</td>
+<td>分型结果</td>
+<td>the answer the program commits to for one person at one gene</td>
+</tr>
+<tr class="odd">
+<td>call rate</td>
+<td>分型率</td>
+<td>the share of attempts that produced an answer at all</td>
 </tr>
 <tr class="even">
 <td>called</td>
@@ -3100,7 +3745,7 @@ Figure 4: Testing the two explanations that would make the case/control differe
 <tr class="even">
 <td>not_typed</td>
 <td>未分型</td>
-<td>the gene is absent from this person’s haplotype altogether</td>
+<td>the gene is absent from that person’s haplotype altogether</td>
 </tr>
 <tr class="odd">
 <td>failed</td>
@@ -3113,9 +3758,78 @@ Figure 4: Testing the two explanations that would make the case/control differe
 <td>several candidate answers fitted the reads equally well</td>
 </tr>
 <tr class="odd">
+<td>dosage</td>
+<td>剂量</td>
+<td>how many copies (0, 1 or 2) a person carries — the number a regression takes as its predictor</td>
+</tr>
+<tr class="even">
+<td>diplotype</td>
+<td>双体型</td>
+<td>both amino acids a person has at one position, without saying which parent gave which: <code>S/T</code> and <code>T/S</code> are one entry</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="the-comparison-with-published-data" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="the-comparison-with-published-data"><span class="header-section-number">11.4</span> The comparison with published data</h2>
+<table class="glossary caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>term</th>
+<th>中文</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>reference panel</td>
+<td>参考面板</td>
+<td>a large, already-published set of HLA types from an independent group of people, used to check our calls and never to produce them</td>
+</tr>
+<tr class="even">
+<td>allele frequency</td>
+<td>等位基因频率</td>
+<td>the share of <strong>chromosomes</strong> in a group that carry that allele — copies divided by chromosomes counted, not by people</td>
+</tr>
+<tr class="odd">
+<td>denominator</td>
+<td>分母</td>
+<td>the set of chromosomes being divided by. Two frequencies can only be compared when both sides divide by the same kind of set</td>
+</tr>
+<tr class="even">
+<td>renormalise</td>
+<td>重新归一</td>
+<td>after removing some chromosomes from the denominator, rescaling what is left so the frequencies still sum to one</td>
+</tr>
+<tr class="odd">
+<td>comparable</td>
+<td>是否可比</td>
+<td>whether the two sides’ denominators mean the same quantity; where they do not, as at DRB3, the correlation measures the mismatch and not the typing</td>
+</tr>
+<tr class="even">
+<td>concordance</td>
+<td>一致性</td>
+<td>agreement between our frequencies and the panel’s, measured one locus at a time as <em>r</em></td>
+</tr>
+<tr class="odd">
+<td>Pearson <em>r</em></td>
+<td>皮尔逊相关系数 <em>r</em></td>
+<td>one number per locus for how closely our frequency for each shared allele tracks the reference’s; 1 means every allele sits on the diagonal. It is driven by the few common alleles, so a high <em>r</em> does not vouch for the rare ones</td>
+</tr>
+<tr class="even">
+<td>n_shared</td>
+<td>共有等位基因数</td>
+<td>how many alleles at a locus both sources carry — the amount of evidence behind that locus’s <em>r</em></td>
+</tr>
+<tr class="odd">
 <td>unconfirmed</td>
 <td>未被参考面板收录</td>
-<td>our call names an allele the reference panel does not list</td>
+<td>the allele we called for a chromosome appears nowhere in the panel. A statement about the panel’s coverage, not proof the call is wrong</td>
 </tr>
 <tr class="even">
 <td>in_reference</td>
@@ -3123,24 +3837,127 @@ Figure 4: Testing the two explanations that would make the case/control differe
 <td>the flag in <code>allele_pgroup_map.tsv</code> recording exactly that</td>
 </tr>
 <tr class="odd">
-<td>reference panel</td>
-<td>参考面板</td>
-<td>published allele frequencies from an independent population</td>
+<td>saturated</td>
+<td>饱和</td>
+<td>a measurement pushed against its ceiling, so averaging it carries almost no information — true of our call rates, and true of a panel that assigns an allele to every chromosome</td>
 </tr>
 <tr class="even">
-<td>P group</td>
-<td>P 组</td>
-<td>alleles grouped by identical protein in the binding region; how the reference names things</td>
+<td>chromosome-weighted</td>
+<td>按染色体加权</td>
+<td>counted by how many chromosomes carry an allele rather than by how many distinct alleles there are, so rare alleles stop counting the same as common ones</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="the-statistics" class="level2" data-number="11.5">
+<h2 data-number="11.5" class="anchored" data-anchor-id="the-statistics"><span class="header-section-number">11.5</span> The statistics</h2>
+<table class="glossary caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>term</th>
+<th>中文</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><em>P</em> value</td>
+<td><em>P</em> 值</td>
+<td>the chance of seeing a difference at least this large if there were no real difference at all; small means hard to explain by luck</td>
+</tr>
+<tr class="even">
+<td>Fisher exact test</td>
+<td>Fisher 精确检验</td>
+<td>asks how likely a count table this lopsided would be if both groups really had the same underlying rate</td>
 </tr>
 <tr class="odd">
-<td>depth</td>
-<td>测序深度</td>
-<td>how many times each position was sequenced, on average</td>
+<td>Mann-Whitney test</td>
+<td>Mann-Whitney 检验</td>
+<td>asks whether one group’s values tend to sit higher than another’s, without assuming any particular distribution</td>
 </tr>
 <tr class="even">
-<td>IPD-IMGT/HLA</td>
-<td>IPD-IMGT/HLA</td>
-<td>the international catalogue of known HLA alleles</td>
+<td>95 % confidence interval</td>
+<td>95% 置信区间</td>
+<td>the range an estimate would plausibly move over if a cohort of the same size were sampled again; a long bar means a rare allele</td>
+</tr>
+<tr class="odd">
+<td>confounding</td>
+<td>混杂</td>
+<td>two things always changing together in the data, so a difference could be caused by either and no statistic can separate them</td>
+</tr>
+<tr class="even">
+<td>association</td>
+<td>关联</td>
+<td>a test of whether carriers of a variant appear more often among cases than controls</td>
+</tr>
+<tr class="odd">
+<td>stratum</td>
+<td>分层</td>
+<td>one of the subgroups the confounding analysis is split into — one platform, one depth window, one reference panel</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="the-sequencing" class="level2" data-number="11.6">
+<h2 data-number="11.6" class="anchored" data-anchor-id="the-sequencing"><span class="header-section-number">11.6</span> The sequencing</h2>
+<table class="glossary caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>term</th>
+<th>中文</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>read</td>
+<td>读段</td>
+<td>one short stretch of sequence the machine produces; HLA typing works by matching these against the catalogue</td>
+</tr>
+<tr class="even">
+<td>reference genome</td>
+<td>参考基因组</td>
+<td>the standard genome sequence reads are matched onto — it carries one arbitrary version of each HLA gene</td>
+</tr>
+<tr class="odd">
+<td>alternate contig</td>
+<td>alt 片段</td>
+<td>extra copies of highly variable regions bolted on to the reference, so reads from a divergent HLA allele have somewhere to land</td>
+</tr>
+<tr class="even">
+<td>depth</td>
+<td>测序深度</td>
+<td>how many times each position was sequenced on average, written with a trailing <code>×</code>. A different thing from how many <em>fields</em> an allele name reaches</td>
+</tr>
+<tr class="odd">
+<td>platform</td>
+<td>测序平台</td>
+<td>a machine model together with the library chemistry and target depth it was run at, so <code>HiSeqX 15x</code> names a batch processed the same way</td>
+</tr>
+<tr class="even">
+<td>batch effect</td>
+<td>批次效应</td>
+<td>a difference produced by how samples were processed rather than by the people in them</td>
+</tr>
+<tr class="odd">
+<td>ancestry cluster</td>
+<td>祖先聚类</td>
+<td>a group of people sitting together on a map of genetic ancestry built from genome-wide genotypes</td>
+</tr>
+<tr class="even">
+<td>chromosome (as a count)</td>
+<td>染色体（作为计数单位）</td>
+<td>one <em>copy</em> of the region in one person, not one of the numbered chromosomes. Everyone has two copies of chromosome 6, so N people contribute 2N — which is what every <code>n_chr_*</code> column counts</td>
 </tr>
 <tr class="odd">
 <td>cohort</td>
@@ -3150,10 +3967,21 @@ Figure 4: Testing the two explanations that would make the case/control differe
 <tr class="even">
 <td>case / control</td>
 <td>病例 / 对照</td>
-<td>people with the disease / comparison group without it</td>
+<td>people with the disease / the comparison group without it</td>
+</tr>
+<tr class="odd">
+<td>CTEPH</td>
+<td>慢性血栓栓塞性肺高血压</td>
+<td>chronic thromboembolic pulmonary hypertension — the disease under study</td>
+</tr>
+<tr class="even">
+<td>AGP3K</td>
+<td>AGP3K</td>
+<td>the Japanese cohort the controls are drawn from</td>
 </tr>
 </tbody>
 </table>
+</section>
 </section>
 
 
@@ -3547,6 +4375,270 @@ Figure 4: Testing the two explanations that would make the case/control differe
 </section>
 </div></section></div></main>
 <!-- /main column -->
+<!-- The two rails, and the page search.
+
+     Included after the body by _quarto.yml, so BOTH language editions get them
+     from one file and cannot drift apart.
+
+     LEFT  the chapters: where you are in the document.
+     RIGHT the current chapter's sections: where you are in this chapter.
+
+     The right rail is not a second table of contents. It is Quarto's own
+     `nav#TOC`, left exactly where Quarto put it and re-presented with CSS. That
+     matters: the TOC carries `data-scroll-target` and Quarto's
+     IntersectionObserver already keeps `a.nav-link.active` pointing at the
+     heading you are reading. Re-implementing scroll-spy would be strictly worse
+     than reading the one this page already ships.
+
+     The search is written here rather than switched on in Quarto because
+     Quarto's search is a website-project feature that needs a separate index
+     file next to the page. This report has to stay ONE self-contained .html --
+     verify.sh checks every figure is embedded in it and it is opened straight
+     off disk -- so the search runs against the rendered DOM instead. While a
+     term is being searched the right rail drops out of chapter scope and shows
+     every matching heading, because a search that could only find things in the
+     chapter you happen to be standing in would be a worse search. -->
+<div id="report-rail" hidden>
+  <form id="rr-form" role="search" onsubmit="return false;">
+    <input id="rr-q" type="search" autocomplete="off" spellcheck="false" aria-label="search">
+    <div id="rr-status" aria-live="polite"></div>
+  </form>
+  <nav id="rr-main"></nav>
+</div>
+<div id="rr-here" hidden></div>
+<script>
+(function () {
+  var root = document.documentElement;
+  var zh = (root.getAttribute('lang') || '').toLowerCase().indexOf('zh') === 0;
+  var T = zh
+    ? { ph: '在本页中搜索…', hint: '回车跳到下一处，Shift+回车上一处，Esc 清除',
+        none: '没有匹配', of: ' / ', matches: ' 处', contents: '目录',
+        here: '本章', found: '搜索结果', alone: '本章没有分小节' }
+    : { ph: 'Search this page…', hint: 'Enter for next, Shift+Enter for previous, Esc to clear',
+        none: 'no match', of: ' of ', matches: ' matches', contents: 'Contents',
+        here: 'In this section', found: 'Search results', alone: 'no subsections' };
+
+  var rail = document.getElementById('report-rail');
+  var here = document.getElementById('rr-here');
+  var content = document.getElementById('quarto-content');
+  var main = document.getElementById('quarto-document-content');
+  var margin = document.getElementById('quarto-margin-sidebar');
+  var toc = document.getElementById('TOC');
+  if (!rail || !content || !main) return;
+
+  // ---- where the left rail lives -----------------------------------------
+  // Wide: a grid item in the page's left column. Narrow: Quarto collapses to one
+  // column and every grid item lands in the same row, so a rail left in the grid
+  // would be drawn straight through the article. Below the breakpoint it goes
+  // inside the article instead, as its first block.
+  var wide = window.matchMedia('(min-width: 992px)');
+  function place() {
+    if (wide.matches) {
+      content.insertBefore(rail, content.firstChild);
+      content.classList.add('has-report-rail');
+    } else {
+      main.insertBefore(rail, main.firstChild);
+      content.classList.remove('has-report-rail');
+    }
+  }
+  place();
+  if (wide.addEventListener) wide.addEventListener('change', place);
+  else if (wide.addListener) wide.addListener(place);
+  rail.hidden = false;
+
+  // ---- left rail: the chapters -------------------------------------------
+  var nav = document.getElementById('rr-main');
+  var tops = toc ? toc.querySelectorAll('#TOC > ul > li') : [];
+  var head = document.createElement('div');
+  head.className = 'rr-head';
+  head.textContent = T.contents;
+  nav.appendChild(head);
+  var chapters = [];
+  Array.prototype.forEach.call(tops, function (li) {
+    var a = li.querySelector('a');
+    if (!a || a.parentNode !== li) return;
+    var c = a.cloneNode(true);          // the href is an anchor; it just works
+    c.removeAttribute('id');
+    c.className = 'rr-chapter';
+    nav.appendChild(c);
+    chapters.push({ li: li, link: c });
+  });
+
+  // ---- right rail: this chapter only -------------------------------------
+  if (toc && margin) {
+    margin.insertBefore(here, toc);
+    here.hidden = false;
+    toc.classList.add('rr-scoped');
+  }
+
+  function topLevel(el) {
+    var li = el.closest('li');
+    while (li && li.parentElement && li.parentElement.parentElement !== toc) {
+      li = li.parentElement.closest('li');
+    }
+    return li;
+  }
+
+  var current = null;
+  function label(text, alone) {
+    here.textContent = '';
+    var t = document.createElement('span');
+    t.className = 'rr-head';
+    t.textContent = text;
+    here.appendChild(t);
+    here.classList.toggle('rr-alone', !!alone);
+    if (alone) {
+      var n = document.createElement('span');
+      n.className = 'rr-none';
+      n.textContent = T.alone;
+      here.appendChild(n);
+    }
+  }
+
+  function syncChapter() {
+    if (!toc || toc.classList.contains('rr-search')) return;
+    var act = toc.querySelector('a.nav-link.active');
+    var li = act ? topLevel(act) : (chapters[0] && chapters[0].li);
+    if (!li || li === current) return;
+    current = li;
+    var was = toc.querySelector('li.rr-here');
+    if (was) was.classList.remove('rr-here');
+    li.classList.add('rr-here');
+    var own = li.querySelector('a');
+    label(own ? own.textContent.replace(/\s+/g, ' ').trim() : T.here,
+          !li.querySelector('ul'));
+    chapters.forEach(function (c) {
+      c.link.classList.toggle('rr-current', c.li === li);
+    });
+  }
+
+  // Driving the rails from verify.sh needs this synchronously: a
+  // MutationObserver callback is a microtask and does not run until the calling
+  // script has finished, so a test that set `.active` and read the DOM straight
+  // back would read it before the rail had reacted.
+  rail.syncChapter = syncChapter;
+
+  if (toc) {
+    new MutationObserver(syncChapter).observe(toc, {
+      attributes: true, attributeFilter: ['class'], subtree: true
+    });
+    syncChapter();
+  }
+
+  // ---- the page search ----------------------------------------------------
+  var q = document.getElementById('rr-q');
+  var status = document.getElementById('rr-status');
+  q.placeholder = T.ph;
+  q.title = T.hint;
+
+  var hits = [], cur = -1, timer = null;
+
+  function unmark() {
+    var marks = main.querySelectorAll('mark.rr-hit');
+    for (var i = 0; i < marks.length; i++) {
+      var m = marks[i];
+      m.parentNode.replaceChild(document.createTextNode(m.textContent), m);
+    }
+    if (marks.length) main.normalize();
+    hits = []; cur = -1;
+  }
+
+  function mark(term) {
+    var low = term.toLowerCase(), targets = [];
+    var walk = document.createTreeWalker(main, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (n) {
+        var p = n.parentNode ? n.parentNode.nodeName : '';
+        if (p === 'SCRIPT' || p === 'STYLE' || p === 'MARK') return NodeFilter.FILTER_REJECT;
+        // On a narrow screen the rail lives inside the article; it is navigation,
+        // not text being searched.
+        if (rail.contains(n)) return NodeFilter.FILTER_REJECT;
+        return n.nodeValue.toLowerCase().indexOf(low) === -1
+          ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    for (var n = walk.nextNode(); n; n = walk.nextNode()) targets.push(n);
+    for (var i = 0; i < targets.length; i++) {
+      var node = targets[i], s = node.nodeValue, ls = s.toLowerCase();
+      var frag = document.createDocumentFragment(), from = 0, at;
+      while ((at = ls.indexOf(low, from)) !== -1) {
+        if (at > from) frag.appendChild(document.createTextNode(s.slice(from, at)));
+        var m = document.createElement('mark');
+        m.className = 'rr-hit';
+        m.textContent = s.slice(at, at + term.length);
+        frag.appendChild(m);
+        from = at + term.length;
+      }
+      if (from < s.length) frag.appendChild(document.createTextNode(s.slice(from)));
+      node.parentNode.replaceChild(frag, node);
+    }
+    hits = [].slice.call(main.querySelectorAll('mark.rr-hit'));
+  }
+
+  // While searching the right rail leaves chapter scope and becomes the result
+  // list: every heading whose own text or whose children match.
+  function filterToc(term) {
+    if (!toc) return;
+    var items = toc.querySelectorAll('li');
+    var low = term.toLowerCase();
+    for (var i = 0; i < items.length; i++) {
+      if (!term) { items[i].classList.remove('rr-off'); continue; }
+      var links = items[i].querySelectorAll('a'), keep = false;
+      for (var j = 0; j < links.length && !keep; j++)
+        keep = links[j].textContent.toLowerCase().indexOf(low) !== -1;
+      items[i].classList.toggle('rr-off', !keep);
+    }
+  }
+
+  function show() {
+    if (!q.value) { status.textContent = ''; return; }
+    if (!hits.length) { status.textContent = T.none; return; }
+    status.textContent = (cur < 0 ? hits.length + T.matches
+                                  : (cur + 1) + T.of + hits.length);
+  }
+
+  function go(step) {
+    if (!hits.length) return;
+    if (cur >= 0) hits[cur].classList.remove('rr-cur');
+    cur = (cur + step + hits.length) % hits.length;
+    hits[cur].classList.add('rr-cur');
+    hits[cur].scrollIntoView({ block: 'center', behavior: 'smooth' });
+    show();
+  }
+
+  function run() {
+    unmark();
+    var term = q.value.trim();
+    filterToc(term);
+    if (toc) {
+      toc.classList.toggle('rr-search', !!term);
+      toc.classList.toggle('rr-scoped', !term);
+    }
+    if (term) label(T.found, false);
+    else { current = null; syncChapter(); }
+    if (term.length >= 2) mark(term);
+    show();
+  }
+
+  // The one hook: verify.sh drives the search and the rails through this in a
+  // headless browser, because navigation that silently stops working looks
+  // exactly like navigation that works.
+  rail.runSearch = run;
+
+  q.addEventListener('input', function () {
+    clearTimeout(timer);
+    timer = setTimeout(run, 160);
+  });
+  q.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); go(e.shiftKey ? -1 : 1); }
+    else if (e.key === 'Escape') { q.value = ''; run(); q.blur(); }
+  });
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault(); q.focus(); q.select();
+    }
+  });
+})();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

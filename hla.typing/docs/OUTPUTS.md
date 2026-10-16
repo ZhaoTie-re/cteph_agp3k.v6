@@ -36,6 +36,15 @@ Every path below is under `results/`.
   allele_frequency_sample.tsv   one row per sample: chromosomes called, unconfirmed
   allele_pgroup_map.tsv         allele -> P group -> in_reference; the association
                                 reads this one
+  allele_quality.tsv            one row per COLUMN of allele_dosage.tsv: chromosome
+                                counts, Wilson interval, whether a panel lists it,
+                                how much support came from a resolved ambiguity, and
+                                the two gene-level flags. No verdict column: where the
+                                usable line falls is the analysis's decision
+  residue_quality.tsv           one row per COLUMN of residue_dosage.tsv: chromosome
+                                counts, how many of this cohort's alleles carry the
+                                amino acid, and the share of samples whose dosages at
+                                that position do not sum to 2
   *.1kg.tsv                     the same four against the SECONDARY panel. Same
                                 schema, different reference and locus list
   typing_confound.tsv           written by PLOT_TYPING_CONFOUND: every stratum

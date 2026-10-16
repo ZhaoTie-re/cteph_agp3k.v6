@@ -23,3 +23,116 @@ table.glossary td:first-child { white-space: nowrap; font-weight: 600; }
                -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   line-height: 1.75;
 }
+
+/* ---- the two rails -------------------------------------------------------
+
+   LEFT   the chapters: where you are in the document.
+   RIGHT  the current chapter's sections: where you are in this chapter.
+
+   Narrow screens first. With no rail column to sit in, the rail is just the
+   first block of the page: search, then the chapter list, then the article.
+   That is the right order on a phone anyway. */
+#report-rail {
+  margin: 0 0 1.6rem 0;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid #E3E6E9;
+}
+
+/* From the theme's own breakpoint up, the page gets two rails. Quarto keeps a
+   wide left column only when the table of contents lives there; the contents
+   belong on the right, so the two-rail template is restated here against
+   Quarto's OWN named grid lines -- the same ones .column-margin and its
+   sidebars are placed on. The rows are named too, and a grid item without a
+   grid-row is auto-placed into an implicit row outside the page, where it
+   renders nowhere at all. */
+@media (min-width: 992px) {
+  #quarto-content.has-report-rail {
+    grid-template-columns:
+      [screen-start] 1.5em [screen-start-inset] 5fr
+      [page-start] 30px [page-start-inset] minmax(0px, 270px)
+      [body-start-outset] 30px [body-start] 1.5em
+      [body-content-start] minmax(420px, calc(820px - 3em)) [body-content-end]
+      1.5em [body-end] 40px [body-end-outset] minmax(0px, 230px)
+      [page-end-inset] 40px [page-end] 5fr [screen-end-inset] 1.5em [screen-end];
+  }
+  #report-rail {
+    grid-column: page-start-inset / body-start-outset;
+    grid-row: content-top / page-bottom;
+    position: sticky;
+    top: 0;
+    align-self: start;
+    max-height: 100vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    margin-bottom: 0;
+    padding: 1.4rem 0.5rem 2rem 0;
+    border-bottom: none;
+    font-size: 0.86rem;
+  }
+}
+
+/* The search box. Deliberately plain: it is the only control on the page, so
+   it has to read as an input without being decorated into something else. */
+#rr-form { margin: 0 0 1.3rem 0; }
+#rr-q {
+  width: 100%; box-sizing: border-box;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #C6CBD1; border-radius: 4px;
+  background: #FFF; color: #21262B; font-size: 0.88rem; line-height: 1.4;
+}
+#rr-q:focus { outline: none; border-color: #2780E3;
+              box-shadow: 0 0 0 2px rgba(39, 128, 227, .18); }
+#rr-status { min-height: 1.2em; margin-top: 0.3rem;
+             font-size: 0.78rem; color: #6C757D; }
+
+/* The heading over each rail: small, quiet, and the only thing that says which
+   of the two lists you are looking at. */
+.rr-head {
+  display: block;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; color: #8A9199;
+  margin: 0 0 0.5rem 0;
+}
+#rr-here .rr-head { text-transform: none; letter-spacing: 0;
+                    font-size: 0.82rem; color: #454A50; }
+.rr-none { display: block; font-size: 0.78rem; color: #9AA0A6;
+           font-style: italic; }
+
+/* Left rail: one line per chapter. The number is kept but pushed back, so the
+   titles line up and the eye reads them as a list rather than as arithmetic. */
+#rr-main .rr-chapter {
+  display: block;
+  padding: 0.26rem 0.4rem 0.26rem 0.7rem;
+  margin-left: -0.7rem;
+  border-left: 2px solid transparent;
+  color: #454A50; text-decoration: none; line-height: 1.35;
+}
+#rr-main .rr-chapter:hover { color: #2780E3; background: #F4F6F8; }
+#rr-main .rr-chapter .header-section-number {
+  display: inline-block; min-width: 1.3em;
+  color: #9AA0A6; font-variant-numeric: tabular-nums;
+}
+#rr-main .rr-chapter.rr-current {
+  color: #1B1F23; font-weight: 600;
+  border-left-color: #2780E3; background: #F4F8FD;
+}
+#rr-main .rr-chapter.rr-current .header-section-number { color: #2780E3; }
+
+/* Right rail. Quarto's nav#TOC stays exactly where Quarto put it -- it is the
+   thing the scroll-spy drives -- and is re-presented rather than rebuilt.
+   `!important` is not decoration here: Bootstrap ships `.collapse{display:none}`
+   and the nested lists carry that class. */
+#TOC #toc-title { display: none; }
+#TOC.rr-scoped > ul > li > a { display: none; }
+#TOC.rr-scoped > ul > li > ul { display: none !important; }
+#TOC.rr-scoped > ul > li.rr-here > ul { display: block !important; }
+#TOC.rr-search > ul > li > a { display: block; }
+#TOC.rr-search > ul > li > ul { display: block !important; }
+#rr-here { margin: 0 0 0.35rem 0; }
+
+/* Search results: rr-off is a contents entry that does not match, rr-cur is the
+   one hit the reader is currently standing on. */
+.rr-off { display: none !important; }
+mark.rr-hit { background: #FFF1A8; color: inherit; padding: 0 .05em;
+              border-radius: 2px; }
+mark.rr-cur { background: #FFC947; box-shadow: 0 0 0 2px #FFC947; }
