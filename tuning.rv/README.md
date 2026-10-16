@@ -86,7 +86,7 @@ process). Base metrics are cached in a permanent `storeDir`
 | `Cohorts` | all three | cohorts to tune (comma list on CLI) |
 | `MaxAC` | 20 | top of the minAC sweep |
 | `RobustZThreshold` | 5 | sample rate-residual outlier cutoff |
-| `KneeS`, `KneeWeightX`, `KneeWeightY` | 1, 1, 2 | Kneedle knee for variant QC |
+| `KneeS`, `KneeWeightX`, `KneeWeightY` | 1, 1, 8 | Kneedle knee for variant QC (weight_y 8: knee 0.04 in every cohort; see METHODS §4) |
 | `PcTemplate`, `PcLabel`, `NPcs` | bbj_mainland, 10 | ancestry PCs for the +PC model |
 | `Robust` | false | OLS SE: classical (default) or HC3 (`--Robust true`) |
 | `Alpha`, `MinACFloor` | 0.05, 1 | V-trough non-significance level + floor |

@@ -36,8 +36,8 @@ def parse_args():
     p.add_argument('--knee-s', type=float, default=1.0, help='Kneedle sensitivity S (default: 1.0).')
     p.add_argument('--knee-weight-x', type=float, default=1.0,
                    help='Kneedle weight_x (default: 1.0).')
-    p.add_argument('--knee-weight-y', type=float, default=2.0,
-                   help='Kneedle weight_y (default: 2.0).')
+    p.add_argument('--knee-weight-y', type=float, default=8.0,
+                   help='Kneedle weight_y (default: 8.0, the pipeline value).')
     p.add_argument('--out-exclude', required=True,
                    help='Output PLINK2 --exclude list (VariantID, no header).')
     p.add_argument('--out-png', required=True,

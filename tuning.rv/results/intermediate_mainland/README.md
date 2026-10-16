@@ -15,16 +15,16 @@ Methodology: `../../docs/METHODS.md` · Output dictionary: `../../docs/OUTPUTS.m
 | minAC sweep | 0-20 |
 | OLS SE | classical |
 | Robust-Z threshold | 5.0 |
-| Kneedle (S, wx, wy) | 1.0, 1.0, 2.0 |
+| Kneedle (S, wx, wy) | 1.0, 1.0, 8.0 |
 | minAC recommendation | V-trough; primary model = nopc (alpha 0.05, floor 1) |
 | Conda env | cteph_geno_pro |
 
 ## Run
 | Field | Value |
 | --- | --- |
-| Run name | gloomy_stallman |
-| Started | 2026-08-08T16:26:30.636607705+09:00 |
-| Command | `nextflow run tuning.rv.nf -resume` |
+| Run name | big_roentgen |
+| Started | 2026-10-08T15:16:37.796705227+09:00 |
+| Command | `nextflow run tuning.rv.nf -resume 487abec1-e507-43c4-b571-d840cb8fe3af` |
 | Revision | n/a |
 | Nextflow | 26.04.4 |
 | Timing | see `../_run_info/report.html` |
@@ -52,13 +52,13 @@ Methodology: `../../docs/METHODS.md` · Output dictionary: `../../docs/OUTPUTS.m
 | Metric | Value |
 | --- | --- |
 | Samples removed (rate-residual outliers) | 3 |
-| Variants excluded (depth-diff) | 976407 |
+| Variants excluded (depth-diff) | 45850 |
 | Samples retained | 2477 |
-| Variants retained (minAC 0) | 16508040 |
-| Depth-diff knee | 0.03 (retained 94.4156%) |
-| Protected variants (never excluded) | 3 present, 1 rescued from exclusion |
+| Variants retained (minAC 0) | 17438597 |
+| Depth-diff knee | 0.04 (retained 99.7378%) |
+| Protected variants (never excluded) | 3 present, 0 rescued from exclusion |
 | **Recommended minAC** (V-trough) | **2**  (calibrated: true) |
 | Primary model / non-sig band | noPC / {2} |
-| beta_group @ rec (noPC) | 0.00224664  (p = 0.751042) |
-| Variants kept @ rec | 7620757 |
+| beta_group @ rec (noPC) | 0.00145507  (p = 0.837019) |
+| Variants kept @ rec | 8050528 |
 | +PC sensitivity | recommends minAC 2; agrees at rec: true |

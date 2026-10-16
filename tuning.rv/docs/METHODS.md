@@ -158,6 +158,15 @@ For every variant compute the depth-stratified missing rates within the 15x and
 
 Build the CDF of Δ and locate its **Kneedle knee** (concave/increasing;
 sensitivity `S`, `weight_x`, `weight_y` tunable; knee rounded to 2 decimals).
+
+**Weight choice.** The difference curve is `weight_y·F(Δ) − weight_x·Δ` (both normalised), so a
+larger `weight_y` moves the knee to larger Δ (a more lenient cut). With `S = 1`, `weight_x = 1`:
+`weight_y = 2` (the earlier default) put the rounded knee at 0.03 in every cohort, which
+excluded the STBD1 candidate `chr4:76306990:G:C` (Δ = 0.031–0.033; kept only by the protect
+list). `weight_y = 8` puts it at **0.04 in all three cohorts** — the same value for every
+`weight_y` from 6.25 to 12, and 8 sits well inside that range — so all three candidates pass
+on their own. The weight was set for that reason: it is a deliberate choice, not one derived
+from the curve, and it removes far fewer variants than 0.03 did.
 Variants with `Δ > knee` have depth-dependent missingness and are written to a
 PLINK2 `--exclude` list (`variants_depthdiff.exclude.txt`). Figure:
 `depthdiff_variants_cdf.png`.

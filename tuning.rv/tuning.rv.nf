@@ -73,7 +73,8 @@ params.MdpCol    = 'Observed_Depth'
 params.RobustZThreshold = 5.0   // |robust z| cutoff for residual sample outliers
 params.KneeS            = 1.0   // Kneedle sensitivity S
 params.KneeWeightX      = 1.0   // Kneedle weight_x
-params.KneeWeightY      = 2.0   // Kneedle weight_y
+params.KneeWeightY      = 8.0   // Kneedle weight_y: knee 0.04 in all three cohorts (same for 6.25-12); keeps the
+                                // STBD1 candidates without rescue (weight_y 2 gave 0.03, excluding chr4:76306990:G:C)
 params.Robust           = false // OLS SE: classical (default) or HC3 robust (--robust)
 params.Alpha            = 0.05  // non-significance level for the minAC V-trough
 
