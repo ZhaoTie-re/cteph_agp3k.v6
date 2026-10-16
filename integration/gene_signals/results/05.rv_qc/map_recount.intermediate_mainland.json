@@ -1,0 +1,52 @@
+{
+ "cohort": "intermediate_mainland",
+ "minac": 2,
+ "analysed": 8050528,
+ "mapped": 157886,
+ "mapped_rows": 159874,
+ "mapped_multigene": 1847,
+ "sets": {
+  "moderate_high": {
+   "qualifying_variants": 70799,
+   "qualifying_by_impact": {
+    "MODERATE": 67044,
+    "HIGH": 3755
+   },
+   "tested_variants": 67257,
+   "tested_by_impact": {
+    "MODERATE": 64055,
+    "HIGH": 3202
+   },
+   "tested_multigene": 857,
+   "tested_pairs": 68199,
+   "genes": 15397,
+   "genes_1": 3677,
+   "genes_2": 2816,
+   "genes_ge3": 8904,
+   "genes_tested": 11720,
+   "untested_only_variants": 3542
+  },
+  "low_moderate_high": {
+   "qualifying_variants": 157886,
+   "qualifying_by_impact": {
+    "LOW": 87087,
+    "MODERATE": 67044,
+    "HIGH": 3755
+   },
+   "tested_variants": 154223,
+   "tested_by_impact": {
+    "LOW": 84691,
+    "MODERATE": 66104,
+    "HIGH": 3428
+   },
+   "tested_multigene": 1673,
+   "tested_pairs": 156032,
+   "genes": 19061,
+   "genes_1": 3842,
+   "genes_2": 2136,
+   "genes_ge3": 13083,
+   "genes_tested": 15219,
+   "untested_only_variants": 3663
+  }
+ }
+}

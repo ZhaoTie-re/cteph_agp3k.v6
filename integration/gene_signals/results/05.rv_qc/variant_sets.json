@@ -1,0 +1,92 @@
+{
+ "narrow_mainland|moderate_high": {
+  "variants": 61153,
+  "genes": 11192,
+  "rows": 62004,
+  "impact": {
+   "MODERATE": 58277,
+   "HIGH": 2876
+  }
+ },
+ "narrow_mainland|low_moderate_high": {
+  "variants": 141510,
+  "genes": 14848,
+  "rows": 143136,
+  "impact": {
+   "LOW": 77973,
+   "MODERATE": 60439,
+   "HIGH": 3098
+  }
+ },
+ "narrow_mainland": {
+  "analysed": 7431380,
+  "by_impact": {
+   "HIGH": 3432,
+   "LOW": 83569,
+   "MODERATE": 61467,
+   "MODIFIER": 7282912
+  },
+  "assigned_to_gene": 145225,
+  "eligible_impact_no_gene": 3243
+ },
+ "intermediate_mainland|moderate_high": {
+  "variants": 67257,
+  "genes": 11720,
+  "rows": 68199,
+  "impact": {
+   "MODERATE": 64055,
+   "HIGH": 3202
+  }
+ },
+ "intermediate_mainland|low_moderate_high": {
+  "variants": 154223,
+  "genes": 15219,
+  "rows": 156032,
+  "impact": {
+   "LOW": 84691,
+   "MODERATE": 66104,
+   "HIGH": 3428
+  }
+ },
+ "intermediate_mainland": {
+  "analysed": 8050528,
+  "by_impact": {
+   "HIGH": 3755,
+   "LOW": 90602,
+   "MODERATE": 67044,
+   "MODIFIER": 7889127
+  },
+  "assigned_to_gene": 157886,
+  "eligible_impact_no_gene": 3515
+ },
+ "full_mainland|moderate_high": {
+  "variants": 78558,
+  "genes": 12554,
+  "rows": 79664,
+  "impact": {
+   "MODERATE": 74739,
+   "HIGH": 3819
+  }
+ },
+ "full_mainland|low_moderate_high": {
+  "variants": 177552,
+  "genes": 15829,
+  "rows": 179697,
+  "impact": {
+   "LOW": 96888,
+   "MODERATE": 76605,
+   "HIGH": 4059
+  }
+ },
+ "full_mainland": {
+  "analysed": 9161666,
+  "by_impact": {
+   "HIGH": 4413,
+   "LOW": 103231,
+   "MODERATE": 77396,
+   "MODIFIER": 8976626
+  },
+  "assigned_to_gene": 181090,
+  "eligible_impact_no_gene": 3950
+ }
+}

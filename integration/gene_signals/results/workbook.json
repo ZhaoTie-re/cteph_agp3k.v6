@@ -1,0 +1,65 @@
+{
+ "signals": {
+  "rows": 90,
+  "or_not_estimable": 2,
+  "max_note": 149
+ },
+ "multisite": {
+  "rows": 13,
+  "samples": 13,
+  "genes_without": [
+   "STBD1",
+   "OSBP",
+   "RPH3A",
+   "CD248",
+   "NKD2",
+   "SCFD1",
+   "P2RY2",
+   "FAM217B",
+   "TBC1D14",
+   "FAS"
+  ]
+ },
+ "lovo": {
+  "rows": 156,
+  "genes": 15,
+  "variant_rows": 141,
+  "tests": 1198,
+  "gene_sets_tiered": {
+   "tier": 14,
+   "sens": 2,
+   "none": 14
+  },
+  "genes_two_variants": 5,
+  "shading": {
+   "#F4A582": 54,
+   "#FDDBC7": 83,
+   "none": 938,
+   "#D1E5F0": 44,
+   "#D6604D": 58,
+   "#92C5DE": 13,
+   "#4393C3": 8
+  },
+  "max_note": 148
+ },
+ "variants": {
+  "rows": 141,
+  "used": {
+   "narrow_mainland": 113,
+   "intermediate_mainland": 120,
+   "full_mainland": 140
+  },
+  "max_note": 124,
+  "note_width": 126
+ },
+ "ot_records": 527,
+ "variant_sets": {
+  "rows": 32
+ },
+ "terms": {
+  "rows": 51,
+  "impacts": 4
+ },
+ "ot_on": true,
+ "n_det": 527
+}

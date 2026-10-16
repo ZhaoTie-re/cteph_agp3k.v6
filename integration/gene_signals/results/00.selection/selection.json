@@ -1,0 +1,63 @@
+{
+ "n_genes": 15,
+ "genes_in_order": [
+  "STBD1",
+  "OSBP",
+  "RPH3A",
+  "JAK2",
+  "PIK3C2G",
+  "CD248",
+  "SCAMP3",
+  "NKD2",
+  "PES1",
+  "SCFD1",
+  "P2RY2",
+  "FAM217B",
+  "TBC1D14",
+  "FAS",
+  "EFCAB6"
+ ],
+ "class_counts": {
+  "Tier 3": 7,
+  "B": 3,
+  "Tier 1": 2,
+  "Tier 2": 2,
+  "S": 1
+ },
+ "selected_by": {
+  "bonferroni,bonferroni_sensitivity,tier,tier_sensitivity": 5,
+  "tier,tier_sensitivity": 4,
+  "bonferroni,bonferroni_sensitivity": 3,
+  "bonferroni,tier": 1,
+  "tier": 1,
+  "tier_sensitivity": 1
+ },
+ "n_gene_variant_rows": 141,
+ "n_variants": 141,
+ "impact_counts": {
+  "MODERATE": 75,
+  "LOW": 58,
+  "HIGH": 8
+ },
+ "max_tier": 3,
+ "include_bonferroni": true,
+ "min_num_var": 2,
+ "sens_min_num_var": 3,
+ "primary_reproduced": true,
+ "sensitivity_tiers": {
+  "CD248|low_moderate_high": 3,
+  "EFCAB6|low_moderate_high": 3,
+  "JAK2|moderate_high": 2,
+  "NKD2|low_moderate_high": 3,
+  "NKD2|moderate_high": 2,
+  "PES1|low_moderate_high": 3,
+  "PES1|moderate_high": 3,
+  "PIK3C2G|low_moderate_high": 3,
+  "PIK3C2G|moderate_high": 3,
+  "RPH3A|low_moderate_high": 2,
+  "RPH3A|moderate_high": 2,
+  "SCAMP3|low_moderate_high": 3,
+  "SCFD1|moderate_high": 3,
+  "STBD1|moderate_high": 1
+ }
+}

@@ -1,0 +1,428 @@
+{
+ "genes": {
+  "rows": 90,
+  "tested": 90,
+  "not_tested": 0
+ },
+ "sensitivity": {
+  "min_num_var": 3,
+  "tiers": {
+   "CD248|low_moderate_high": 3,
+   "EFCAB6|low_moderate_high": 3,
+   "JAK2|moderate_high": 2,
+   "NKD2|low_moderate_high": 3,
+   "NKD2|moderate_high": 2,
+   "PES1|low_moderate_high": 3,
+   "PES1|moderate_high": 3,
+   "PIK3C2G|low_moderate_high": 3,
+   "PIK3C2G|moderate_high": 3,
+   "RPH3A|low_moderate_high": 2,
+   "RPH3A|moderate_high": 2,
+   "SCAMP3|low_moderate_high": 3,
+   "SCFD1|moderate_high": 3,
+   "STBD1|moderate_high": 1
+  }
+ },
+ "rsid": {
+  "ToMMo": 136,
+  "dbSNP allele": 0,
+  "dbSNP 151": 3,
+  "unresolved": 0,
+  "none": 2,
+  "tommo_vs_dbsnp_disagree": 0
+ },
+ "lovo": {
+  "rows": 1378,
+  "tests": 1198,
+  "baselines_equal_to_published": 180,
+  "primary_sets": {
+   "CD248": [
+    "low_moderate_high"
+   ],
+   "EFCAB6": [
+    "low_moderate_high"
+   ],
+   "FAM217B": [
+    "moderate_high"
+   ],
+   "FAS": [
+    "low_moderate_high"
+   ],
+   "JAK2": [
+    "moderate_high"
+   ],
+   "NKD2": [
+    "moderate_high"
+   ],
+   "OSBP": [
+    "moderate_high"
+   ],
+   "P2RY2": [
+    "moderate_high"
+   ],
+   "PES1": [
+    "low_moderate_high",
+    "moderate_high"
+   ],
+   "PIK3C2G": [
+    "low_moderate_high",
+    "moderate_high"
+   ],
+   "RPH3A": [
+    "low_moderate_high",
+    "moderate_high"
+   ],
+   "SCAMP3": [
+    "low_moderate_high"
+   ],
+   "SCFD1": [
+    "moderate_high"
+   ],
+   "STBD1": [
+    "moderate_high"
+   ],
+   "TBC1D14": [
+    "low_moderate_high"
+   ]
+  },
+  "genes_with_two_variants": [
+   "CD248|moderate_high|full_mainland",
+   "CD248|moderate_high|intermediate_mainland",
+   "CD248|moderate_high|narrow_mainland",
+   "FAS|moderate_high|full_mainland",
+   "FAS|moderate_high|intermediate_mainland",
+   "FAS|moderate_high|narrow_mainland",
+   "OSBP|moderate_high|full_mainland",
+   "OSBP|moderate_high|intermediate_mainland",
+   "OSBP|moderate_high|narrow_mainland",
+   "P2RY2|moderate_high|intermediate_mainland",
+   "P2RY2|moderate_high|narrow_mainland",
+   "TBC1D14|moderate_high|intermediate_mainland",
+   "TBC1D14|moderate_high|narrow_mainland"
+  ],
+  "top": {
+   "STBD1|moderate_high|narrow_mainland|cmc": "chr4:76309559:G:T",
+   "STBD1|moderate_high|narrow_mainland|skato": "chr4:76309559:G:T",
+   "STBD1|moderate_high|intermediate_mainland|cmc": "chr4:76309559:G:T",
+   "STBD1|moderate_high|intermediate_mainland|skato": "chr4:76309559:G:T",
+   "STBD1|moderate_high|full_mainland|cmc": "chr4:76309559:G:T",
+   "STBD1|moderate_high|full_mainland|skato": "chr4:76309559:G:T",
+   "STBD1|low_moderate_high|narrow_mainland|cmc": "chr4:76309559:G:T",
+   "STBD1|low_moderate_high|narrow_mainland|skato": "chr4:76309559:G:T",
+   "STBD1|low_moderate_high|intermediate_mainland|cmc": "chr4:76309559:G:T",
+   "STBD1|low_moderate_high|intermediate_mainland|skato": "chr4:76309559:G:T",
+   "STBD1|low_moderate_high|full_mainland|cmc": "chr4:76309559:G:T",
+   "STBD1|low_moderate_high|full_mainland|skato": "chr4:76309559:G:T",
+   "OSBP|moderate_high|narrow_mainland|cmc": "chr11:59594182:C:T",
+   "OSBP|moderate_high|narrow_mainland|skato": "chr11:59594182:C:T",
+   "OSBP|moderate_high|intermediate_mainland|cmc": "chr11:59594182:C:T",
+   "OSBP|moderate_high|intermediate_mainland|skato": "chr11:59594182:C:T",
+   "OSBP|moderate_high|full_mainland|cmc": "chr11:59594182:C:T",
+   "OSBP|moderate_high|full_mainland|skato": "chr11:59594182:C:T",
+   "OSBP|low_moderate_high|narrow_mainland|cmc": "chr11:59576952:G:A",
+   "OSBP|low_moderate_high|narrow_mainland|skato": "chr11:59576952:G:A",
+   "OSBP|low_moderate_high|intermediate_mainland|cmc": "chr11:59576952:G:A",
+   "OSBP|low_moderate_high|intermediate_mainland|skato": "chr11:59576952:G:A",
+   "OSBP|low_moderate_high|full_mainland|cmc": "chr11:59576952:G:A",
+   "OSBP|low_moderate_high|full_mainland|skato": "chr11:59576952:G:A",
+   "RPH3A|moderate_high|narrow_mainland|cmc": "chr12:112890858:C:T",
+   "RPH3A|moderate_high|narrow_mainland|skato": "chr12:112890858:C:T",
+   "RPH3A|moderate_high|intermediate_mainland|cmc": "chr12:112890858:C:T",
+   "RPH3A|moderate_high|intermediate_mainland|skato": "chr12:112890858:C:T",
+   "RPH3A|moderate_high|full_mainland|cmc": "chr12:112890858:C:T",
+   "RPH3A|moderate_high|full_mainland|skato": "chr12:112890858:C:T",
+   "RPH3A|low_moderate_high|narrow_mainland|cmc": "chr12:112890858:C:T",
+   "RPH3A|low_moderate_high|narrow_mainland|skato": "chr12:112890858:C:T",
+   "RPH3A|low_moderate_high|intermediate_mainland|cmc": "chr12:112890858:C:T",
+   "RPH3A|low_moderate_high|intermediate_mainland|skato": "chr12:112890858:C:T",
+   "RPH3A|low_moderate_high|full_mainland|cmc": "chr12:112890858:C:T",
+   "RPH3A|low_moderate_high|full_mainland|skato": "chr12:112890858:C:T",
+   "JAK2|moderate_high|narrow_mainland|cmc": "chr9:5073743:C:T",
+   "JAK2|moderate_high|narrow_mainland|skato": "chr9:5073770:G:T",
+   "JAK2|moderate_high|intermediate_mainland|cmc": "chr9:5073743:C:T",
+   "JAK2|moderate_high|intermediate_mainland|skato": "chr9:5073770:G:T",
+   "JAK2|moderate_high|full_mainland|cmc": "chr9:5073743:C:T",
+   "JAK2|moderate_high|full_mainland|skato": "chr9:5073770:G:T",
+   "JAK2|low_moderate_high|narrow_mainland|cmc": "chr9:5126407:T:C",
+   "JAK2|low_moderate_high|narrow_mainland|skato": "chr9:5073770:G:T",
+   "JAK2|low_moderate_high|intermediate_mainland|cmc": "chr9:5126407:T:C",
+   "JAK2|low_moderate_high|intermediate_mainland|skato": "chr9:5073770:G:T",
+   "JAK2|low_moderate_high|full_mainland|cmc": "chr9:5073743:C:T",
+   "JAK2|low_moderate_high|full_mainland|skato": "chr9:5073770:G:T",
+   "PIK3C2G|moderate_high|narrow_mainland|cmc": "chr12:18282639:C:A",
+   "PIK3C2G|moderate_high|narrow_mainland|skato": "chr12:18282639:C:A",
+   "PIK3C2G|moderate_high|intermediate_mainland|cmc": "chr12:18282639:C:A",
+   "PIK3C2G|moderate_high|intermediate_mainland|skato": "chr12:18282639:C:A",
+   "PIK3C2G|moderate_high|full_mainland|cmc": "chr12:18282639:C:A",
+   "PIK3C2G|moderate_high|full_mainland|skato": "chr12:18282639:C:A",
+   "PIK3C2G|low_moderate_high|narrow_mainland|cmc": "chr12:18282639:C:A",
+   "PIK3C2G|low_moderate_high|narrow_mainland|skato": "chr12:18282639:C:A",
+   "PIK3C2G|low_moderate_high|intermediate_mainland|cmc": "chr12:18282639:C:A",
+   "PIK3C2G|low_moderate_high|intermediate_mainland|skato": "chr12:18282639:C:A",
+   "PIK3C2G|low_moderate_high|full_mainland|cmc": "chr12:18282639:C:A",
+   "PIK3C2G|low_moderate_high|full_mainland|skato": "chr12:18282639:C:A",
+   "CD248|moderate_high|narrow_mainland|cmc": "chr11:66316108:G:A",
+   "CD248|moderate_high|narrow_mainland|skato": "chr11:66316108:G:A",
+   "CD248|moderate_high|intermediate_mainland|cmc": "chr11:66316108:G:A",
+   "CD248|moderate_high|intermediate_mainland|skato": "chr11:66316108:G:A",
+   "CD248|moderate_high|full_mainland|cmc": "chr11:66316108:G:A",
+   "CD248|moderate_high|full_mainland|skato": "chr11:66316108:G:A",
+   "CD248|low_moderate_high|narrow_mainland|cmc": "chr11:66316572:G:A",
+   "CD248|low_moderate_high|narrow_mainland|skato": "chr11:66316572:G:A",
+   "CD248|low_moderate_high|intermediate_mainland|cmc": "chr11:66316572:G:A",
+   "CD248|low_moderate_high|intermediate_mainland|skato": "chr11:66316572:G:A",
+   "CD248|low_moderate_high|full_mainland|cmc": "chr11:66316572:G:A",
+   "CD248|low_moderate_high|full_mainland|skato": "chr11:66316572:G:A",
+   "SCAMP3|moderate_high|narrow_mainland|cmc": "chr1:155256780:G:C",
+   "SCAMP3|moderate_high|narrow_mainland|skato": "chr1:155262119:G:T",
+   "SCAMP3|moderate_high|intermediate_mainland|cmc": "chr1:155262130:C:T",
+   "SCAMP3|moderate_high|intermediate_mainland|skato": "chr1:155262130:C:T",
+   "SCAMP3|moderate_high|full_mainland|cmc": "chr1:155256780:G:C",
+   "SCAMP3|moderate_high|full_mainland|skato": "chr1:155256780:G:C",
+   "SCAMP3|low_moderate_high|narrow_mainland|cmc": "chr1:155257530:G:A",
+   "SCAMP3|low_moderate_high|narrow_mainland|skato": "chr1:155257530:G:A",
+   "SCAMP3|low_moderate_high|intermediate_mainland|cmc": "chr1:155257530:G:A",
+   "SCAMP3|low_moderate_high|intermediate_mainland|skato": "chr1:155257530:G:A",
+   "SCAMP3|low_moderate_high|full_mainland|cmc": "chr1:155257530:G:A",
+   "SCAMP3|low_moderate_high|full_mainland|skato": "chr1:155257530:G:A",
+   "NKD2|moderate_high|narrow_mainland|cmc": "chr5:1033479:G:A",
+   "NKD2|moderate_high|narrow_mainland|skato": "chr5:1033479:G:A",
+   "NKD2|moderate_high|intermediate_mainland|cmc": "chr5:1033479:G:A",
+   "NKD2|moderate_high|intermediate_mainland|skato": "chr5:1033479:G:A",
+   "NKD2|moderate_high|full_mainland|cmc": "chr5:1033479:G:A",
+   "NKD2|moderate_high|full_mainland|skato": "chr5:1033479:G:A",
+   "NKD2|low_moderate_high|narrow_mainland|cmc": "chr5:1033479:G:A",
+   "NKD2|low_moderate_high|narrow_mainland|skato": "chr5:1033479:G:A",
+   "NKD2|low_moderate_high|intermediate_mainland|cmc": "chr5:1033479:G:A",
+   "NKD2|low_moderate_high|intermediate_mainland|skato": "chr5:1033479:G:A",
+   "NKD2|low_moderate_high|full_mainland|cmc": "chr5:1033479:G:A",
+   "NKD2|low_moderate_high|full_mainland|skato": "chr5:1033479:G:A",
+   "PES1|moderate_high|narrow_mainland|cmc": "chr22:30581589:G:A",
+   "PES1|moderate_high|narrow_mainland|skato": "chr22:30581589:G:A",
+   "PES1|moderate_high|intermediate_mainland|cmc": "chr22:30581589:G:A",
+   "PES1|moderate_high|intermediate_mainland|skato": "chr22:30581589:G:A",
+   "PES1|moderate_high|full_mainland|cmc": "chr22:30579877:C:T",
+   "PES1|moderate_high|full_mainland|skato": "chr22:30581348:C:T",
+   "PES1|low_moderate_high|narrow_mainland|cmc": "chr22:30581589:G:A",
+   "PES1|low_moderate_high|narrow_mainland|skato": "chr22:30581589:G:A",
+   "PES1|low_moderate_high|intermediate_mainland|cmc": "chr22:30581589:G:A",
+   "PES1|low_moderate_high|intermediate_mainland|skato": "chr22:30581589:G:A",
+   "PES1|low_moderate_high|full_mainland|cmc": "chr22:30588174:C:T",
+   "PES1|low_moderate_high|full_mainland|skato": "chr22:30580088:G:A",
+   "SCFD1|moderate_high|narrow_mainland|cmc": "chr14:30638176:A:G",
+   "SCFD1|moderate_high|narrow_mainland|skato": "chr14:30638176:A:G",
+   "SCFD1|moderate_high|intermediate_mainland|cmc": "chr14:30638176:A:G",
+   "SCFD1|moderate_high|intermediate_mainland|skato": "chr14:30638176:A:G",
+   "SCFD1|moderate_high|full_mainland|cmc": "chr14:30638176:A:G",
+   "SCFD1|moderate_high|full_mainland|skato": "chr14:30638176:A:G",
+   "SCFD1|low_moderate_high|narrow_mainland|cmc": "chr14:30638176:A:G",
+   "SCFD1|low_moderate_high|narrow_mainland|skato": "chr14:30638176:A:G",
+   "SCFD1|low_moderate_high|intermediate_mainland|cmc": "chr14:30638176:A:G",
+   "SCFD1|low_moderate_high|intermediate_mainland|skato": "chr14:30638176:A:G",
+   "SCFD1|low_moderate_high|full_mainland|cmc": "chr14:30638176:A:G",
+   "SCFD1|low_moderate_high|full_mainland|skato": "chr14:30638176:A:G",
+   "P2RY2|moderate_high|narrow_mainland|cmc": "chr11:73235169:G:A",
+   "P2RY2|moderate_high|narrow_mainland|skato": "chr11:73235169:G:A",
+   "P2RY2|moderate_high|intermediate_mainland|cmc": "chr11:73235169:G:A",
+   "P2RY2|moderate_high|intermediate_mainland|skato": "chr11:73235169:G:A",
+   "P2RY2|moderate_high|full_mainland|cmc": "chr11:73235276:A:G",
+   "P2RY2|moderate_high|full_mainland|skato": "chr11:73235276:A:G",
+   "P2RY2|low_moderate_high|narrow_mainland|cmc": "chr11:73235276:A:G",
+   "P2RY2|low_moderate_high|narrow_mainland|skato": "chr11:73235276:A:G",
+   "P2RY2|low_moderate_high|intermediate_mainland|cmc": "chr11:73235276:A:G",
+   "P2RY2|low_moderate_high|intermediate_mainland|skato": "chr11:73235276:A:G",
+   "P2RY2|low_moderate_high|full_mainland|cmc": "chr11:73235276:A:G",
+   "P2RY2|low_moderate_high|full_mainland|skato": "chr11:73235276:A:G",
+   "FAM217B|moderate_high|narrow_mainland|cmc": "chr20:59944904:G:A",
+   "FAM217B|moderate_high|narrow_mainland|skato": "chr20:59944904:G:A",
+   "FAM217B|moderate_high|intermediate_mainland|cmc": "chr20:59944904:G:A",
+   "FAM217B|moderate_high|intermediate_mainland|skato": "chr20:59944904:G:A",
+   "FAM217B|moderate_high|full_mainland|cmc": "chr20:59944904:G:A",
+   "FAM217B|moderate_high|full_mainland|skato": "chr20:59944904:G:A",
+   "FAM217B|low_moderate_high|narrow_mainland|cmc": "chr20:59944904:G:A",
+   "FAM217B|low_moderate_high|narrow_mainland|skato": "chr20:59944904:G:A",
+   "FAM217B|low_moderate_high|intermediate_mainland|cmc": "chr20:59944904:G:A",
+   "FAM217B|low_moderate_high|intermediate_mainland|skato": "chr20:59944904:G:A",
+   "FAM217B|low_moderate_high|full_mainland|cmc": "chr20:59944904:G:A",
+   "FAM217B|low_moderate_high|full_mainland|skato": "chr20:59944904:G:A",
+   "TBC1D14|moderate_high|narrow_mainland|cmc": "chr4:6923903:G:A",
+   "TBC1D14|moderate_high|narrow_mainland|skato": "chr4:6923903:G:A",
+   "TBC1D14|moderate_high|intermediate_mainland|cmc": "chr4:6923903:G:A",
+   "TBC1D14|moderate_high|intermediate_mainland|skato": "chr4:6923903:G:A",
+   "TBC1D14|moderate_high|full_mainland|cmc": "chr4:6923903:G:A",
+   "TBC1D14|moderate_high|full_mainland|skato": "chr4:6923903:G:A",
+   "TBC1D14|low_moderate_high|narrow_mainland|cmc": "chr4:6999155:C:T",
+   "TBC1D14|low_moderate_high|narrow_mainland|skato": "chr4:6999155:C:T",
+   "TBC1D14|low_moderate_high|intermediate_mainland|cmc": "chr4:6999155:C:T",
+   "TBC1D14|low_moderate_high|intermediate_mainland|skato": "chr4:6999155:C:T",
+   "TBC1D14|low_moderate_high|full_mainland|cmc": "chr4:6999155:C:T",
+   "TBC1D14|low_moderate_high|full_mainland|skato": "chr4:6999155:C:T",
+   "FAS|moderate_high|narrow_mainland|cmc": "chr10:89003165:G:A",
+   "FAS|moderate_high|narrow_mainland|skato": "chr10:89003165:G:A",
+   "FAS|moderate_high|intermediate_mainland|cmc": "chr10:89003165:G:A",
+   "FAS|moderate_high|intermediate_mainland|skato": "chr10:89003165:G:A",
+   "FAS|moderate_high|full_mainland|cmc": "chr10:89003165:G:A",
+   "FAS|moderate_high|full_mainland|skato": "chr10:89003165:G:A",
+   "FAS|low_moderate_high|narrow_mainland|cmc": "chr10:89003165:G:A",
+   "FAS|low_moderate_high|narrow_mainland|skato": "chr10:89003165:G:A",
+   "FAS|low_moderate_high|intermediate_mainland|cmc": "chr10:89003165:G:A",
+   "FAS|low_moderate_high|intermediate_mainland|skato": "chr10:89003165:G:A",
+   "FAS|low_moderate_high|full_mainland|cmc": "chr10:89003165:G:A",
+   "FAS|low_moderate_high|full_mainland|skato": "chr10:89003165:G:A",
+   "EFCAB6|moderate_high|narrow_mainland|cmc": "chr22:43537404:CCT:C",
+   "EFCAB6|moderate_high|narrow_mainland|skato": "chr22:43537404:CCT:C",
+   "EFCAB6|moderate_high|intermediate_mainland|cmc": "chr22:43537404:CCT:C",
+   "EFCAB6|moderate_high|intermediate_mainland|skato": "chr22:43537404:CCT:C",
+   "EFCAB6|moderate_high|full_mainland|cmc": "chr22:43537404:CCT:C",
+   "EFCAB6|moderate_high|full_mainland|skato": "chr22:43537404:CCT:C",
+   "EFCAB6|low_moderate_high|narrow_mainland|cmc": "chr22:43537404:CCT:C",
+   "EFCAB6|low_moderate_high|narrow_mainland|skato": "chr22:43537404:CCT:C",
+   "EFCAB6|low_moderate_high|intermediate_mainland|cmc": "chr22:43537404:CCT:C",
+   "EFCAB6|low_moderate_high|intermediate_mainland|skato": "chr22:43537404:CCT:C",
+   "EFCAB6|low_moderate_high|full_mainland|cmc": "chr22:43537404:CCT:C",
+   "EFCAB6|low_moderate_high|full_mainland|skato": "chr22:43537404:CCT:C"
+  }
+ },
+ "variants": {
+  "rows": 423,
+  "by_reason": {
+   "moderate_high": {
+    "": 226,
+    "impact": 164,
+    "mac": 14,
+    "no_carrier": 12,
+    "common": 7
+   },
+   "low_moderate_high": {
+    "": 373,
+    "mac": 31,
+    "no_carrier": 12,
+    "common": 7
+   }
+  },
+  "callset_absent": {
+   "no_carrier": 12,
+   "common": 7
+  }
+ },
+ "coverage": {
+  "n_variants": 141,
+  "tommo": 136,
+  "kg_eas": 60,
+  "kg_jpt": 60,
+  "gnomad": 103,
+  "rsid": 139,
+  "ot_in_index": 10,
+  "ot_clinvar": 8,
+  "ot_gwas": 2,
+  "ot_qtl": 1,
+  "ot_e2g": 3
+ },
+ "tommo_vs_controls": {
+  "n": 135,
+  "mean_tommo": 0.0012995851851851851,
+  "mean_controls": 0.001301480738331111,
+  "r": 0.9302778536049339
+ },
+ "qc": {
+  "full_mainland": {
+   "samples": {
+    "all": 3068,
+    "case": 438,
+    "control": 2630
+   },
+   "analysed_variants": 9161666,
+   "minac": 2,
+   "gap_protected_rescued": 0
+  },
+  "intermediate_mainland": {
+   "samples": {
+    "all": 2477,
+    "case": 428,
+    "control": 2049
+   },
+   "analysed_variants": 8050528,
+   "minac": 2,
+   "gap_protected_rescued": 0
+  },
+  "narrow_mainland": {
+   "samples": {
+    "all": 2165,
+    "case": 418,
+    "control": 1747
+   },
+   "analysed_variants": 7431380,
+   "minac": 2,
+   "gap_protected_rescued": 0
+  }
+ },
+ "multisite": {
+  "rows": 13,
+  "samples": 13,
+  "equal_to_upstream_records": 48
+ },
+ "selection": {
+  "n_genes": 15,
+  "genes_in_order": [
+   "STBD1",
+   "OSBP",
+   "RPH3A",
+   "JAK2",
+   "PIK3C2G",
+   "CD248",
+   "SCAMP3",
+   "NKD2",
+   "PES1",
+   "SCFD1",
+   "P2RY2",
+   "FAM217B",
+   "TBC1D14",
+   "FAS",
+   "EFCAB6"
+  ],
+  "class_counts": {
+   "Tier 3": 7,
+   "B": 3,
+   "Tier 1": 2,
+   "Tier 2": 2,
+   "S": 1
+  },
+  "selected_by": {
+   "bonferroni,bonferroni_sensitivity,tier,tier_sensitivity": 5,
+   "tier,tier_sensitivity": 4,
+   "bonferroni,bonferroni_sensitivity": 3,
+   "bonferroni,tier": 1,
+   "tier": 1,
+   "tier_sensitivity": 1
+  },
+  "n_gene_variant_rows": 141,
+  "n_variants": 141,
+  "impact_counts": {
+   "MODERATE": 75,
+   "LOW": 58,
+   "HIGH": 8
+  },
+  "max_tier": 3,
+  "include_bonferroni": true,
+  "min_num_var": 2,
+  "sens_min_num_var": 3,
+  "primary_reproduced": true,
+  "sensitivity_tiers": {
+   "CD248|low_moderate_high": 3,
+   "EFCAB6|low_moderate_high": 3,
+   "JAK2|moderate_high": 2,
+   "NKD2|low_moderate_high": 3,
+   "NKD2|moderate_high": 2,
+   "PES1|low_moderate_high": 3,
+   "PES1|moderate_high": 3,
+   "PIK3C2G|low_moderate_high": 3,
+   "PIK3C2G|moderate_high": 3,
+   "RPH3A|low_moderate_high": 2,
+   "RPH3A|moderate_high": 2,
+   "SCAMP3|low_moderate_high": 3,
+   "SCFD1|moderate_high": 3,
+   "STBD1|moderate_high": 1
+  }
+ },
+ "all_passed": true
+}
