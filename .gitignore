@@ -44,3 +44,23 @@
 !**/report/_quarto.yml
 !**/report/*.css
 !**/report/*.lua
+# The left rail and its search, included after the body by _quarto.yml.
+# Named exactly, not as **/report/*.html, so that no future .html dropped
+# into a report/ directory is committed by accident.
+!**/report/sidebar.html
+
+# Component configuration written in YAML: the curated seed and the gene themes
+# of integration/cteph_knowledge_graph. Scoped to config/ directories, so no
+# other YAML is picked up by accident.
+!**/config/*.yaml
+
+# Never committed, whatever the extension (these rules come last, so they win):
+# - raw API responses and language-model answer caches: large, regenerable from
+#   the pipelines, and not meant for review;
+**/raw/**
+**/00.raw/**
+**/cache/**
+# - tmp/: scratch analyses and slide decks. Some of their files hold per-sample
+#   values next to sample ids (carrier read counts, QC outliers), which must not
+#   reach a public remote. Files already tracked there stay tracked.
+tmp/**
