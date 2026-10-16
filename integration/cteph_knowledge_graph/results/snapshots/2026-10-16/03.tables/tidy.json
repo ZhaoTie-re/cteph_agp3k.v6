@@ -1,0 +1,42 @@
+{
+ "release": "26.09",
+ "api_version": "26.9.0",
+ "fetch_date": "2026-10-16",
+ "fetched_at": "2026-10-16T08:11:12+00:00",
+ "conditions": 95,
+ "conditions_by_source": {
+  "clinical": 27,
+  "ontology": 11,
+  "colocalisation": 67
+ },
+ "relations": 154,
+ "colocalisations": 308,
+ "gwas_studies": 514,
+ "credible_sets": 8422,
+ "eas_studies": 53,
+ "mendelian_links": 600,
+ "mendelian_records": 23332,
+ "cteph_targets": 615,
+ "literature_rows": 1417,
+ "literature_pmids": 689,
+ "cteph_genetic_records": 471,
+ "cteph_genetic_studies": 51,
+ "cteph_findings": 139,
+ "methods_fields": 266,
+ "gene_condition": 2145,
+ "graph_nodes": 1664,
+ "graph_edges": 2658,
+ "extract": {
+  "records": 471,
+  "prescreened_out": 373,
+  "read_by_model": 98,
+  "included": 51,
+  "findings": 139,
+  "methods_fields": 266,
+  "dropped_items": 36,
+  "llm_calls": 0,
+  "llm_cached": 71,
+  "model": "CLI default",
+  "effort": "CLI default"
+ }
+}

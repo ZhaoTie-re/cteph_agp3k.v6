@@ -1,0 +1,10 @@
+{
+ "snapshot": "2026-10-16",
+ "dir": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/integration/cteph_knowledge_graph/results/snapshots/2026-10-16",
+ "knowledge": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/integration/cteph_knowledge_graph/results/snapshots/2026-10-16/06.knowledge/cteph_knowledge_graph.md",
+ "snapshots": [
+  "2026-10-16"
+ ],
+ "release": "26.09",
+ "workbook": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/integration/cteph_knowledge_graph/results/snapshots/2026-10-16/cteph_knowledge_graph_2026-10-16.xlsx"
+}

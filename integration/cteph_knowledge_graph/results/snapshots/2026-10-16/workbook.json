@@ -1,0 +1,115 @@
+{
+ "sheets": [
+  "Guide",
+  "1 Related conditions",
+  "2 Shared genes",
+  "3 CTEPH genetics",
+  "4 Study methods",
+  "5 Condition genetics",
+  "6 Mechanisms",
+  "7 East Asian",
+  "8 Changes",
+  "A1 GWAS studies",
+  "A2 GWAS loci",
+  "A3 Colocalisation",
+  "A4 Curated genes",
+  "A5 CTEPH studies",
+  "A6 Screening"
+ ],
+ "rows": {
+  "Guide": 8,
+  "1 Related conditions": 256,
+  "2 Shared genes": 335,
+  "3 CTEPH genetics": 223,
+  "4 Study methods": 56,
+  "5 Condition genetics": 2074,
+  "6 Mechanisms": 4887,
+  "7 East Asian": 88,
+  "8 Changes": 0,
+  "A1 GWAS studies": 514,
+  "A2 GWAS loci": 8422,
+  "A3 Colocalisation": 308,
+  "A4 Curated genes": 600,
+  "A5 CTEPH studies": 51,
+  "A6 Screening": 471
+ },
+ "layout": {
+  "Guide": {
+   "header": 3,
+   "rows": 8,
+   "spanner": false
+  },
+  "1 Related conditions": {
+   "header": 10,
+   "rows": 256,
+   "spanner": false
+  },
+  "2 Shared genes": {
+   "header": 10,
+   "rows": 335,
+   "spanner": true
+  },
+  "3 CTEPH genetics": {
+   "header": 34,
+   "rows": 223,
+   "spanner": false
+  },
+  "4 Study methods": {
+   "header": 37,
+   "rows": 56,
+   "spanner": false
+  },
+  "5 Condition genetics": {
+   "header": 9,
+   "rows": 2074,
+   "spanner": false
+  },
+  "6 Mechanisms": {
+   "header": 10,
+   "rows": 4887,
+   "spanner": false
+  },
+  "7 East Asian": {
+   "header": 7,
+   "rows": 88,
+   "spanner": false
+  },
+  "8 Changes": {
+   "header": 3,
+   "rows": 0,
+   "spanner": false
+  },
+  "A1 GWAS studies": {
+   "header": 3,
+   "rows": 514,
+   "spanner": false
+  },
+  "A2 GWAS loci": {
+   "header": 3,
+   "rows": 8422,
+   "spanner": false
+  },
+  "A3 Colocalisation": {
+   "header": 3,
+   "rows": 308,
+   "spanner": false
+  },
+  "A4 Curated genes": {
+   "header": 3,
+   "rows": 600,
+   "spanner": false
+  },
+  "A5 CTEPH studies": {
+   "header": 3,
+   "rows": 51,
+   "spanner": false
+  },
+  "A6 Screening": {
+   "header": 3,
+   "rows": 471,
+   "spanner": false
+  }
+ },
+ "release": "26.09",
+ "fetch_date": "2026-10-16"
+}

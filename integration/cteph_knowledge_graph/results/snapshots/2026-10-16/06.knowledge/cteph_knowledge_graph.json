@@ -1,0 +1,1961 @@
+{
+ "release": "26.09",
+ "fetch_date": "2026-10-16",
+ "questions": [
+  "Which conditions are related to CTEPH, and on what evidence?",
+  "Which genes do CTEPH and its related conditions share?",
+  "What is known about the genetics of CTEPH?",
+  "How were the genetic studies of CTEPH done?",
+  "What are the genetics of each related condition?",
+  "Which mechanisms does the CTEPH literature describe?",
+  "What evidence comes from East Asian and Japanese populations?"
+ ],
+ "counts": {
+  "conditions": 95,
+  "conditions_by_source": {
+   "clinical": 27,
+   "ontology": 11,
+   "colocalisation": 67
+  },
+  "relations": 154,
+  "colocalisations": 308,
+  "gwas_studies": 514,
+  "credible_sets": 8422,
+  "eas_studies": 53,
+  "mendelian_links": 600,
+  "mendelian_records": 23332,
+  "cteph_targets": 615,
+  "literature_rows": 1417,
+  "literature_pmids": 689,
+  "cteph_genetic_records": 471,
+  "cteph_genetic_studies": 51,
+  "cteph_findings": 139,
+  "methods_fields": 266,
+  "gene_condition": 2145,
+  "graph_nodes": 1664,
+  "graph_edges": 2658,
+  "extract": {
+   "records": 471,
+   "prescreened_out": 373,
+   "read_by_model": 98,
+   "included": 51,
+   "findings": 139,
+   "methods_fields": 266,
+   "dropped_items": 36,
+   "llm_calls": 0,
+   "llm_cached": 71,
+   "model": "CLI default",
+   "effort": "CLI default"
+  }
+ },
+ "conditions": [
+  {
+   "condition": "Chronic thromboembolic pulmonary disease without PH (CTEPD)",
+   "id": "custom:ctepd",
+   "category": "Precursor / spectrum",
+   "sources": "clinical",
+   "evidence": [
+    "CTEPD is the broader term; CTEPH refers to the patients with pulmonary hypertension. (Jais 2025, PMID 40653349)",
+    "CTEPH and CTEPD describe chronic thromboembolic occlusions with or without PH at rest. (Remy-Jardin 2022, PMID 36307107)"
+   ]
+  },
+  {
+   "condition": "Deep vein thrombosis",
+   "id": "EFO_0003907",
+   "category": "Precursor / spectrum",
+   "sources": "clinical colocalisation",
+   "evidence": [
+    "CTEPH follows DVT less often than PE: 0.3% and 1.3% at 2 and 10 years after DVT. (Martinez 2018, PMID 29985100)",
+    "CTEPH develops most commonly after PE and less frequently after DVT. (Martinez 2018, PMID 29985100)",
+    "Japanese women with CTEPH had less DVT and fewer acute embolic episodes than men. (Shigeta 2008, PMID 18931448; East Asian)",
+    "More than half of CTEPH patients, especially Japanese, have no prior DVT or coagulation abnormality. (Kominami 2009, PMID 19165231; East Asian)",
+    "12 GWAS colocalise with CTEPH loci rs2289252, rs687289, rs7659024"
+   ]
+  },
+  {
+   "condition": "Pulmonary embolism",
+   "id": "MONDO_0005279",
+   "category": "Precursor / spectrum",
+   "sources": "clinical colocalisation",
+   "evidence": [
+    "CTEPH follows acute PE in about 0.6% of all comers and 3.2% of survivors (meta-analysis of 16 studies). (Ende-Verhaar 2017, PMID 28232411)",
+    "CTEPH is a relatively common, serious complication of PE. (Pengo 2004, PMID 15163775)",
+    "CTEPH is a rare complication of acute PE, symptomatic or not (ERS statement). (Delcroix 2021, PMID 33334946)",
+    "In Japan, 2.3% of acute PE patients were diagnosed with CTEPH within 3 years (DOAC era). (Ikeda 2024, PMID 39435728; East Asian)",
+    "11 GWAS colocalise with CTEPH loci rs2289252, rs687289, rs7659024"
+   ]
+  },
+  {
+   "condition": "Venous thromboembolism",
+   "id": "MONDO_0005399",
+   "category": "Precursor / spectrum",
+   "sources": "clinical colocalisation",
+   "evidence": [
+    "Previous VTE (OR 4.5) and recurrent VTE (OR 14.5) are associated with CTEPH. (Bonderman 2009, PMID 18799507)",
+    "Recurrent VTE (OR 3.2) and unprovoked PE (OR 4.1) raise the risk of CTEPH after PE. (Ende-Verhaar 2017, PMID 28232411)",
+    "28 GWAS colocalise with CTEPH loci rs2289252, rs687289, rs7659024"
+   ]
+  },
+  {
+   "condition": "Antiphospholipid syndrome / antiphospholipid antibodies",
+   "id": "MONDO_8000010",
+   "category": "Risk factor",
+   "sources": "clinical",
+   "evidence": [
+    "Lupus anticoagulant / antiphospholipid antibodies are associated with CTEPH (OR 4.2). (Bonderman 2009, PMID 18799507)",
+    "About 12% of CTEPH patients carry antiphospholipid antibodies (meta-analysis). (Cheng 2019, PMID 30603858)",
+    "Phospholipid-dependent antibodies were found in 20% of CTEPH patients. (Wolf 2000, PMID 10706510)",
+    "In one UK study antiphospholipid antibodies were not increased in CTEPH. (Wong 2010, PMID 20182352)",
+    "CTEPH was found in 3.8% of an APS cohort. (Rosen 2022, PMID 34836752)"
+   ]
+  },
+  {
+   "condition": "Inherited thrombophilia",
+   "id": "MONDO_0002305",
+   "category": "Risk factor",
+   "sources": "clinical colocalisation",
+   "evidence": [
+    "Hereditary thrombotic risk factors were not increased in CTEPH. (Wolf 2000, PMID 10706510)",
+    "Factor V Leiden was more frequent in white CTEPH patients (29% vs 7.8%). (Wong 2010, PMID 20182352)",
+    "About one in seven CTEPH patients has a congenital thrombophilia, mostly protein S or C deficiency. (Borsi 2025, PMID 41007777)",
+    "Prothrombin rs1799963 was more common in CTEPH than in controls. (Kvasnička 2024, PMID 39150410)",
+    "In Chinese CTEPH patients, 9.8% had congenital thrombophilia (protein C/S, antithrombin); no FVL or F2 G20210A. (Lian 2022, PMID 36338413; East Asian)",
+    "4 GWAS colocalise with CTEPH loci rs2289252, rs7659024"
+   ]
+  },
+  {
+   "condition": "Non-O blood group",
+   "id": "EFO_0600059",
+   "category": "Risk factor",
+   "sources": "clinical",
+   "evidence": [
+    "Non-O blood groups are associated with CTEPH (OR 2.1). (Bonderman 2009, PMID 18799507)",
+    "The association of CTEPH with prior VTE and non-O blood groups was confirmed. (Lang 2013, PMID 23677493)",
+    "The CTEPH GWAS found loci at ABO, FGG, F11, MYH7B and HLA-DRA. (Liley 2024, PMID 38470220)"
+   ]
+  },
+  {
+   "condition": "Splenectomy",
+   "id": "custom:splenectomy",
+   "category": "Risk factor",
+   "sources": "clinical",
+   "evidence": [
+    "8.6% of CTEPH patients had a splenectomy, against 2.5% in IPAH. (Jaïs 2005, PMID 16085731)",
+    "Splenectomy (OR 13), VA shunts (OR 13) and chronic inflammatory disorders raise the risk of CTEPH after PE. (Bonderman 2005, PMID 15735803)",
+    "The 5-year cumulative incidence of CTEPH after splenectomy was 3.2%. (Bollova 2024, PMID 38385544)",
+    "Against PE controls, only a trend towards more splenectomy and non-O blood group remained. (Dodson 2022, PMID 35000431)"
+   ]
+  },
+  {
+   "condition": "Ventriculoatrial shunt, infected pacemaker and intravascular devices",
+   "id": "custom:va_shunt_devices",
+   "category": "Risk factor",
+   "sources": "clinical",
+   "evidence": [
+    "VA shunts and infected pacemakers are strongly associated with CTEPH (OR 76). (Bonderman 2009, PMID 18799507)",
+    "VA-shunt carriers with shunt infection are at increased risk of CTEPH; staphylococcal DNA was found in their thrombi. (Bonderman 2008, PMID 18239156)"
+   ]
+  },
+  {
+   "condition": "Chronic osteomyelitis",
+   "id": "MONDO_0005246",
+   "category": "Comorbidity",
+   "sources": "clinical",
+   "evidence": [
+    "Osteomyelitis was among the chronic inflammatory disorders associated with CTEPH. (Bonderman 2005, PMID 15735803)",
+    "Splenectomy, VA shunt, central lines, IBD and osteomyelitis were associated with CTEPH development. (Bonderman 2007, PMID 17420352)"
+   ]
+  },
+  {
+   "condition": "Clonal haematopoiesis",
+   "id": "EFO_0010819",
+   "category": "Comorbidity",
+   "sources": "clinical",
+   "evidence": [
+    "9.4% of CTEPH patients carried a CHIP mutation (VAF >= 2%). (Liu 2024, PMID 38116660)",
+    "20.1% of Japanese CTEPH patients had variants in clonal-haematopoiesis genes. (Momoi 2024, PMID 39604025; East Asian)"
+   ]
+  },
+  {
+   "condition": "Essential thrombocythaemia",
+   "id": "MONDO_0005029",
+   "category": "Comorbidity",
+   "sources": "clinical",
+   "evidence": [
+    "PV and ET were generally related to CTEPH among MPN patients with PH. (Montani 2023, PMID 37311222)"
+   ]
+  },
+  {
+   "condition": "Hypothyroidism / thyroid replacement therapy",
+   "id": "MONDO_0005420",
+   "category": "Comorbidity",
+   "sources": "clinical",
+   "evidence": [
+    "Thyroid replacement therapy (OR 6.1) and malignancy (OR 3.8) emerged as CTEPH risk factors. (Bonderman 2009, PMID 18799507)",
+    "A quarter of operable CTEPH patients had thyroid disease, mostly hypothyroidism. (Krieg 2020, PMID 31734602)",
+    "Review: splenectomy, cancer, VA shunt, chronic inflammation, antiphospholipid antibodies and hypothyroidism raise CTEPH risk. (Kim 2012, PMID 22379171)"
+   ]
+  },
+  {
+   "condition": "Inflammatory bowel disease",
+   "id": "MONDO_0005265",
+   "category": "Comorbidity",
+   "sources": "clinical",
+   "evidence": [
+    "Chronic inflammatory disorders such as IBD and osteomyelitis were associated with CTEPH (OR 67, wide CI). (Bonderman 2005, PMID 15735803)",
+    "IBD was among the risk factors identified in a CTEPH series. (Bohacekova 2016, PMID 27826972)",
+    "Against PE controls, the conditions studied (including IBD) were equally frequent. (Dodson 2022, PMID 35000431)"
+   ]
+  },
+  {
+   "condition": "Malignancy (history of cancer)",
+   "id": "MONDO_0004992",
+   "category": "Comorbidity",
+   "sources": "clinical",
+   "evidence": [
+    "A history of malignancy (OR 3.8) emerged as a CTEPH risk factor. (Bonderman 2009, PMID 18799507)",
+    "Against PE controls, malignancy and other conditions did not raise the risk of CTEPH. (Dodson 2022, PMID 35000431)",
+    "10.6% of 1,270 Japanese CTEPH patients had a history of cancer. (Nakamura 2025, PMID 39486772; East Asian)",
+    "Cancer is a known risk factor for CTEPH. (Nakamura 2023, PMID 37615801; East Asian)"
+   ]
+  },
+  {
+   "condition": "Myeloproliferative neoplasm",
+   "id": "EFO_0004251",
+   "category": "Comorbidity",
+   "sources": "clinical",
+   "evidence": [
+    "Half of the PH patients with an MPN had CTEPH; PV and ET were mostly related to CTEPH. (Montani 2023, PMID 37311222)",
+    "Three of 40 CTEPH patients carried JAK2 p.Val617Phe, each with an MPN; more than expected. (Eichstaedt 2020, PMID 32397294)",
+    "5.4% of CTEPH patients in a Japanese registry had an MPN. (Hirose 2026, PMID 41808951; East Asian)"
+   ]
+  },
+  {
+   "condition": "Polycythaemia vera",
+   "id": "MONDO_0009891",
+   "category": "Comorbidity",
+   "sources": "clinical",
+   "evidence": [
+    "PV and ET were generally related to CTEPH among MPN patients with PH. (Montani 2023, PMID 37311222)"
+   ]
+  },
+  {
+   "condition": "Sickle cell disease and haemoglobinopathies",
+   "id": "MONDO_0011382",
+   "category": "Comorbidity",
+   "sources": "clinical",
+   "evidence": [
+    "Thrombotic lesions are a major component of PH in sickle cell disease. (Savale 2019, PMID 31537700)",
+    "A third of haemolytic-anaemia PH patients had CTEPH (50% of SCD). (Karyofyllis 2024, PMID 39063629)",
+    "Haemoglobinopathies and congenital haemolytic anaemia predispose to CTEPH. (Karyofyllis 2018, PMID 30088118)"
+   ]
+  },
+  {
+   "condition": "ADAMTS13 level",
+   "id": "EFO_0006955",
+   "category": "Intermediate trait",
+   "sources": "clinical",
+   "evidence": [
+    "ADAMTS13 stayed low after endarterectomy and was equally reduced in CTED. (Newnham 2019, PMID 30655285)"
+   ]
+  },
+  {
+   "condition": "D-dimer level",
+   "id": "EFO_0004507",
+   "category": "Intermediate trait",
+   "sources": "clinical colocalisation",
+   "evidence": [
+    "D-dimer and CRP at diagnosis predict outcome in CTEPH. (Skoro-Sajer 2018, PMID 29802084)",
+    "D-dimer is insensitive and nonspecific for diagnosing CTEPH. (Arunthari 2009, PMID 19572023)",
+    "A lower D-dimer at the index PE predicted later CTEPH in a Japanese registry. (Ikeda 2024, PMID 39435728; East Asian)",
+    "1 GWAS colocalise with CTEPH loci rs7659024"
+   ]
+  },
+  {
+   "condition": "Factor VIII level",
+   "id": "EFO_0004630",
+   "category": "Intermediate trait",
+   "sources": "clinical colocalisation",
+   "evidence": [
+    "Elevated FVIII was more prevalent in CTEPH (41%) than in controls (5%). (Bonderman 2003, PMID 12958604)",
+    "FVIII and VWF were higher in CTEPH than in other PH. (Wong 2010, PMID 20182352)",
+    "Review: antiphospholipid antibodies, increased FVIII, non-O blood groups and chronic inflammation are the most consistent risk factors. (Delcroix 2016, PMID 27571001)",
+    "2 GWAS colocalise with CTEPH loci rs2289252, rs687289, rs7659024"
+   ]
+  },
+  {
+   "condition": "Factor XI level (F11 locus)",
+   "id": "EFO_0004694",
+   "category": "Intermediate trait",
+   "sources": "clinical colocalisation",
+   "evidence": [
+    "The CTEPH GWAS found a locus at F11. (Liley 2024, PMID 38470220)",
+    "F11 rs2289252 was more frequent in CTEPH (OR 1.55). (Kvasnička 2024, PMID 39150410)",
+    "6 GWAS colocalise with CTEPH loci rs2289252, rs7659024"
+   ]
+  },
+  {
+   "condition": "Fibrinogen (level and variants)",
+   "id": "OBA_0000061",
+   "category": "Intermediate trait",
+   "sources": "clinical colocalisation",
+   "evidence": [
+    "Dysfibrinogenaemia was found in 5 of 33 CTEPH patients. (Morris 2009, PMID 19420351)",
+    "The fibrinogen Aalpha Thr312Ala allele increased the risk of CTEPH. (Suntharalingam 2008, PMID 18057060)",
+    "Thr312Ala was a risk factor for CTEPH but not PE in Chinese patients. (Li 2013, PMID 23894515)",
+    "FGA rs6050 is associated with VTE and CTEPH (meta-analysis). (Cheng 2025, PMID 39838925)",
+    "2 GWAS colocalise with CTEPH loci rs2289252"
+   ]
+  },
+  {
+   "condition": "Lipoprotein(a) level",
+   "id": "EFO_0006925",
+   "category": "Intermediate trait",
+   "sources": "clinical",
+   "evidence": [
+    "Lp(a) was higher in CTEPH than in PPH and controls (one small study). (Ignatescu 1998, PMID 9716143)"
+   ]
+  },
+  {
+   "condition": "Platelet count and activation",
+   "id": "EFO_0004309",
+   "category": "Intermediate trait",
+   "sources": "clinical",
+   "evidence": [
+    "CTEPH patients had a lower platelet count, higher MPV and more spontaneous aggregation. (Remková 2015, PMID 26309645)",
+    "Review: high platelet counts are among the plasmatic factors proposed to cause vessel obliteration. (Lang 2013, PMID 22700839)",
+    "Platelets of Japanese CTEPH patients are highly activated and hyperresponsive to thrombin. (Yaoita 2014, PMID 25169936; East Asian)"
+   ]
+  },
+  {
+   "condition": "von Willebrand factor level",
+   "id": "OBA_1000199",
+   "category": "Intermediate trait",
+   "sources": "clinical colocalisation",
+   "evidence": [
+    "CTEPH patients had decreased ADAMTS13 and increased VWF. (Newnham 2019, PMID 30655285)",
+    "VWF is increased in plasma and pulmonary endothelium of CTEPH patients. (Manz 2022, PMID 35081007)",
+    "CTEPH patients with rare STAB2 variants had higher VWF and FVIII. (Dodson 2025, PMID 40726512)",
+    "3 GWAS colocalise with CTEPH loci rs2289252, rs687289, rs7659024"
+   ]
+  },
+  {
+   "condition": "Braddock syndrome",
+   "id": "MONDO_0012032",
+   "category": "PH group",
+   "sources": "ontology",
+   "evidence": [
+    "Open Targets disease ontology: Braddock syndrome is the sibling of CTEPH (child of pulmonary hypertension)"
+   ]
+  },
+  {
+   "condition": "Eisenmenger syndrome",
+   "id": "MONDO_0019944",
+   "category": "PH group",
+   "sources": "ontology",
+   "evidence": [
+    "Open Targets disease ontology: Eisenmenger syndrome is the child of pulmonary arterial hypertension"
+   ]
+  },
+  {
+   "condition": "Pulmonary arterial hypertension",
+   "id": "MONDO_0015924",
+   "category": "PH group",
+   "sources": "clinical ontology",
+   "evidence": [
+    "PAH is group 1 and CTEPH group 4 of the PH classification (2022 ESC/ERS guidelines). (Rosenkranz 2023, PMID 36648489)",
+    "Non-operable CTEPH resembles IPAH more than operable CTEPH in its risk factors. (Lang 2013, PMID 23677493)",
+    "The CTEPH GWAS found no association shared with IPAH. (Liley 2024, PMID 38470220)",
+    "Open Targets disease ontology: pulmonary arterial hypertension is the sibling of CTEPH (child of pulmonary hypertension)"
+   ]
+  },
+  {
+   "condition": "Pulmonary arterial hypertension associated with another disease",
+   "id": "EFO_0009193",
+   "category": "PH group",
+   "sources": "ontology",
+   "evidence": [
+    "Open Targets disease ontology: Pulmonary arterial hypertension associated with another disease is the child of pulmonary arterial hypertension"
+   ]
+  },
+  {
+   "condition": "drug- or toxin-induced pulmonary arterial hypertension",
+   "id": "MONDO_0017149",
+   "category": "PH group",
+   "sources": "ontology",
+   "evidence": [
+    "Open Targets disease ontology: drug- or toxin-induced pulmonary arterial hypertension is the child of pulmonary arterial hypertension"
+   ]
+  },
+  {
+   "condition": "heritable pulmonary arterial hypertension",
+   "id": "MONDO_0017148",
+   "category": "PH group",
+   "sources": "ontology",
+   "evidence": [
+    "Open Targets disease ontology: heritable pulmonary arterial hypertension is the child of pulmonary arterial hypertension"
+   ]
+  },
+  {
+   "condition": "hyperuricemia-pulmonary hypertension-renal failure-alkalosis syndrome",
+   "id": "MONDO_0013458",
+   "category": "PH group",
+   "sources": "ontology",
+   "evidence": [
+    "Open Targets disease ontology: hyperuricemia-pulmonary hypertension-renal failure-alkalosis syndrome is the sibling of CTEPH (child of pulmonary hypertension)"
+   ]
+  },
+  {
+   "condition": "idiopathic pulmonary arterial hypertension",
+   "id": "MONDO_0001999",
+   "category": "PH group",
+   "sources": "ontology",
+   "evidence": [
+    "Open Targets disease ontology: idiopathic pulmonary arterial hypertension is the child of pulmonary arterial hypertension"
+   ]
+  },
+  {
+   "condition": "pulmonary hypertension",
+   "id": "MONDO_0005149",
+   "category": "PH group",
+   "sources": "ontology",
+   "evidence": [
+    "Open Targets disease ontology: pulmonary hypertension is the parent of CTEPH"
+   ]
+  },
+  {
+   "condition": "pulmonary hypertension, neonatal",
+   "id": "MONDO_0100159",
+   "category": "PH group",
+   "sources": "ontology",
+   "evidence": [
+    "Open Targets disease ontology: pulmonary hypertension, neonatal is the sibling of CTEPH (child of pulmonary hypertension)"
+   ]
+  },
+  {
+   "condition": "pulmonary veno-occlusive disease and/or pulmonary capillary haemangiomatosis",
+   "id": "MONDO_0018554",
+   "category": "PH group",
+   "sources": "ontology",
+   "evidence": [
+    "Open Targets disease ontology: pulmonary veno-occlusive disease and/or pulmonary capillary haemangiomatosis is the child of pulmonary arterial hypertension"
+   ]
+  }
+ ],
+ "shared_genes": [
+  {
+   "ensembl_id": "ENSG00000175164",
+   "symbol": "ABO",
+   "n": 9,
+   "cteph": true,
+   "conds": "Deep vein thrombosis; Factor VIII level; Factor XI level (F11 locus); Fibrinogen (level and variants); Hypothyroidism / thyroid replacement therapy; Inherited thrombophilia; Pulmonary embolism; Venous thromboembolism; von Willebrand factor level",
+   "kinds": "GWAS/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000198734",
+   "symbol": "F5",
+   "n": 9,
+   "cteph": true,
+   "conds": "D-dimer level; Deep vein thrombosis; Factor VIII level; Factor XI level (F11 locus); Fibrinogen (level and variants); Inherited thrombophilia; Pulmonary embolism; Venous thromboembolism; von Willebrand factor level",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000088926",
+   "symbol": "F11",
+   "n": 8,
+   "cteph": true,
+   "conds": "Deep vein thrombosis; Factor VIII level; Factor XI level (F11 locus); Fibrinogen (level and variants); Inherited thrombophilia; Pulmonary embolism; Venous thromboembolism; von Willebrand factor level",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000171557",
+   "symbol": "FGG",
+   "n": 8,
+   "cteph": true,
+   "conds": "Deep vein thrombosis; Factor VIII level; Factor XI level (F11 locus); Fibrinogen (level and variants); Inherited thrombophilia; Pulmonary embolism; Venous thromboembolism; von Willebrand factor level",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000099282",
+   "symbol": "TSPAN15",
+   "n": 8,
+   "cteph": true,
+   "conds": "Deep vein thrombosis; Factor VIII level; Factor XI level (F11 locus); Fibrinogen (level and variants); Inherited thrombophilia; Pulmonary embolism; Venous thromboembolism; von Willebrand factor level",
+   "kinds": "GWAS/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000096968",
+   "symbol": "JAK2",
+   "n": 7,
+   "cteph": true,
+   "conds": "Clonal haematopoiesis; Deep vein thrombosis; Essential thrombocythaemia; Inflammatory bowel disease; Myeloproliferative neoplasm; Polycythaemia vera; Venous thromboembolism",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000129353",
+   "symbol": "SLC44A2",
+   "n": 7,
+   "cteph": true,
+   "conds": "Deep vein thrombosis; Factor VIII level; Factor XI level (F11 locus); Fibrinogen (level and variants); Pulmonary embolism; Venous thromboembolism; von Willebrand factor level",
+   "kinds": "GWAS/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000110799",
+   "symbol": "VWF",
+   "n": 7,
+   "cteph": true,
+   "conds": "Deep vein thrombosis; Factor VIII level; Factor XI level (F11 locus); Fibrinogen (level and variants); Pulmonary embolism; Venous thromboembolism; von Willebrand factor level",
+   "kinds": "GWAS/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000204217",
+   "symbol": "BMPR2",
+   "n": 6,
+   "cteph": true,
+   "conds": "Hypothyroidism / thyroid replacement therapy; Pulmonary arterial hypertension; Pulmonary arterial hypertension associated with another disease; heritable pulmonary arterial hypertension; idiopathic pulmonary arterial hypertension; pulmonary hypertension",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000180210",
+   "symbol": "F2",
+   "n": 5,
+   "cteph": true,
+   "conds": "Deep vein thrombosis; Inherited thrombophilia; Pulmonary embolism; Venous thromboembolism; von Willebrand factor level",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000171560",
+   "symbol": "FGA",
+   "n": 5,
+   "cteph": true,
+   "conds": "D-dimer level; Deep vein thrombosis; Inherited thrombophilia; Pulmonary embolism; Venous thromboembolism",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000168769",
+   "symbol": "TET2",
+   "n": 5,
+   "cteph": true,
+   "conds": "Clonal haematopoiesis; Essential thrombocythaemia; Inflammatory bowel disease; Myeloproliferative neoplasm; Polycythaemia vera",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000139567",
+   "symbol": "ACVRL1",
+   "n": 4,
+   "cteph": true,
+   "conds": "Deep vein thrombosis; Pulmonary arterial hypertension; heritable pulmonary arterial hypertension; pulmonary hypertension",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000113889",
+   "symbol": "KNG1",
+   "n": 4,
+   "cteph": true,
+   "conds": "Factor VIII level; Factor XI level (F11 locus); Fibrinogen (level and variants); Venous thromboembolism",
+   "kinds": "GWAS/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000115718",
+   "symbol": "PROC",
+   "n": 4,
+   "cteph": true,
+   "conds": "Deep vein thrombosis; Inherited thrombophilia; Pulmonary embolism; Venous thromboembolism",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000184500",
+   "symbol": "PROS1",
+   "n": 4,
+   "cteph": true,
+   "conds": "Deep vein thrombosis; Inherited thrombophilia; Pulmonary embolism; Venous thromboembolism",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000197249",
+   "symbol": "SERPINA1",
+   "n": 4,
+   "cteph": true,
+   "conds": "Factor VIII level; Fibrinogen (level and variants); Pulmonary embolism; Venous thromboembolism",
+   "kinds": "GWAS/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000136011",
+   "symbol": "STAB2",
+   "n": 4,
+   "cteph": true,
+   "conds": "Deep vein thrombosis; Factor VIII level; Venous thromboembolism; von Willebrand factor level",
+   "kinds": "GWAS/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000119772",
+   "symbol": "DNMT3A",
+   "n": 3,
+   "cteph": true,
+   "conds": "Inflammatory bowel disease; Myeloproliferative neoplasm; Polycythaemia vera",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000106991",
+   "symbol": "ENG",
+   "n": 3,
+   "cteph": true,
+   "conds": "Pulmonary arterial hypertension; heritable pulmonary arterial hypertension; pulmonary hypertension",
+   "kinds": "curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000263761",
+   "symbol": "GDF2",
+   "n": 3,
+   "cteph": true,
+   "conds": "Pulmonary arterial hypertension; heritable pulmonary arterial hypertension; pulmonary hypertension",
+   "kinds": "curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000117400",
+   "symbol": "MPL",
+   "n": 3,
+   "cteph": true,
+   "conds": "Clonal haematopoiesis; Essential thrombocythaemia; Myeloproliferative neoplasm",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000159216",
+   "symbol": "RUNX1",
+   "n": 3,
+   "cteph": true,
+   "conds": "Clonal haematopoiesis; Myeloproliferative neoplasm; Polycythaemia vera",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000117601",
+   "symbol": "SERPINC1",
+   "n": 3,
+   "cteph": true,
+   "conds": "Hypothyroidism / thyroid replacement therapy; Inherited thrombophilia; Venous thromboembolism",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000164736",
+   "symbol": "SOX17",
+   "n": 3,
+   "cteph": true,
+   "conds": "Pulmonary arterial hypertension; heritable pulmonary arterial hypertension; pulmonary hypertension",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000160323",
+   "symbol": "ADAMTS13",
+   "n": 2,
+   "cteph": true,
+   "conds": "ADAMTS13 level; Inherited thrombophilia",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000171456",
+   "symbol": "ASXL1",
+   "n": 2,
+   "cteph": true,
+   "conds": "Clonal haematopoiesis; Myeloproliferative neoplasm",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000134954",
+   "symbol": "ETS1",
+   "n": 2,
+   "cteph": true,
+   "conds": "Deep vein thrombosis; Hypothyroidism / thyroid replacement therapy",
+   "kinds": "GWAS/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000088053",
+   "symbol": "GP6",
+   "n": 2,
+   "cteph": true,
+   "conds": "Deep vein thrombosis; Venous thromboembolism",
+   "kinds": "GWAS/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000106366",
+   "symbol": "SERPINE1",
+   "n": 2,
+   "cteph": true,
+   "conds": "Fibrinogen (level and variants); Venous thromboembolism",
+   "kinds": "GWAS/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000178726",
+   "symbol": "THBD",
+   "n": 2,
+   "cteph": true,
+   "conds": "Inherited thrombophilia; Venous thromboembolism",
+   "kinds": "GWAS/curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000090534",
+   "symbol": "THPO",
+   "n": 2,
+   "cteph": true,
+   "conds": "Essential thrombocythaemia; Myeloproliferative neoplasm",
+   "kinds": "curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000163131",
+   "symbol": "CTSS",
+   "n": 1,
+   "cteph": true,
+   "conds": "Hypothyroidism / thyroid replacement therapy",
+   "kinds": "GWAS/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000139083",
+   "symbol": "ETV6",
+   "n": 1,
+   "cteph": true,
+   "conds": "Myeloproliferative neoplasm",
+   "kinds": "curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000124491",
+   "symbol": "F13A1",
+   "n": 1,
+   "cteph": true,
+   "conds": "Inherited thrombophilia",
+   "kinds": "curated/literature"
+  },
+  {
+   "ensembl_id": "ENSG00000099937",
+   "symbol": "SERPIND1",
+   "n": 1,
+   "cteph": true,
+   "conds": "Inherited thrombophilia",
+   "kinds": "curated/literature"
+  }
+ ],
+ "themes": [
+  {
+   "theme": "Fibrinogen",
+   "genes": [
+    {
+     "theme": "Fibrinogen",
+     "label": "FGA",
+     "symbol": "FGA",
+     "n_studies": 5,
+     "n_findings": 5,
+     "associated": 4,
+     "not_associated": 1,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "Fibrinogen",
+     "label": "FGG",
+     "symbol": "FGG",
+     "n_studies": 3,
+     "n_findings": 3,
+     "associated": 2,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 1
+    },
+    {
+     "theme": "Fibrinogen",
+     "label": "MIR759",
+     "symbol": "MIR759",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 1
+    }
+   ]
+  },
+  {
+   "theme": "ABO, von Willebrand factor, factor VIII and factor XI",
+   "genes": [
+    {
+     "theme": "ABO, von Willebrand factor, factor VIII and factor XI",
+     "label": "ABO",
+     "symbol": "ABO",
+     "n_studies": 3,
+     "n_findings": 3,
+     "associated": 3,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "ABO, von Willebrand factor, factor VIII and factor XI",
+     "label": "F11",
+     "symbol": "F11",
+     "n_studies": 2,
+     "n_findings": 2,
+     "associated": 2,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "ABO, von Willebrand factor, factor VIII and factor XI",
+     "label": "STAB2",
+     "symbol": "STAB2",
+     "n_studies": 1,
+     "n_findings": 2,
+     "associated": 1,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "ABO, von Willebrand factor, factor VIII and factor XI",
+     "label": "ADAMTS13",
+     "symbol": "ADAMTS13",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "ABO, von Willebrand factor, factor VIII and factor XI",
+     "label": "F8",
+     "symbol": "F8",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 1,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "ABO, von Willebrand factor, factor VIII and factor XI",
+     "label": "VWF",
+     "symbol": "VWF",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    }
+   ]
+  },
+  {
+   "theme": "Inherited thrombophilia and other haemostasis genes",
+   "genes": [
+    {
+     "theme": "Inherited thrombophilia and other haemostasis genes",
+     "label": "F5",
+     "symbol": "F5",
+     "n_studies": 14,
+     "n_findings": 15,
+     "associated": 2,
+     "not_associated": 5,
+     "identified": 5,
+     "other": 2
+    },
+    {
+     "theme": "Inherited thrombophilia and other haemostasis genes",
+     "label": "F2",
+     "symbol": "F2",
+     "n_studies": 10,
+     "n_findings": 10,
+     "associated": 2,
+     "not_associated": 3,
+     "identified": 4,
+     "other": 1
+    },
+    {
+     "theme": "Inherited thrombophilia and other haemostasis genes",
+     "label": "SERPINE1",
+     "symbol": "SERPINE1",
+     "n_studies": 2,
+     "n_findings": 2,
+     "associated": 1,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Inherited thrombophilia and other haemostasis genes",
+     "label": "SLC44A2",
+     "symbol": "SLC44A2",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 1,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "Inherited thrombophilia and other haemostasis genes",
+     "label": "TSPAN15",
+     "symbol": "TSPAN15",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 1,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "Inherited thrombophilia and other haemostasis genes",
+     "label": "SERPINC1",
+     "symbol": "SERPINC1",
+     "n_studies": 3,
+     "n_findings": 3,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 3,
+     "other": 0
+    },
+    {
+     "theme": "Inherited thrombophilia and other haemostasis genes",
+     "label": "F13A1",
+     "symbol": "F13A1",
+     "n_studies": 2,
+     "n_findings": 2,
+     "associated": 0,
+     "not_associated": 1,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Inherited thrombophilia and other haemostasis genes",
+     "label": "THBD",
+     "symbol": "THBD",
+     "n_studies": 2,
+     "n_findings": 2,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 2,
+     "other": 0
+    },
+    {
+     "theme": "Inherited thrombophilia and other haemostasis genes",
+     "label": "CPB2",
+     "symbol": "CPB2",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 1,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "Inherited thrombophilia and other haemostasis genes",
+     "label": "F12",
+     "symbol": "F12",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Inherited thrombophilia and other haemostasis genes",
+     "label": "F13B",
+     "symbol": "F13B",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Inherited thrombophilia and other haemostasis genes",
+     "label": "KNG1",
+     "symbol": "KNG1",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Inherited thrombophilia and other haemostasis genes",
+     "label": "MTHFR",
+     "symbol": "MTHFR",
+     "n_studies": 1,
+     "n_findings": 2,
+     "associated": 0,
+     "not_associated": 1,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "Inherited thrombophilia and other haemostasis genes",
+     "label": "PROC",
+     "symbol": "PROC",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Inherited thrombophilia and other haemostasis genes",
+     "label": "PROS1",
+     "symbol": "PROS1",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Inherited thrombophilia and other haemostasis genes",
+     "label": "SERPIND1",
+     "symbol": "SERPIND1",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    }
+   ]
+  },
+  {
+   "theme": "HLA and immunity",
+   "genes": [
+    {
+     "theme": "HLA and immunity",
+     "label": "HLA-B",
+     "symbol": "HLA-B",
+     "n_studies": 4,
+     "n_findings": 6,
+     "associated": 3,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 2
+    },
+    {
+     "theme": "HLA and immunity",
+     "label": "HLA-DPB1",
+     "symbol": "HLA-DPB1",
+     "n_studies": 2,
+     "n_findings": 2,
+     "associated": 2,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "HLA and immunity",
+     "label": "CLEC7A",
+     "symbol": "CLEC7A",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 1,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "HLA and immunity",
+     "label": "ETS1",
+     "symbol": "ETS1",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 1,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "HLA and immunity",
+     "label": "FGR",
+     "symbol": "FGR",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 1,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "HLA and immunity",
+     "label": "HLA-DRA",
+     "symbol": "HLA-DRA",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 1,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "HLA and immunity",
+     "label": "NFKBIL1",
+     "symbol": "NFKBIL1",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 1,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "HLA and immunity",
+     "label": "TNFSF13B",
+     "symbol": "TNFSF13B",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 1,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "HLA and immunity",
+     "label": "CTSS",
+     "symbol": "CTSS",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    }
+   ]
+  },
+  {
+   "theme": "Clonal haematopoiesis, myeloproliferative and platelet-production genes",
+   "genes": [
+    {
+     "theme": "Clonal haematopoiesis, myeloproliferative and platelet-production genes",
+     "label": "JAK2",
+     "symbol": "JAK2",
+     "n_studies": 6,
+     "n_findings": 6,
+     "associated": 1,
+     "not_associated": 0,
+     "identified": 5,
+     "other": 0
+    },
+    {
+     "theme": "Clonal haematopoiesis, myeloproliferative and platelet-production genes",
+     "label": "TET2",
+     "symbol": "TET2",
+     "n_studies": 2,
+     "n_findings": 2,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 2,
+     "other": 0
+    },
+    {
+     "theme": "Clonal haematopoiesis, myeloproliferative and platelet-production genes",
+     "label": "ASXL1",
+     "symbol": "ASXL1",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Clonal haematopoiesis, myeloproliferative and platelet-production genes",
+     "label": "CH-associated genes",
+     "symbol": "",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Clonal haematopoiesis, myeloproliferative and platelet-production genes",
+     "label": "DNMT3A",
+     "symbol": "DNMT3A",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Clonal haematopoiesis, myeloproliferative and platelet-production genes",
+     "label": "ETV6",
+     "symbol": "ETV6",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Clonal haematopoiesis, myeloproliferative and platelet-production genes",
+     "label": "MPL",
+     "symbol": "MPL",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Clonal haematopoiesis, myeloproliferative and platelet-production genes",
+     "label": "NFE2",
+     "symbol": "NFE2",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Clonal haematopoiesis, myeloproliferative and platelet-production genes",
+     "label": "RUNX1",
+     "symbol": "RUNX1",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Clonal haematopoiesis, myeloproliferative and platelet-production genes",
+     "label": "THPO",
+     "symbol": "THPO",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    }
+   ]
+  },
+  {
+   "theme": "Pulmonary arterial hypertension genes",
+   "genes": [
+    {
+     "theme": "Pulmonary arterial hypertension genes",
+     "label": "BMPR2",
+     "symbol": "BMPR2",
+     "n_studies": 6,
+     "n_findings": 7,
+     "associated": 1,
+     "not_associated": 2,
+     "identified": 3,
+     "other": 1
+    },
+    {
+     "theme": "Pulmonary arterial hypertension genes",
+     "label": "BMPR2, ACVRL1, ENG, SMAD9, CAV1, KCNK3, and CBLN2",
+     "symbol": "",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 1,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "Pulmonary arterial hypertension genes",
+     "label": "ACVRL1",
+     "symbol": "ACVRL1",
+     "n_studies": 2,
+     "n_findings": 2,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 2,
+     "other": 0
+    },
+    {
+     "theme": "Pulmonary arterial hypertension genes",
+     "label": "ENG",
+     "symbol": "ENG",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Pulmonary arterial hypertension genes",
+     "label": "GDF2",
+     "symbol": "GDF2",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Pulmonary arterial hypertension genes",
+     "label": "RASA1",
+     "symbol": "RASA1",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Pulmonary arterial hypertension genes",
+     "label": "RNF213",
+     "symbol": "RNF213",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Pulmonary arterial hypertension genes",
+     "label": "SOX17",
+     "symbol": "SOX17",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    }
+   ]
+  },
+  {
+   "theme": "Endothelium, platelets and vascular tone",
+   "genes": [
+    {
+     "theme": "Endothelium, platelets and vascular tone",
+     "label": "ACE",
+     "symbol": "ACE",
+     "n_studies": 2,
+     "n_findings": 4,
+     "associated": 2,
+     "not_associated": 1,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "Endothelium, platelets and vascular tone",
+     "label": "GNB3",
+     "symbol": "GNB3",
+     "n_studies": 2,
+     "n_findings": 2,
+     "associated": 2,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "Endothelium, platelets and vascular tone",
+     "label": "ICAM1",
+     "symbol": "ICAM1",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 1,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "Endothelium, platelets and vascular tone",
+     "label": "ANO1",
+     "symbol": "ANO1",
+     "n_studies": 1,
+     "n_findings": 2,
+     "associated": 0,
+     "not_associated": 1,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "Endothelium, platelets and vascular tone",
+     "label": "GP6",
+     "symbol": "GP6",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Endothelium, platelets and vascular tone",
+     "label": "HTR2A",
+     "symbol": "HTR2A",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 1,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "Endothelium, platelets and vascular tone",
+     "label": "NOS3",
+     "symbol": "NOS3",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 1,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "Endothelium, platelets and vascular tone",
+     "label": "PTGIS",
+     "symbol": "PTGIS",
+     "n_studies": 1,
+     "n_findings": 2,
+     "associated": 0,
+     "not_associated": 1,
+     "identified": 0,
+     "other": 1
+    },
+    {
+     "theme": "Endothelium, platelets and vascular tone",
+     "label": "SLC6A4",
+     "symbol": "SLC6A4",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 1
+    },
+    {
+     "theme": "Endothelium, platelets and vascular tone",
+     "label": "STIM1",
+     "symbol": "STIM1",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    }
+   ]
+  },
+  {
+   "theme": "Anticoagulant pharmacogenetics",
+   "genes": [
+    {
+     "theme": "Anticoagulant pharmacogenetics",
+     "label": "CYP2C9",
+     "symbol": "CYP2C9",
+     "n_studies": 1,
+     "n_findings": 2,
+     "associated": 0,
+     "not_associated": 1,
+     "identified": 0,
+     "other": 1
+    },
+    {
+     "theme": "Anticoagulant pharmacogenetics",
+     "label": "VKORC1",
+     "symbol": "VKORC1",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 1,
+     "identified": 0,
+     "other": 0
+    }
+   ]
+  },
+  {
+   "theme": "Other genes",
+   "genes": [
+    {
+     "theme": "Other genes",
+     "label": "LRP1",
+     "symbol": "LRP1",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 1,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "Other genes",
+     "label": "MYH7B",
+     "symbol": "MYH7B",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 1,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "Other genes",
+     "label": "MUC6",
+     "symbol": "MUC6",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    },
+    {
+     "theme": "Other genes",
+     "label": "OR2T3",
+     "symbol": "OR2T3",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 1,
+     "identified": 0,
+     "other": 0
+    },
+    {
+     "theme": "Other genes",
+     "label": "SERPINA1",
+     "symbol": "SERPINA1",
+     "n_studies": 1,
+     "n_findings": 1,
+     "associated": 0,
+     "not_associated": 0,
+     "identified": 1,
+     "other": 0
+    }
+   ]
+  },
+  {
+   "theme": "No gene named",
+   "genes": [
+    {
+     "theme": "No gene named",
+     "label": "no gene named",
+     "symbol": "",
+     "n_studies": 3,
+     "n_findings": 5,
+     "associated": 2,
+     "not_associated": 0,
+     "identified": 0,
+     "other": 1
+    }
+   ]
+  }
+ ],
+ "cteph_genetics": {
+  "gwas_loci": 3,
+  "literature_studies": 51,
+  "findings": 139,
+  "facts": [
+   {
+    "pmid": "15640334",
+    "direction": "increased risk",
+    "design": "case-control",
+    "population": "Japan, 80 CTEPH vs 678 controls",
+    "statement": "HLA-B*52:01 (40% vs 24%) and DPB1*02:02 (19% vs 6%) are more frequent in Japanese CTEPH.",
+    "quote": "The frequencies of HLA-B*5201 (40 versus 24%) and DPB1*0202 (19 versus 6%) were significantly higher in the patients.",
+    "topic": "HLA (Japanese)"
+   },
+   {
+    "pmid": "19165231",
+    "direction": "increased risk",
+    "design": "case-control",
+    "population": "Japan, 160 CTEPH vs 380 controls",
+    "statement": "HLA markers (DPB1*02:02, B*52:01) and NFKBIL1 are associated with DVT-negative CTEPH only.",
+    "quote": "We found a strong association of HLA markers with the DVT-negative CTEPH",
+    "topic": "HLA (Japanese)"
+   },
+   {
+    "pmid": "38470220",
+    "direction": "associated",
+    "design": "GWAS",
+    "population": "European",
+    "statement": "The CTEPH GWAS: 1,907 European cases and 10,363 controls.",
+    "quote": "We conducted a genome-wide association study on 1,907 European cases and 10,363 European control subjects.",
+    "topic": "GWAS"
+   },
+   {
+    "pmid": "38470220",
+    "direction": "associated",
+    "design": "GWAS",
+    "population": "European",
+    "statement": "CTEPH is partially heritable and polygenic, with genetics related to but distinct from PE and DVT.",
+    "quote": "Chronic thromboembolic pulmonary hypertension is a partially heritable polygenic disease, with related though distinct genetic associations with pulmonary embolism and deep vein thrombosis.",
+    "topic": "GWAS"
+   },
+   {
+    "pmid": "34409094",
+    "direction": "associated",
+    "design": "cohort (registry)",
+    "population": "worldwide incl. Japan",
+    "statement": "In the worldwide registry, 75% of Japanese CTEPH patients were female.",
+    "quote": "Sex was evenly balanced, except in Japan where 75% of patients were female.",
+    "topic": "Epidemiology (Japan)"
+   },
+   {
+    "pmid": "18931448",
+    "direction": "associated",
+    "design": "cohort",
+    "population": "Japan, 150 CTEPH",
+    "statement": "Japanese women with CTEPH have less DVT and fewer acute embolic episodes.",
+    "quote": "The female patients were elderly and had less deep vein thrombosis, less acute embolic episodes, better cardiac function, lower arterial oxygen tension and more peripheral thrombi, and showed less improvement through surgery than males.",
+    "topic": "Epidemiology (Japan)"
+   }
+  ]
+ },
+ "mechanisms": [
+  {
+   "kind": "mechanism",
+   "key": "Autophagy",
+   "title": "Autophagy",
+   "pmids": "19633069; 27234007; 33692478; 37608664; 39821606; 41912928; 42491119; PPR1079116",
+   "genes": "ATG7; MTOR; MAP1LC3A; BECN1; MAP1LC3B; PIK3C3",
+   "n_targets": "6",
+   "summary": "The material indicates that autophagy signalling is altered in CTEPH pulmonary vasculature, although the direction of change differs between human lesions and animal models. In pulmonary artery lesions from CTEPH patients, the autophagy markers BECN1 (beclin-1) and LC3 were elevated alongside increased collagen deposition, defining a TGF-β/Smad3-LC3 axis as a driver of disease and a target for pharmacological modulation of autophagy, for example with riociguat [41912928, PPR1079116]. In contrast, a rat CTEPH model showed decreased Beclin-1 and LC3B with increased tissue factor expression, suggesting LC3B may be protective by regulating endothelial cell proliferation during CTEPH pathogenesis [27234007]. Autophagy-related gene ATG7 is regulated by non-coding RNAs: overexpressed miR-382-3p promotes vascular remodelling via ATG7 inhibition [37608664], and the lncRNA APF/miR-188-3p/ATG7 axis was examined in paired CTEPH vascular specimens [42491119]. PDGF transiently phosphorylated Akt, mTOR and p70S6 kinase in CTEPH cells, implicating mTOR in pulmonary vascular remodelling and suggesting benefit from rapamycin [19633069], though basal mTOR levels versus control cells remain unconfirmed [33692478]. A role for PIK3C3 (VPS34) in promoting thrombosis in CTEPH is suggested but not established [39821606].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Cell Cycle",
+   "title": "Cell Cycle",
+   "pmids": "27124368; 28904974; 29122755; 31593832; 33024690; 33083107; 34736457; 35229989; 36440052; 36949868; 37608664; 38451963; 39192976; 41560055; 41827036; PPR661171",
+   "genes": "JAK2; EP300; AKT1; TP53; PAFAH1B1; STAG2; MAPK3; MAPRE1; PCNA; CDK6; MYC; PRKCA",
+   "n_targets": "12",
+   "summary": "Several cell-cycle-associated genes are implicated in CTEPH, largely through proliferative vascular remodelling and clonal haematopoiesis. Network analyses of CTEPH tissue place TP53 and MYC among the most highly connected hub proteins across cell types, with circ_0007400 proposed to regulate TP53 as a competing endogenous RNA [36440052]. Non-coding RNA circuits also converge on cell-cycle control, as the hsa_circ_0002062–hsa-miR-942-5p–CDK6 pathway has been linked to CTEPH occurrence and development [31593832, 35229989], while miR-382-3p overexpression promotes pulmonary artery wall thickening with increased PCNA and VEGF expression via ATG7 inhibition [37608664]. Proliferative signalling involves ERK1/2 (MAPK3)-dependent migration of CTEPH pulmonary artery smooth muscle cells driven by the renin-angiotensin system [29122755], thrombin-activated Akt signalling [34736457], PI3K/Akt downstream of hsa-miR-122-5p–PIK3CG [41560055], and PRKCA-linked pathways [28904974]. Clonal haematopoiesis mutations, including STAG2, are enriched in CTEPH [PPR661171], and PAFAH1B1 is upregulated in CTEPH vascular samples [27124368, 33083107]. Transcriptional regulators EP300 [38451963, 39192976] and JAK2 V617F [33024690, 36949868] are additionally reported.",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Cell-Cell communication",
+   "title": "Cell-Cell communication",
+   "pmids": "21854648; 22452949; 25169936; 33024690; 33313943; 33810533; 33947407; 34103026; 35572511; 36555286; 36949868; 36984870; 39360158; 39684570; 40188413; 40567587; 41372353; 41571319; 41811700; PPR899102",
+   "genes": "ACTA1; PKM; EZH2; IL6; NFKB1; JAK2; FOXJ2; RAC1; PVR; JAK1; STAT3; CDH5",
+   "n_targets": "20",
+   "summary": "The material depicts CTEPH as involving disturbed communication between vascular cells, immune cells and platelets. In pulmonary endarterectomy tissue, cells co-expressing the endothelial marker CD31 and α-SMA (ACTA1) indicate \"intermediate\" endothelial-to-muscle phenotypes in neointimal lesions, while α-SMA expression is lower in CTEPH pulmonary artery tissue than in donors and only a minority of neointimal α-SMA-positive cells express desmin or SMMHC [21854648, 22452949]; CDH5 was identified as the key molecular target linking particulate exposure to CTEPH [40188413, PPR899102]. Endothelial cells from PEA specimens show NF-κB (NFKB1) activation sustaining a pro-inflammatory state, which PRDX2 overexpression attenuates [33810533, 41372353]. Inflammatory mediators and signaling are prognostically and mechanistically relevant: IL-6 with sST2 predicts outcome [41571319] though T cell IL-6 does not separate patients from controls [35572511], STAT3 is upregulated in CD4+ Treg clusters [40567587], and JAK1/2 inhibition reduces vascular remodeling in rats [36555286, 39684570]. Platelet GTP-bound Rac1 and related GTPases were measured as activation markers [25169936, 36984870], and PKM2 is elevated in serum and PEA tissue, modulating endothelial mitochondrial metabolism and intimal remodeling [39360158, 41811700].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Cellular responses to stimuli",
+   "title": "Cellular responses to stimuli",
+   "pmids": "11463608; 26667361; 33270690; 33313943; 33947407; 33996028; 35053115; 35572511; 36323673; 37063122; 38451963; 39730379; 39823269; 40941614; 41372353; 41515551; 41571319",
+   "genes": "PRDX2; APOA1; ALB; CCL2; NOS3; HIF1A; EGF; HMOX1; EZH2; CXCL8; IL6; HSPA1A",
+   "n_targets": "56",
+   "summary": "The material depicts CTEPH as a disease in which pulmonary vascular cells mount sustained responses to inflammatory, oxidative and hypoxic stimuli. Inflammatory mediators are consistently elevated: CCL2 (MCP-1), proposed to be upregulated by blood pressure or shear stress as well as immune reactions, is higher in CTEPH patients than controls [26667361, 11463608]; CXCL8 is increased in plasma, correlates with survival and is expressed more highly in CTEPH than in IPAH [33947407, 38451963]; and IL6, together with sST2, is an independent prognostic biomarker in medically treated CTEPH, although intracellular T cell IL-6 does not distinguish patients from controls [41571319, 35572511]. Stress-response and redox genes are also altered, with increased PRDX2, whose overexpression limits inflammation via NF-κB signalling and modulates mitophagy to attenuate vascular remodelling [41372353], raised HMOX1 [39730379], and HSP70 (HSPA1A) failure supporting endothelial dysfunction [33270690]. Hypoxic signalling is shifted, with increased HIF-1α, decreased eNOS (NOS3) and downregulated HIF1α-AS1 [39823269, 37063122, 36323673]. Additional changes involve EGF, EZH2, APOA1 and albumin [35053115, 33313943, 33996028, 40941614].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Chromatin organization",
+   "title": "Chromatin organization",
+   "pmids": "33024690; 33313943; 33810533; 36949868; 38451963; 39192976; 41372353; PPR661171",
+   "genes": "EZH2; NFKB1; JAK2; EP300; DNMT3A",
+   "n_targets": "5",
+   "summary": "The material links chromatin-modifying and transcription-regulating genes to CTEPH. EZH2 expression was measured, at both protein and mRNA level, in pulmonary artery smooth muscle cells from CTEPH patients, implicating this histone-modifying enzyme in the diseased vascular wall [33313943]. EP300 was identified among genes with diagnostic and therapeutic value in CTEPH, particularly in chronic thrombosis, although unlike the co-identified inflammatory genes it was expressed lower in CTEPH than in idiopathic pulmonary arterial hypertension [38451963]; separately, EP300-regulated gene programmes, along with those of FLI-1 and ESRRA, were upregulated in CD16+ monocytes of CTEPH patients [39192976]. Clonal haematopoiesis of indeterminate potential mutations are enriched in CTEPH patients, with DNMT3A among the most frequently mutated genes [PPR661171]. Transcriptional inflammatory signalling is also implicated: phospho-NF-κB-P65 was detected in CTEPH endothelial cells and thrombus vessels [33810533], NF-κB activity was modulated by PRDX2 and by inhibitor treatment [41372353], and JAK2 V617F-mutant essential thrombocythaemia co-occurred with CTEPH [33024690, 36949868].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Circadian clock",
+   "title": "Circadian clock",
+   "pmids": "1394930; 26363916; 32110389; 32699607; 33263045; 38451963; 39192976; 40588471; 41596405; 41811700; 41827036",
+   "genes": "AVP; EP300; SERPINE1; PPARGC1A; MEF2D; PPP1CA; PPARA",
+   "n_targets": "7",
+   "summary": "Several circadian clock-annotated genes appear in CTEPH through neurohormonal, transcriptional, fibrinolytic and metabolic mechanisms. The AVP-derived peptide copeptin, alongside MR-proANP, MR-proADM and CT-proET-1, has been measured prospectively in PAH and CTEPH cohorts to assess haemodynamics, exercise capacity and prognosis, and is altered in CTEPH, falling after therapy, with median levels comparable to those reported in mixed pulmonary hypertension cohorts [33263045, 26363916]. The transcriptional coactivator EP300 is proposed to have diagnostic and therapeutic value in chronic thrombosis, being expressed lower in CTEPH than in IPAH, while EP300-regulated genes are upregulated in CD16+ monocytes of CTEPH patients [38451963, 39192976]. For SERPINE1, PAI-1 complexes circulating t-PA, yet neither high resting PAI-1 activity nor blunted t-PA release explains CTEPH; a PAI-1 polymorphism has been examined as a genetic determinant [1394930, 41596405]. PPARGC1A (PGC-1alpha) with mtTFA mediates PKM2-dependent endothelial mitochondrial metabolism and intimal remodelling [41811700], PPARA agonists reduce TAFIalpha [40588471], PPAR-linked fatty-acid metabolism and CD36 are implicated [32110389], MEF2D links miR-665 to smooth-muscle proliferation [32699607], and PPP1CA discriminates CTEPH from FM-PH [41827036].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "DNA Repair",
+   "title": "DNA Repair",
+   "pmids": "34190625; 36440052; 37608664",
+   "genes": "TP53; PARP1; PCNA",
+   "n_targets": "3",
+   "summary": "The material links three DNA repair-associated genes to CTEPH, although the evidence reported concerns vascular remodelling and inflammation rather than DNA repair function itself. In protein-protein interaction networks built from different pulmonary cell types, TP53 was among the genes with the highest connectivity, suggesting a hub role in CTEPH progression [36440052]. TP53 was also proposed to be regulated by circ_0007400 acting as a competing endogenous RNA in cancer stem cells and CRISPLD2+ cells, providing a possible mechanism for its involvement [36440052]. PARP-1 levels were significantly upregulated in patients with CTEPH, as well as in IPAH and COPD-PH, compared with controls (p < .0001) [34190625]. In a rat model, CTEPH increased PCNA expression together with VEGF and autophagy-related proteins; a miR-382-3p antagomir reversed these changes and the associated mPAP elevation and pulmonary artery wall thickening, whereas a miR-382-3p agomir potentiated them, implicating miR-382-3p-driven, ATG7-dependent vascular remodelling [37608664].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Developmental Biology",
+   "title": "Developmental Biology",
+   "pmids": "11463608; 23738715; 26667361; 28536427; 31747868; 32699607; 32741891; 33313943; 33947407; 35053115; 35572511; 38451963; 39192976; 39274190; 39550495; 41571319; PPR689684",
+   "genes": "EDN1; TNF; CCL2; IL1B; MMP2; CD14; EGF; TGFB1; EZH2; CXCL8; IL6; FOXO1",
+   "n_targets": "84",
+   "summary": "The material frames CTEPH as a disease in which developmental/growth-factor signalling drives thrombus non-resolution and vascular remodelling. Endothelin-1 and TGF-β are described as pivotal in CTEPH pathophysiology and vascular remodelling, with circulating levels assessed before and after pulmonary endarterectomy [39274190], the ET-1 pathway implicated in CTEPH microvasculopathy [39550495], and defective endothelial TGF-β signalling tested for its contribution to thrombus non-resolution and fibrosis using platelet TGFB1 and endothelial TGFβRII deletions [31747868]. Systemic EGF was elevated in CTEPH but not iPAH [35053115], while EZH2 was measured in CTEPH pulmonary artery smooth muscle cells [33313943] and FOXO1 was linked to apoptosis and autophagy during pulmonary artery remodelling [28536427, PPR689684]. Matrix remodelling involves MMP2, reportedly upregulated through loss of miR-106b-5p [32699607] and by ginsenoside Rg1 [23738715]. These programmes act alongside inflammation, including TNF, CCL2, IL1B, CXCL8 and IL6 and CD14+/CD16+ monocyte-macrophage responses [26667361, 11463608, 32741891, 39192976, 38451963, 33947407, 35572511, 41571319].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Disease",
+   "title": "Disease",
+   "pmids": "25188497; 30594174; 30655285; 33996028; 34616545; 35572511; 36314346; 37448441; 37761997; 38451963; 39056331; 39192976; 39468095; 40240930; 41300788; 41372353; 42346503; PPR925396",
+   "genes": "CD4; VWF; ADAMTS13; PRDX2; RNF213; APOA1; ADAMTSL4; IL1B; HMGB1; ANO1; HGF; F10",
+   "n_targets": "125",
+   "summary": "The material depicts CTEPH as a disease involving coagulation, inflammation and vascular remodelling mechanisms. Coagulation abnormalities include decreased ADAMTS13 with increased VWF levels in CTEPH compared with healthy controls, implicating the ADAMTS13–VWF axis in CTEPH pathobiology [30655285], with elevated FVIII and VWF:Ag not explained by VWF or F8 mutations [41300788]; ADAMTS13 levels in CTEPH are higher than in pulmonary arterial hypertension [34616545], and heparin-calibrated anti-Xa measurement informs treatment of CTEPH patients receiving FXa inhibitors [39468095, PPR925396]. Inflammatory mechanisms include increased CCR6+ CD4+ T cells at diagnosis and in vascular lesions [35572511], recruitment of CD16+ monocytes to pulmonary artery intima and differentiation into IL-1β-high macrophages [39192976], higher IL1B and other chemokine/cytokine gene expression than in IPAH [38451963], raised serum HMGB1 [25188497, 36314346], and increased PRDX2, whose overexpression attenuates inflammation via NF-κB and alleviates vascular remodelling [41372353]. Additional reported factors are the heterozygous RNF213 p.Arg4810Lys variant in 7.1% of patients, affecting balloon pulmonary angioplasty response [39056331, 40240930], dysfunctional ApoA-I [33996028], elevated ADAMTSL4 [37448441], HGF [30594174] and ANO1 polymorphisms [42346503].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Drug ADME",
+   "title": "Drug ADME",
+   "pmids": "25169936; 31113643; 33996028; 36856592; 36984870; 40941614; 41515551",
+   "genes": "ALB; PON1; CYP2C9; RAC1; ABCB1",
+   "n_targets": "5",
+   "summary": "The material links CTEPH to proteins that govern drug absorption, distribution, metabolism and excretion, although most evidence is indirect. Serum albumin, the principal plasma drug-binding protein, was inversely correlated with length of stay in CTEPH and strongly predicted prolonged hospitalisation and mortality (AUC = 0.833), and was also evaluated as part of the NT-proBNP-to-albumin ratio (NTAR) alongside the RDW-to-eGFR ratio (RGR) [40941614, 41515551]. Paraoxonase-1 enzymatic activity was measured with HDL-C, ApoA-I and oxidised dysfunctional oxTrp72-ApoA-I in CTEPH patients versus healthy controls, the first such assessment of ApoA-I derangement in CTEPH [33996028]. CYP2C9*3 and CYP2C9*7 polymorphisms were genotyped in Turkish CTEPH patients but showed no association with disease, unlike the fibrinogen-Aα THR312ALA variant [36856592]. For transport-mediated handling, P-glycoprotein (ABCB1) and cytochrome 3A4 drug-drug interactions with targeted therapies raise bioaccumulation risk for DOACs in CTEPH [31113643]. Platelet GTP-bound Rac1, Rap1, RhoA, RalA and Ras were measured to test for a prothrombotic state in CTEPH [25169936, 36984870].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Extracellular matrix organization",
+   "title": "Extracellular matrix organization",
+   "pmids": "1394930; 21854648; 22452949; 23738715; 24909805; 30655285; 31183846; 31324443; 31337550; 31747868; 32699607; 36081943; 37239056; 38333700; 39274190; 39988875; 40567587; 41300788; 41596405",
+   "genes": "VWF; ICAM1; ACTA1; SPARC; MMP2; BMP10; PLG; TGFB1; SPP1; SGCB; PECAM1; SERPINE1",
+   "n_targets": "42",
+   "summary": "The material frames CTEPH as a disorder of impaired thrombus resolution and vascular remodeling with matrix-related features. Coagulation and fibrinolytic imbalance is prominent: FVIII and VWF antigen are elevated without causative VWF or F8 mutations [41300788], the ADAMTS13–VWF axis is implicated independently of inflammation or disease severity [30655285], plasminogen and alpha2-antiplasmin are reduced while tPA is increased [41300788], low plasminogen with high fibrinogen predicts poor survival [24909805], and t-PA/PAI-1 abnormalities and a PAI-1 polymorphism have been examined [1394930, 41596405]. Endothelial activation and inflammation include ICAM-1 overexpression in endarterectomy-derived endothelial cells, an E469K polymorphism enriched in CTEPH [31324443], and inflammatory cytokine/adhesion molecule production [40567587]. Remodeling involves CD31/α-SMA double-positive intermediate cells in neointima [21854648], altered α-SMA expression in pulmonary artery tissue [22452949], MMP-2 regulation by miR-106b-5p and its inverse relation to collagen-I deposition [32699607, 23738715], TGFβ1 signaling in thrombus nonresolution and fibrosis [31747868, 39274190], raised SPARC [38333700] and osteopontin linked to inflammatory/fibrotic processes and maladaptive RV remodeling [31183846, 37239056], with BMP10 activity falling after pulmonary endarterectomy [39988875] and sGC stimulation modulating endothelial repair [31337550, 36081943].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Gene expression (Transcription)",
+   "title": "Gene expression (Transcription)",
+   "pmids": "28536427; 28682884; 29563354; 30290671; 30603858; 30942132; 31747868; 33313943; 33810533; 35053115; 35572511; 36555549; 38116660; 39274190; 41262940; 41372353; 41571319; PPR661171; PPR689684",
+   "genes": "PIN1; PRDX2; CTLA4; TGFB1; STUB1; EZH2; IL6; FOXO1; NFKB1; EGFR; ADIPOQ; FASLG",
+   "n_targets": "62",
+   "summary": "This material links CTEPH to inflammation-driven transcriptional programmes rather than to a single transcription factor. NF-κB is activated in CTEPH endothelial cells and in vessels within thrombi (phospho-NF-κB-P65 staining), accounting at least partly for their raised basal pro-inflammatory status [33810533]; PRDX2, increased in patient blood and in rat pulmonary vasculature, limits this NF-κB-dependent inflammation and modulates mitophagy when overexpressed in PAECs, attenuating vascular remodelling, with BAY-11-7085 used to confirm pathway involvement [41372353]. FOXO1, with apoptosis and autophagy, contributes to pulmonary artery remodelling in CTEPH rats [28536427, PPR689684], and EZH2 expression was measured in PASMCs from CTEPH patients [33313943]. Upstream or associated signals include endothelial TGFβ signalling in thrombus nonresolution and fibrosis [31747868, 39274190] and EGFR/ErbB-related circRNA–miRNA networks [28682884, 35053115]. Clonal haematopoiesis is enriched in CTEPH and relates to inflammatory markers and worse prognosis [38116660, PPR661171], while IL-6, CTLA4, adiponectin and PIN1 serve mainly as immune or prognostic markers [41571319, 35572511, 36555549, 29563354, 30942132, 41262940].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Hemostasis",
+   "title": "Hemostasis",
+   "pmids": "24909805; 26667361; 28289017; 30594174; 30655285; 30942132; 33103541; 33986029; 33996028; 34616545; 36609091; 37063122; 38333700; 39468095; 39823269; 40941614; 41300788; 41515551; PPR925396",
+   "genes": "VWF; TF; ADAMTS13; APOA1; THBD; ALB; NOS3; HGF; F10; SPARC; ANGPT2; PLG",
+   "n_targets": "88",
+   "summary": "Within hemostasis, CTEPH is characterised by a procoagulant shift: patients show elevated FVIII and VWF antigen that are not explained by VWF or F8 mutations [41300788], together with reduced ADAMTS13 and increased VWF levels, implicating the ADAMTS13–VWF axis in CTEPH pathobiology independently of pulmonary hypertension severity or systemic inflammation [30655285], although plasma ADAMTS13 is lower in pulmonary arterial hypertension than in CTEPH [34616545]. Extrinsic pathway activation is also implicated, with increased tissue factor antigen and mRNA in monocytes alongside lower plasma TF and higher TFPI, suggesting roles in thrombosis and pulmonary vascular remodelling [26667361, 30942132]. Impaired fibrinolysis is indicated by low plasminogen with high tPA [41300788], low plasminogen predicting poor survival [24909805], and by THBD variants and high TAFI/thrombomodulin expression in pulmonary arteries and thrombus [33103541, 28289017]. Defective thrombus resolution and remodelling involve ANGPT2 [33986029, 36609091], HGF [30594174], SPARC [38333700], reduced NOS3/eNOS [39823269, 37063122], with APOA1 and ALB as biomarkers [33996028, 40941614, 41515551], and FXa (F10) monitoring guiding anticoagulation [39468095, PPR925396].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Immune System",
+   "title": "Immune System",
+   "pmids": "11463608; 15302794; 25412085; 26667361; 31324443; 32007254; 32741891; 35572511; 35685949; 36004182; 37761997; 39056331; 40240930; 40567587; 41262940; 42017234",
+   "genes": "CD4; CXCL10; PTX3; PIN1; RNF213; TNF; CCR6; CD40LG; CRP; CD8A; ICAM1; CCL2",
+   "n_targets": "157",
+   "summary": "The material depicts CTEPH as a markedly proinflammatory condition in which innate and adaptive immune mechanisms contribute to thrombus persistence and pulmonary vascular remodeling. Circulating inflammatory mediators are elevated, including CRP, TNF-α and MCP-1 (CCL2), which correlate with plasma tissue factor and are proposed to drive CTEPH thrombosis and remodeling [26667361, 11463608, 32741891]; CXCL10 tracks disease severity and falls after balloon pulmonary angioplasty, and the CXCL10/CXCR3 axis links hemodynamic stress to PASMC hyperproliferation and macrophage-driven perivascular inflammation [35685949, 42017234]. PTX3 was the most sensitive plasma biomarker distinguishing CTEPH from stable pulmonary thromboembolism, while preoperative CRP ≥10 mg/L marks worse functional, hemodynamic and early post-endarterectomy outcomes, and sCD40L has been examined as a surgical-outcome marker, although plasma sCD40L was not increased in CTEPH in one study [25412085, 32007254, 36004182, 15302794]. Adaptive immunity is also engaged: CCR6+ Th17-associated CD4+ T cells are expanded and present in vascular lesions, with altered IFNγ/IL-17 capacity and increased CTLA4 on CD4+ and CD8+ T cells [35572511, 37761997]. Endothelial ICAM1 overexpression sustains the abnormal endothelial phenotype, alongside leukocyte infiltration of endarterectomy specimens, and the RNF213 p.Arg4810Lys variant occurs in a subset of patients, influencing angioplasty response [31324443, 40567587, 39056331, 40240930]; PIN1 levels show sex-specific associations with CTEPH probability and hemodynamics [41262940].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Metabolism",
+   "title": "Metabolism",
+   "pmids": "15182267; 18256058; 25412085; 29563354; 30942132; 33996028; 35958401; 37063122; 38333700; 39360158; 39730379; 39823269; 40941614; 41262940; 41515551; 41560055; 41811700",
+   "genes": "APOA1; ALB; NOS3; PKM; HMOX1; PIK3CG; FABP3; ADIPOQ; PIK3R6; PON1; PTGIS; HPSE",
+   "n_targets": "57",
+   "summary": "The material links CTEPH to disturbances in lipid, energy and vasoactive-mediator metabolism. Lipoprotein metabolism is altered: ApoA-I is a more sensitive biomarker than HDL-C and may reflect right heart dysfunction, with concurrent derangements in oxidized dysfunctional oxTrp72-ApoA-I and PON1 enzymatic activity [33996028]. Glycolytic and mitochondrial metabolism is implicated, as PKM2 is elevated in serum and pulmonary endarterectomy tissue of CTEPH patients [39360158], and the PKM2 tetramer may regulate pulmonary artery endothelial cell mitochondrial function via PGC-1alpha and mtTFA, influencing intimal remodeling and pulmonary artery pressure [41811700]. Vasoactive and redox pathways are affected, with decreased eNOS alongside increased HIF-1alpha in CTEPH pulmonary vascular tissue [39823269], downregulated NOS3 with higher pulmonary vascular resistance [37063122], impaired prostacyclin biosynthesis and PTGIS VNTR polymorphisms [15182267], and elevated HMOX1, a candidate drug target [39730379]. Additional metabolic or signalling markers include albumin [40941614, 41515551], adiponectin [29563354, 30942132], H-FABP [18256058, 25412085], HPSE [38333700, 41262940], PIK3CG [41560055] and PIK3R6 [35958401].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Metabolism of RNA",
+   "title": "Metabolism of RNA",
+   "pmids": "28904974; 30759165; 33270690; 34103026; 34736457; 39360158; 40400966; 41560055; 41827036",
+   "genes": "HSPA1A; HNRNPA1; PHAX; AKT1; CPSF2; PPP1CA; PTBP1; PRKCA",
+   "n_targets": "8",
+   "summary": "The material links several RNA-binding and RNA-processing proteins to CTEPH, chiefly through control of glycolytic gene expression. hnRNPA1 regulates glycolysis and proliferative activity by modulating PKM2 expression, and the hnRNPA1/PKM2 axis is proposed as a therapeutic target in CTEPH [39360158]. The related splicing factor PTBP1 acts on PKM2 in a comparable way, indicating that PKM2 is controlled by hnRNP family members (PTBP1 or hnRNPA1) across PH groups [39360158]; a miR-124/PTBP1 axis is hypothesised to shift the PKM2/PKM1 balance and endothelial metabolic programming during progression from pulmonary embolism to CTEPH, contributing to pulmonary arterial intimal remodelling, although these roles remain unclear [40400966]. RNA-export and 3'-end processing factors appear as immune targets or classifiers: autoantibodies against PHAX are higher in CTEPH and PAH patients than healthy donors [30759165], whereas CPSF2 antibodies do not differ by PH status and instead correlate with aortic hypertension [34103026]. PPP1CA was selected by all three algorithms discriminating CTEPH from FM-PH [41827036]. Additional contributors include HSP70 failure supporting endothelial dysfunction and serving as a candidate biomarker [33270690], and Akt-related signalling, with thrombin activating Akt in smooth muscle cells [34736457] and an hsa-miR-122-5p-PIK3CG-PI3K/Akt pathway proposed in CTED deterioration to CTEPH [41560055]; hsa-miR-3148-PRKCA signalling is also suggested as a key CTEPH mechanism [28904974].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Metabolism of proteins",
+   "title": "Metabolism of proteins",
+   "pmids": "23738715; 24909805; 26667361; 30047301; 30655285; 30942132; 32699607; 32746916; 33996028; 34616545; 34917333; 36323673; 37448441; 38362348; 39468095; 39823269; 40941614; 41300788; 41515551; PPR925396",
+   "genes": "TF; ADAMTS13; APOA1; ADAMTSL4; ALB; TGFBI; F10; HIF1A; MMP2; PAPPA; PLG; MUC6",
+   "n_targets": "84",
+   "summary": "Protein-level processing and turnover—particularly proteolytic cascades—are repeatedly implicated in CTEPH. Monocyte tissue factor antigen and mRNA are increased while plasma TF is reduced and TFPI raised, suggesting consumption within the extrinsic coagulation pathway [26667361, 30942132], and heparin-calibrated anti-Xa activity has been proposed to guide factor Xa inhibitor therapy [39468095, PPR925396]. Fibrinolytic and VWF-cleaving capacity is impaired, with low plasminogen (alongside low alpha2-antiplasmin and high tPA) predicting poor survival [41300788, 24909805] and decreased ADAMTS13 with increased VWF in CTEPH patients [30655285, 34616545]. Extracellular matrix-modifying proteins are also altered: circulating TGFBI is elevated and falls after pulmonary endarterectomy, marking thrombofibrosis [38362348]; ADAMTSL4 is raised [37448441]; PAPP-A is slightly higher and tracks right ventricular impairment [32746916, 34917333]; and MMP2 is regulated by miR-106b-5p and linked to myocardial collagen deposition [32699607, 23738715]. Additional findings include elevated HIF-1α with reduced eNOS in pulmonary vascular tissue and downregulated HIF1α-AS1 [39823269, 36323673], reduced ApoA-I [33996028], prognostic serum albumin [40941614, 41515551], and a rare MUC6 variant [30047301].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Muscle contraction",
+   "title": "Muscle contraction",
+   "pmids": "21854648; 22452949; 26820968; 33263045; 33270690; 33693167; 35958401; 36210266; 39727495; 40248873; 41072776; 41583269",
+   "genes": "ACTA1; DES; STIM1; MYH11; NPPA; PDE5A; ANXA2; SCN3A; ORAI1; ORAI2; TRPC1; KCNK3",
+   "n_targets": "18",
+   "summary": "Within the muscle-contraction theme, CTEPH vascular remodelling involves an altered smooth muscle phenotype: α-SMA expression is reduced by about 42% in CTEPH pulmonary artery tissue versus donors, and neointimal cells in proximal pulmonary arteries only rarely co-express the mature contractile markers desmin (DES) and smooth muscle myosin heavy chain (MYH11), unlike medial smooth muscle cells [22452949]; CD31/α-SMA double-positive 'intermediate' cells in distal neointimal lesions suggest endothelial-to-smooth-muscle transition [21854648]. In the hypertrophied right ventricle of CTEPH pigs, the long STIM1 isoform STIM1L is re-expressed while classic STIM1, ORAI1, STIM2, ORAI2/3 and TRPC1/3/4/5/6 proteins are unchanged, and selective ORAI1 inhibition does not alter Ca2+ transients or cell shortening [40248873]. Ion-channel genes are also implicated, with SCN3A upregulated and proposed as a CTEPH marker [35958401, 39727495] and a KCNK3 missense mutation found in one CTEPH patient [26820968, 41072776]. Clinically, atrial stress is reflected by exercise-induced MR-proANP (NPPA) rises marking latent right heart failure [36210266, 33263045], and PDE5 inhibitors are used as vasodilator therapy in inoperable or residual CTEPH [41583269, 33693167]. Annexin A2, a fibrinolytic component, was examined in CTEPH pulmonary arteries to probe microvascular responses [33270690].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Neuronal System",
+   "title": "Neuronal System",
+   "pmids": "25169936; 26820968; 28904974; 29122755; 35958401; 36984870; 39411231; 41072776",
+   "genes": "KCNMB2; ERBB4; RAC1; KCNK3; MAPK3; PRKCA",
+   "n_targets": "6",
+   "summary": "The material links several genes annotated to this theme with CTEPH, mainly through expression and genetic studies rather than defined neuronal signalling mechanisms. Potassium channel genes feature in two ways: KCNMB2-AS1 showed a downregulated trend in both male and female CTEPH patients relative to controls, suggesting its expression is not sex-specific [35958401], and a missense mutation in KCNK3 exon 1 was found in one CTEPH patient when 7 PAH-causing genes (BMPR2, ACVRL1, ENG, SMAD9, CAV1, KCNK3, CBLN2) were screened in 49 CTEPH patients [26820968]. ERBB4 was elevated in disease groups, allowing 18 GEO CTEPH patients to be stratified into high and low ERBB4 expression groups [39411231], and PRKCA was proposed as an hsa-miR-3148 target in cancer/glioma/ErbB signalling as a possible key CTEPH mechanism [28904974]. GTP-bound Rac1, alongside Rap1, RhoA, RalA and Ras, was measured in platelets of CTEPH, PAH and non-PH patients to test for a prothrombotic condition [25169936, 36984870]. The renin-angiotensin system drove migration of CTEPH PASMCs via ERK1/2 [29122755].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Organelle biogenesis and maintenance",
+   "title": "Organelle biogenesis and maintenance",
+   "pmids": "27124368; 32110389; 32699607; 33083107; 39192976; 40588471; 41072776; 41811700; 41827036",
+   "genes": "TFAM; PAFAH1B1; PPARGC1A; NOTCH1; ESRRA; MEF2D; MAPRE1; PPARA",
+   "n_targets": "8",
+   "summary": "Within the theme of organelle biogenesis and maintenance, the material centres on mitochondrial biogenesis regulators in CTEPH: the tetrameric form of pyruvate kinase muscle isoform 2 (PKM2) was examined as a regulator of pulmonary artery endothelial cell mitochondrial metabolism acting through PGC-1alpha (PPARGC1A) and mitochondrial transcription factor A (mtTFA/TFAM), thereby influencing arterial intimal remodeling, with lactic acid also implicated [41811700]. Related metabolic regulation is suggested by PPARA, whose agonists reduce TAFIalpha, a contributor to thrombus formation, vascular remodeling and inflammation in CTEPH [40588471], and by implication of the PPAR pathway and CD36 in insulin resistance and fatty-acid metabolism relevant to CTEPH pathogenesis [32110389]. Other listed genes are reported as expression changes or associations rather than defined organelle mechanisms: PAFAH1B1 is upregulated in CTEPH vascular samples [27124368, 33083107]; NOTCH1 expression correlates positively with pulmonary artery wedge pressure in CTEPH [41072776]; ESRRA-regulated genes are upregulated in CD16+ monocytes [39192976]; MEF2D is linked to miR-665-driven smooth muscle cell proliferation and migration [32699607]; and MAPRE1, with PPP1CA, discriminates CTEPH from FM-PH [41827036].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Programmed Cell Death",
+   "title": "Programmed Cell Death",
+   "pmids": "25188497; 28536427; 30290671; 30603858; 34736457; 35732465; 36314346; 36440052; 37502145; 38116660; 38333700; 38451963; 39192976; 39730379; 40567587; 41560055; PPR661171",
+   "genes": "IL1B; HMGB1; CD14; STUB1; FASLG; AKT1; GSN; TNFSF10; TP53; BAD; BCL2L1; STAT3",
+   "n_targets": "16",
+   "summary": "The material links CTEPH to apoptosis- and inflammation-related mediators rather than to a single death pathway. Pro-apoptotic signalling is suggested by altered protein levels of FoxO1, Bad and Bcl-2 in a rat CTEPH model [28536427], with increased Bad expression associated with heightened endothelial apoptosis and lung remodelling in rat CTEPH [35732465], while BCL2L1, together with FASN, PLAUR, HMOX1 and RHOB, is proposed to participate in anti-anoikis processes and to serve as a CTEPH diagnostic biomarker [39730379]. Survival signalling is implicated through thrombin-mediated Akt activation in smooth muscle cells [34736457] and a hsa-miR-122-5p–PIK3CG–PI3K/Akt axis in progression from CTED to CTEPH [41560055]. Network analyses place TP53 among the most connected hub proteins, potentially regulated by circ_0007400 as a competing endogenous RNA [36440052], and GSN was defined as a critical interaction module [38333700]. Inflammatory mediators including IL-1β-high macrophages [39192976], IL1B [38451963], HMGB1 [25188497, 36314346] and clonal haematopoiesis [38116660, PPR661171] accompany these changes.",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Protein localization",
+   "title": "Protein localization",
+   "pmids": "28895506; 31929853; 35237384; 36440052; 39550495; 39730379",
+   "genes": "HMOX1; CAT; APP; NOS2; ACOT8",
+   "n_targets": "5",
+   "summary": "The supplied material does not describe protein localization mechanisms directly; it instead links these genes to CTEPH through oxidative stress, nitric oxide signalling and cell-type–specific regulatory networks. HMOX1 expression is significantly higher in CTEPH patients than in controls, and targeted drug analysis with molecular docking identified stannsoporfin as a candidate HMOX1-directed therapy [39730379]. Serum oxidative stress markers, including catalase activity, were assessed for prognostic value in PAH and CTEPH but did not differ between the two groups [31929853], although clinical observational studies report that the Cat gene is associated with oxidative stress–mediated pulmonary vascular disease and is significantly downregulated in PAH and CTEPH [35237384]. APP is proposed to act in a circ_0026692/circ_0021630–miR-20b-5p–APP axis in fibroblasts, smooth muscle cells, endothelial cells and myofibroblasts, and is among the most highly connected nodes in cell-type protein–protein interaction networks [36440052]. For NOS2-related signalling, strategies include riociguat, PDE5 inhibitors, and stabilizing NOS or supplying L-arginine to restore NO production [28895506]. No mechanistic role is given for ACOT8, whose citation concerns endothelin-1–targeted therapy and shared microvasculopathy between CTEPH and iPAH [39550495].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Reproduction",
+   "title": "Reproduction",
+   "pmids": "24526692; 34103026; 41072776; 41300788; PPR661171",
+   "genes": "DIDO1; SOX17; STAG2; TET2; PDPN",
+   "n_targets": "5",
+   "summary": "The material links five genes annotated to this theme with CTEPH, although it describes vascular, haemostatic and haematopoietic observations rather than reproductive processes themselves. Rare variants in SOX17, alongside RASA1, ENG, GDF2, ACVRL1 and RNF213, were found exclusively in CTEPH patients and not in pulmonary embolism patients without CTEPH, and SOX17, known from primary pulmonary hypertension (type 7), is considered a plausible CTEPH candidate [41300788]. In expression profiling, SOX17 and TET2 levels correlated negatively with systolic pulmonary artery pressure in IPAH, with CTEPH showing a distinct gene and miRNA profile in which NOTCH1 correlated with pulmonary artery wedge pressure [41072776]. Clonal haematopoiesis of indeterminate potential mutations are enriched in CTEPH, most commonly affecting DNMT3A, RUN1 and STAG2 [PPR661171]. Podoplanin (PDPN) and other vessel-specific genes were expressed at lower levels in white CTEPH thrombi than in organizing venous or aortic aneurysm thrombi [24526692]. Serum DIDO1 autoantibody levels did not differ between CTEPH patients and healthy donors [34103026].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Sensory Perception",
+   "title": "Sensory Perception",
+   "pmids": "28904974; 33996028; 35958401; 38333700; 39727495; 40422933",
+   "genes": "APOA1; SCN3A; GSN; PRKCA; TTR",
+   "n_targets": "5",
+   "summary": "The material assembled under the Sensory Perception theme does not describe sensory signalling itself in chronic thromboembolic pulmonary hypertension (CTEPH); instead it links the listed genes to plasma biomarkers, transcriptomic markers and network modules. Plasma ApoA-I, together with HDL-C, paraoxonase-1 activity and oxidised dysfunctional oxTrp72-ApoA-I, was compared between CTEPH patients and healthy controls, with ApoA-I judged a more sensitive biomarker than HDL-C and possibly associated with right heart dysfunction [33996028]. Transcriptomic analyses report upregulation of the sodium voltage-gated channel alpha subunit 3 (SCN3A) in CTEPH patients [39727495] and propose SCN3A, alongside LINC00472, PIK3R6 and TCL6, as potential gene markers, in analyses enriched for chemokine signalling, metabolic pathways, arachidonic acid metabolism and MAPK signalling [35958401]. Network analysis identified gelsolin (GSN), with HPSE and SPARC, as a significant interaction module potentially relevant to CTEPH pathogenesis [38333700]. A miRNA-target analysis suggested hsa-miR-3148–PRKCA acting through cancer/glioma/ErbB signalling as a possible key mechanism [28904974], while TTR appears only indirectly, as prealbumin among nutritional markers proposed for prognostic evaluation [40422933].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Signal Transduction",
+   "title": "Signal Transduction",
+   "pmids": "11463608; 24728306; 26667361; 26927848; 30594174; 30655285; 32397294; 32741891; 33947407; 35572511; 35685949; 37063122; 37761997; 39274190; 39550495; 39823269; 41262940; 41300788; 42017234",
+   "genes": "EDN1; VWF; CXCL10; PIN1; CXCL13; TNF; CCR6; CCL2; CXCL9; NOS3; BMPR2; HGF",
+   "n_targets": "173",
+   "summary": "Signal transduction via vasoactive, chemokine and growth-factor receptor pathways is repeatedly implicated in CTEPH. Endothelin-1 signalling, studied together with TGF-β, is proposed to drive microvasculopathy and vascular remodelling, and circulating ET-1 was measured before and after pulmonary endarterectomy, although preclinical evidence for ET-1 receptor antagonism in CTEPH remains limited [39550495, 39274190]. Chemokine signalling is prominent: CXCL10 is elevated and falls after balloon pulmonary angioplasty [35685949], and the CXCL10/CXCR3 axis links haemodynamic stress to remodelling through PASMC hyperproliferation and macrophage-driven inflammation [42017234]; CXCL13 is overexpressed in vascular lesions [26927848, 33947407], CXCL9 may recruit cytotoxic lymphocytes, NK cells and macrophages and predict prognosis [33947407, 37761997], CCR6+ Th17-associated T cells are increased [35572511], and TNF and CCL2 correlate with tissue factor and remodelling [32741891, 26667361, 11463608]. Endothelial signalling is altered, with decreased NOS3 alongside increased HIF-1α [39823269, 37063122], elevated VWF/FVIII unexplained by VWF mutations [30655285, 41300788], raised serum HGF [30594174], Pin1 elevation in men [41262940], and rare BMPR2 variants [24728306, 32397294].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Transport of small molecules",
+   "title": "Transport of small molecules",
+   "pmids": "26363916; 26667361; 30942132; 33122779; 33263045; 33316641; 33996028; 34957234; 39730379; 40248873; 40941614; 41515551; 42346503; 9716143",
+   "genes": "TF; APOA1; ALB; ANO1; HMOX1; AVP; LCN2; TRPC6; TRPC1; RYR2; SLC2A3; LPA",
+   "n_targets": "23",
+   "summary": "Within the theme of transport of small molecules, the material links CTEPH to altered coagulation initiation, lipid transport, carrier proteins and ion handling. Monocyte tissue factor antigen and mRNA are increased in CTEPH, with plasma TF reduced and TFPI raised, suggesting extrinsic-pathway activation contributes to thrombosis and pulmonary vascular remodelling [26667361, 30942132]. Lipid-transport markers are also affected: ApoA-I (including oxidised oxTrp72-ApoA-I) is a more sensitive biomarker than HDL-C and may reflect right heart dysfunction [33996028], while Lp(a) encoded by LPA is significantly higher in CTEPH than in PPH or controls [9716143]. Serum albumin inversely correlates with length of stay and predicts prolonged hospitalisation and mortality [40941614, 41515551], and copeptin (AVP-derived) is altered in CTEPH and falls after therapy [33263045, 26363916]; NGAL/LCN2 elevation associates with poor prognosis [33122779]. Ion- and solute-transport genes implicated include ANO1 polymorphisms and methylation with serum chloride [42346503], RYR2 nanostructure with unchanged TRPC1/TRPC6 in right ventricle [40248873], SLC2A3 [33316641, 34957234] and HMOX1 [39730379].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  },
+  {
+   "kind": "mechanism",
+   "key": "Vesicle-mediated transport",
+   "title": "Vesicle-mediated transport",
+   "pmids": "25188497; 26363916; 26667361; 28682884; 29069014; 30942132; 33122779; 33263045; 33996028; 35053115; 35572511; 36314346; 36890726; 37761997; 38333700; 40941614; 41300788; 41515551",
+   "genes": "CD4; TF; APOA1; ALB; HMGB1; SPARC; HP; EGF; EGFR; CD163; F8; AVP",
+   "n_targets": "28",
+   "summary": "The material frames CTEPH largely through secreted and circulating mediators rather than intracellular trafficking per se. Procoagulant secretion is prominent: monocyte TF antigen and mRNA are increased while plasma TF is lower and TFPI higher, implicating the extrinsic pathway [26667361, 30942132], and FVIII with vWF:Ag are elevated, suggesting endothelial activation [36890726, 41300788]. Released alarmin and matrix proteins are also altered, with raised serum HMGB1 [25188497, 36314346] and higher plasma SPARC than in IPAH, PTE or controls [38333700]. Growth-factor signalling shows increased systemic EGF with reduced serum EGFR [35053115], and an ErbB-linked circRNA–miR-940–CRKL axis has been proposed [28682884]. Plasma and immune markers carry prognostic weight: ApoA-I relates to right heart dysfunction [33996028], albumin predicts hospitalisation and mortality [40941614, 41515551], haptoglobin is higher than in PAH [29069014], soluble CD163 predicts poor outcome [33122779], CCR6+ CD4+ T cells are expanded [35572511], and copeptin falls after therapy [33263045, 26363916].",
+   "grounded": "True",
+   "problems": "",
+   "tally": ""
+  }
+ ],
+ "changes": {
+  "current": "2026-10-16",
+  "current_release": "26.09",
+  "previous": null,
+  "previous_release": null,
+  "counts": {}
+ },
+ "caveats": [
+  "Relations to CTEPH are evidence of association (clinical studies, ontology, shared genetic signal), not of causation. Many classic risk factors were found against non-thromboembolic PH controls; against PE survivors most were not enriched (Dodson 2022, PMID 35000431).",
+  "Colocalisation here is eCAVIAR on PICS fine-mapping (CLPP); a trait sharing only the ABO locus mostly reflects the pleiotropy of ABO, so single-locus relations are weaker than multi-locus ones.",
+  "Locus-to-gene (L2G) scores are predictions of the causal gene, not proof.",
+  "Curated gene evidence comes from curated resources (ClinGen, PanelApp, Orphanet, ClinVar, UniProt, Gene2Phenotype, gene burden) for the condition or its descendants in the ontology; it is mostly rare-variant, Mendelian evidence.",
+  "The literature studies were screened and extracted by a language model from PubMed abstracts and open-access Methods sections; every gene, variant, number and quote was checked against the source text, and items that failed were dropped. Studies behind paywalls contribute their abstract only.",
+  "Gene themes of the CTEPH literature are an editorial grouping; \"associated in two or more studies\" counts studies, not independent samples.",
+  "Generated summaries are syntheses of the listed source records; they cite only those records, but they are not a systematic review.",
+  "Text-mined target links can map an abbreviation to the wrong gene; the matched words are listed in the workbook."
+ ]
+}
