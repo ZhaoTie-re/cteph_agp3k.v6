@@ -1,0 +1,46 @@
+{
+  "n_cohorts": 3,
+  "n_loci": 16,
+  "n_loci_by_class": {
+    "SG": 15,
+    "GW": 1
+  },
+  "loci_in_order": [
+    "FTO",
+    "ARL13B",
+    "HS3ST3A1",
+    "LINC01146",
+    "GALNTL6",
+    "ARHGEF26-AS1",
+    "HLA-DQA1",
+    "INPP5D",
+    "MFSD11",
+    "CDH4",
+    "SLC44A2",
+    "PHF20L1",
+    "ABI3BP",
+    "ALPI",
+    "OR13C8",
+    "ADARB2"
+  ],
+  "n_variants": 168,
+  "roles": {
+    "CS member": 149,
+    "Lead": 16,
+    "Alt lead": 3
+  },
+  "alt_leads": [
+    "chr17:76738241:G:A",
+    "chr19:10631611:C:T",
+    "chr3:100830861:G:A"
+  ],
+  "n_sel_rows": 57,
+  "n_pairs": 48,
+  "n_pairs_with_peak": 48,
+  "pairs_without_peak": [],
+  "n_cs_rows": 252,
+  "n_cs_variants": 159,
+  "n_credible_sets": 17,
+  "n_peaks_with_cs": 17,
+  "n_peaks_lead_in_a_set": 17
+}

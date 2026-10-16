@@ -1,0 +1,148 @@
+{
+  "all_passed": true,
+  "built": "2026-10-05T20:53:52",
+  "p_value_source": "no_spa",
+  "upstream_p_value_column": "p.value.NA",
+  "cohorts": [
+    "narrow_mainland",
+    "intermediate_mainland",
+    "full_mainland"
+  ],
+  "af_cohort": "full_mainland",
+  "selection": {
+    "n_cohorts": 3,
+    "n_loci": 16,
+    "n_loci_by_class": {
+      "SG": 15,
+      "GW": 1
+    },
+    "loci_in_order": [
+      "FTO",
+      "ARL13B",
+      "HS3ST3A1",
+      "LINC01146",
+      "GALNTL6",
+      "ARHGEF26-AS1",
+      "HLA-DQA1",
+      "INPP5D",
+      "MFSD11",
+      "CDH4",
+      "SLC44A2",
+      "PHF20L1",
+      "ABI3BP",
+      "ALPI",
+      "OR13C8",
+      "ADARB2"
+    ],
+    "n_variants": 168,
+    "roles": {
+      "CS member": 149,
+      "Lead": 16,
+      "Alt lead": 3
+    },
+    "alt_leads": [
+      "chr17:76738241:G:A",
+      "chr19:10631611:C:T",
+      "chr3:100830861:G:A"
+    ],
+    "n_sel_rows": 57,
+    "n_pairs": 48,
+    "n_pairs_with_peak": 48,
+    "pairs_without_peak": [],
+    "n_cs_rows": 252,
+    "n_cs_variants": 159,
+    "n_credible_sets": 17,
+    "n_peaks_with_cs": 17,
+    "n_peaks_lead_in_a_set": 17
+  },
+  "credible_sets": {
+    "n_fits": 48,
+    "n_pairs_without_peak": 0,
+    "fits_with_set": 17,
+    "fits_null": 2,
+    "fits_impure": 29,
+    "fits_impure_single_effect": 20,
+    "fits_impure_multi_effect": 9,
+    "fits_null_list": [
+      "intermediate_mainland:sg018_10_1747167",
+      "narrow_mainland:sg019_10_1747167"
+    ],
+    "dropped_single_sets_containing_lead": 20,
+    "n_credible_sets": 17,
+    "status_counts": {
+      "in_cs": 252,
+      "no_cs_impure": 241,
+      "below_cut": 9,
+      "no_cs_null": 2
+    },
+    "max_abs_dpip": 4.9960036108132e-16
+  },
+  "table": {
+    "n_variants": 168,
+    "n_rows": 504,
+    "n_lead_rows_checked": 57,
+    "n_cs_rows_checked": 252,
+    "r_tommo_agp3k": 0.9991,
+    "r_gnomad_eas_1kg_eas": 0.9991,
+    "coverage": {
+      "snpeff": 168,
+      "tommo": 167,
+      "kg_eas": 168,
+      "kg_jpt": 168,
+      "gnomad_eas": 168,
+      "gnomad_nfe": 168
+    },
+    "tommo_absent": [
+      "chr6:32628445:T:A"
+    ],
+    "tommo_normalised": [
+      "chr17:76740603:C:CTT",
+      "chr19:10637397:C:G",
+      "chr2:233067853:T:C"
+    ],
+    "tommo_filtered": [
+      "chr2:233066247:C:T (HighlyMultiAllelic)"
+    ],
+    "kg_absent": [],
+    "lof_nmd": 0,
+    "tommo_an_median": 122636,
+    "opentargets": {
+      "in_index": 97,
+      "with_gwas": 52,
+      "with_thrombosis_gwas": 9,
+      "with_molqtl": 79,
+      "with_trans_molqtl": 9,
+      "with_e2g": 26,
+      "with_clinvar": 1
+    },
+    "rsid_resolution": {
+      "dbsnp": "hg38_avsnp151.txt",
+      "variants": {
+        "chr19:10670113:A:G": {
+          "candidates": [
+            "rs2067827755",
+            "rs2360943"
+          ],
+          "rsID": "rs2360943",
+          "rule": "dbSNP allele",
+          "dbsnp_records": [
+            "10670113-10670113 A>G rs2360943",
+            "10670113-10670113 A>T rs2360943"
+          ]
+        },
+        "chr10:1747167:CGTG:C": {
+          "candidates": [
+            "rs1347066655",
+            "rs1564211184"
+          ],
+          "rsID": "rs1564211184",
+          "rule": "dbSNP exclusion",
+          "dbsnp_records": [
+            "1747167-1747167 C>T rs1347066655"
+          ]
+        }
+      },
+      "unresolved": []
+    }
+  }
+}

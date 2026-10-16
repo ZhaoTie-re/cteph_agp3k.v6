@@ -1,0 +1,22 @@
+{
+  "n_fits": 48,
+  "n_pairs_without_peak": 0,
+  "fits_with_set": 17,
+  "fits_null": 2,
+  "fits_impure": 29,
+  "fits_impure_single_effect": 20,
+  "fits_impure_multi_effect": 9,
+  "fits_null_list": [
+    "intermediate_mainland:sg018_10_1747167",
+    "narrow_mainland:sg019_10_1747167"
+  ],
+  "dropped_single_sets_containing_lead": 20,
+  "n_credible_sets": 17,
+  "status_counts": {
+    "in_cs": 252,
+    "no_cs_impure": 241,
+    "below_cut": 9,
+    "no_cs_null": 2
+  },
+  "max_abs_dpip": 4.9960036108132e-16
+}

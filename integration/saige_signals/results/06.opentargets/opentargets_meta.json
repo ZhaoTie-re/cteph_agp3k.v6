@@ -1,0 +1,55 @@
+{
+  "queried": true,
+  "api": "https://api.platform.opentargets.org/api/v4/graphql",
+  "focus_traits": "thromb|embol|venous|pulmonary hypertension|pulmonary arter|coagul|fibrin|haemosta|hemosta",
+  "top_n": 3,
+  "cis_window": 1000000,
+  "trans_distance": 5000000,
+  "queried_at": "2026-10-05T15:45:05",
+  "api_version": "26.9.0",
+  "data_version": "26.09",
+  "n_variants": 168,
+  "n_in_index": 97,
+  "n_with_gwas": 52,
+  "n_with_focus_gwas": 9,
+  "n_with_qtl": 79,
+  "n_with_e2g": 26,
+  "n_with_clinvar": 1,
+  "n_records": 5847,
+  "stat_sources": {
+    "p_source": {
+      "variant": 2982,
+      "lead": 2821
+    },
+    "beta_source": {
+      "variant": 3770,
+      "lead": 1776,
+      "missing": 257
+    }
+  },
+  "study_annotation": {
+    "GWAS": {
+      "studies": 310,
+      "with_cohorts": 280,
+      "with_population": 310,
+      "records_without_cohorts": 379,
+      "records_without_population": 0
+    },
+    "molQTL": {
+      "studies": 244,
+      "with_cohorts": 0,
+      "with_population": 2,
+      "records_without_cohorts": 1638,
+      "records_without_population": 1619
+    }
+  },
+  "qtl_class": {
+    "cis": 1629,
+    "trans": 9
+  },
+  "qtl_class_vs_isTransQtl": {
+    "cis / false": 1629,
+    "trans / true": 9
+  },
+  "qtl_contradictions": 0
+}

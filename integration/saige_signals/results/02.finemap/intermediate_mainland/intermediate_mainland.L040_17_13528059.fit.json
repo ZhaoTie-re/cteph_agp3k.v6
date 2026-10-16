@@ -1,0 +1,23 @@
+{
+  "cohort": "intermediate_mainland",
+  "locus_id": "sg025_17_13528059",
+  "lead_id": "chr17:13528059:G:A",
+  "n_variants": 1471,
+  "n_gwas": 2508,
+  "L": 10,
+  "coverage": 0.95,
+  "min_abs_corr": 0.5,
+  "n_table_outside": 0,
+  "niter": 2,
+  "converged": true,
+  "V": [0.00768495824197483, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  "sigma2": 1,
+  "elbo_last": -3555.24584670692,
+  "n_effects": 1,
+  "n_sets_pre": 1,
+  "n_sets_pure": 1,
+  "n_credible_sets_stored": 1,
+  "max_abs_dpip": 5.55111512312578e-17,
+  "susieR_version": "0.14.2",
+  "purity": "exact (n_purity = Inf, all pairs)"
+}
