@@ -1,0 +1,8 @@
+{
+  "variants": 34,
+  "samples_swapped": 89,
+  "samples_untouched": 2388,
+  "genotypes_changed": 68,
+  "share_changed": 0.02247191011235955,
+  "untouched_identical": true
+}

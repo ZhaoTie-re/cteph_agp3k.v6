@@ -1,0 +1,10 @@
+{
+  "cohort": "full_mainland",
+  "variance_ratio_published": 0.917915969429341,
+  "variance_ratio_refit": 0.917916166694329,
+  "variance_ratio_rel_diff": 2.1490527954724417e-07,
+  "variants": 2108,
+  "z_max_rel_diff": 0.00018389499351586686,
+  "z_median_rel_diff": 0.0,
+  "pass": true
+}

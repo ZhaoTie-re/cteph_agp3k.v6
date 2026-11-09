@@ -1,0 +1,74 @@
+{
+  "recall_vs_original:DNBSeq-T7 30x:concordance": [
+    1.0,
+    1.0
+  ],
+  "recall_vs_original:NovaSeq 30x:concordance": [
+    1.0,
+    1.0
+  ],
+  "recall_vs_original:DNBSeq-G400RS 30x:concordance": [
+    1.0,
+    1.0
+  ],
+  "replicate_vs_baseline:DNBSeq-T7 30x:concordance": [
+    0.9999581463621716,
+    0.999988040423369
+  ],
+  "replicate_vs_baseline:NovaSeq 30x:concordance": [
+    0.9998091020158828,
+    0.999875816743724
+  ],
+  "replicate_vs_baseline:DNBSeq-G400RS 30x:concordance": [
+    0.9997074098456586,
+    0.999804889945735
+  ],
+  "recall_vs_original:DNBSeq-T7 30x:het_retained": [
+    0.9999939977071242,
+    0.9999939977071242
+  ],
+  "recall_vs_original:NovaSeq 30x:het_retained": [
+    1.0,
+    1.0
+  ],
+  "recall_vs_original:DNBSeq-G400RS 30x:het_retained": [
+    1.0,
+    1.0
+  ],
+  "replicate_vs_baseline:DNBSeq-T7 30x:het_retained": [
+    0.99347550764392,
+    0.9939857025383696
+  ],
+  "replicate_vs_baseline:NovaSeq 30x:het_retained": [
+    0.9744939876017626,
+    0.9757636866084098
+  ],
+  "replicate_vs_baseline:DNBSeq-G400RS 30x:het_retained": [
+    0.970319208512227,
+    0.9721859249579988
+  ],
+  "recall_vs_original:DNBSeq-T7 30x:callrate_test": [
+    0.9828580451972114,
+    0.9828580451972114
+  ],
+  "recall_vs_original:NovaSeq 30x:callrate_test": [
+    0.9975,
+    0.9975
+  ],
+  "recall_vs_original:DNBSeq-G400RS 30x:callrate_test": [
+    0.9994498660543436,
+    0.9994498660543436
+  ],
+  "replicate_vs_baseline:DNBSeq-T7 30x:callrate_test": [
+    0.9785857156225144,
+    0.9787523978851822
+  ],
+  "replicate_vs_baseline:NovaSeq 30x:callrate_test": [
+    0.9772201492537314,
+    0.9780876865671642
+  ],
+  "replicate_vs_baseline:DNBSeq-G400RS 30x:callrate_test": [
+    0.9810323383084576,
+    0.9814987562189056
+  ]
+}

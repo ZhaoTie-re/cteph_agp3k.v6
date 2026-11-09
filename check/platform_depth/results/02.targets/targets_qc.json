@@ -1,0 +1,44 @@
+{
+  "gwas_signal_variants": 168,
+  "genes": [
+    "JAK2",
+    "OSBP",
+    "RPH3A",
+    "STBD1"
+  ],
+  "gene_tested_variants_distinct": 36,
+  "gene_rows": [
+    "JAK2/low_moderate_high=11",
+    "JAK2/moderate_high=7",
+    "OSBP/low_moderate_high=6",
+    "OSBP/moderate_high=2",
+    "RPH3A/low_moderate_high=11",
+    "RPH3A/moderate_high=7",
+    "STBD1/low_moderate_high=8",
+    "STBD1/moderate_high=3"
+  ],
+  "hc_intervals": 23,
+  "hc_bp": 930000,
+  "fixed_sites": 2156,
+  "fixed_by_kind": {
+    "gwas_context": 1952,
+    "gwas_signal": 168,
+    "gene": 36
+  },
+  "null_snps": 20000,
+  "null_by_bin": [
+    "0.01-0.02/snv=3000",
+    "0.01-0.02/indel=1000",
+    "0.02-0.05/snv=3000",
+    "0.02-0.05/indel=1000",
+    "0.05-0.1/snv=3000",
+    "0.05-0.1/indel=1000",
+    "0.1-0.2/snv=3000",
+    "0.1-0.2/indel=1000",
+    "0.2-0.5/snv=3000",
+    "0.2-0.5/indel=1000"
+  ],
+  "flank": 10000,
+  "shard": 5000,
+  "seed": 20261030
+}

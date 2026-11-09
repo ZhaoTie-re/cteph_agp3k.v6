@@ -1,0 +1,72 @@
+{
+  "gate": "G6",
+  "rows": [
+    {
+      "comparison": "origgvcf_vs_original",
+      "role": "deep",
+      "arm": "origgvcf",
+      "samples": 137,
+      "both_called": 288831,
+      "concordance": 1.0,
+      "nonref_concordance": 1.0,
+      "callrate_ref": 0.9833519446562806,
+      "callrate_test": 0.983443866434252
+    },
+    {
+      "comparison": "origgvcf_vs_original",
+      "role": "fidelity",
+      "arm": "origgvcf",
+      "samples": 20,
+      "both_called": 41466,
+      "concordance": 1.0,
+      "nonref_concordance": 1.0,
+      "callrate_ref": 0.9671875,
+      "callrate_test": 0.9670242537313432
+    },
+    {
+      "comparison": "recall_vs_origgvcf",
+      "role": "deep",
+      "arm": "baseline",
+      "samples": 137,
+      "both_called": 288864,
+      "concordance": 1.0,
+      "nonref_concordance": 1.0,
+      "callrate_ref": 0.983443866434252,
+      "callrate_test": 0.983443866434252
+    },
+    {
+      "comparison": "recall_vs_origgvcf",
+      "role": "fidelity",
+      "arm": "baseline",
+      "samples": 20,
+      "both_called": 41464,
+      "concordance": 1.0,
+      "nonref_concordance": 1.0,
+      "callrate_ref": 0.9670242537313432,
+      "callrate_test": 0.9669776119402984
+    },
+    {
+      "comparison": "recall_vs_original",
+      "role": "deep",
+      "arm": "baseline",
+      "samples": 408,
+      "both_called": 862678,
+      "concordance": 1.0,
+      "nonref_concordance": 1.0,
+      "callrate_ref": 0.9862120921129646,
+      "callrate_test": 0.9862383852794848
+    },
+    {
+      "comparison": "recall_vs_original",
+      "role": "fidelity",
+      "arm": "baseline",
+      "samples": 20,
+      "both_called": 41464,
+      "concordance": 1.0,
+      "nonref_concordance": 1.0,
+      "callrate_ref": 0.9671875,
+      "callrate_test": 0.9669776119402984
+    }
+  ],
+  "pass": true
+}

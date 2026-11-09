@@ -1,0 +1,16 @@
+{
+  "target_depth": 16.9897,
+  "downsampled_cases": 408,
+  "by_platform": {
+    "DNBSeq-T7 30x": 319,
+    "NovaSeq 30x": 50,
+    "DNBSeq-G400RS 30x": 39
+  },
+  "platform_median_depth": {
+    "HiSeqX 15x": 16.9897,
+    "DNBSeq-T7 30x": 17.6007,
+    "NovaSeq 30x": 27.1488,
+    "DNBSeq-G400RS 30x": 34.3789,
+    "DNBseq-G400RS 15x": 13.7651
+  }
+}

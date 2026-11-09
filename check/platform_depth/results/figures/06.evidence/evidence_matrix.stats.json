@@ -1,0 +1,11 @@
+{
+  "signals": 22,
+  "cells": {
+    "consistent": 301,
+    "not applicable": 117,
+    "flag": 5,
+    "not checkable": 4,
+    "reported": 9,
+    "not testable": 6
+  }
+}

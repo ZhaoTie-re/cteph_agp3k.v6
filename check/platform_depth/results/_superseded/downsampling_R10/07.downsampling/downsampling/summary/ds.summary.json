@@ -1,0 +1,17 @@
+{
+  "gwas_variants": 168,
+  "dqb1_57v_case_copies": 90.0,
+  "dqb1_57v_deep_copies": 16.0,
+  "replicates": [
+    "r01",
+    "r02",
+    "r03",
+    "r04",
+    "r05",
+    "r06",
+    "r07",
+    "r08",
+    "r09",
+    "r10"
+  ]
+}

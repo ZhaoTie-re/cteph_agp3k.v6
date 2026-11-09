@@ -1,0 +1,9 @@
+{
+  "association_rows": 16,
+  "driver_rows": 5,
+  "signals_by_verdict": {
+    "consistent on arrays": 16,
+    "carriers counted": 3,
+    "not checkable": 2
+  }
+}

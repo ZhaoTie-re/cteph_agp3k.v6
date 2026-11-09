@@ -1,0 +1,8 @@
+{
+  "gate": "G8",
+  "genome_arms": 12,
+  "ratio_median": 0.9989592514811815,
+  "ratio_min": 0.9924286214972468,
+  "ratio_max": 1.007509254286451,
+  "pass": true
+}

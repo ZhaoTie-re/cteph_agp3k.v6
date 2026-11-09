@@ -1,0 +1,66 @@
+{
+  "FTO": {
+    "cases": 0.2883,
+    "controls": 0.2042
+  },
+  "ARL13B": {
+    "cases": 0.035,
+    "controls": 0.0122
+  },
+  "HS3ST3A1": {
+    "cases": 0.0831,
+    "controls": 0.04
+  },
+  "LINC01146": {
+    "cases": 0.6898,
+    "controls": 0.5918
+  },
+  "GALNTL6": {
+    "cases": 0.0373,
+    "controls": 0.0132
+  },
+  "ARHGEF26-AS1": {
+    "cases": 0.0425,
+    "controls": 0.0145
+  },
+  "HLA-DQA1": {
+    "cases": 0.2847,
+    "controls": 0.3847
+  },
+  "INPP5D": {
+    "cases": 0.0372,
+    "controls": 0.013
+  },
+  "MFSD11": {
+    "cases": 0.0602,
+    "controls": 0.0249
+  },
+  "CDH4": {
+    "cases": 0.0581,
+    "controls": 0.0231
+  },
+  "SLC44A2": {
+    "cases": 0.7258,
+    "controls": 0.6444
+  },
+  "PHF20L1": {
+    "cases": 0.0428,
+    "controls": 0.019
+  },
+  "ABI3BP": {
+    "cases": 0.1505,
+    "controls": 0.0876
+  },
+  "ALPI": {
+    "cases": 0.8831,
+    "controls": 0.9315
+  },
+  "OR13C8": {
+    "cases": 0.2543,
+    "controls": 0.1825
+  },
+  "ADARB2": {
+    "cases": 0.0061,
+    "controls": 0.0387
+  }
+}

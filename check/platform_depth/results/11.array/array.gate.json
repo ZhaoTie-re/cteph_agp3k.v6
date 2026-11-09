@@ -1,0 +1,42 @@
+{
+  "gate": "G10",
+  "what": "the array re-run in full mainland reproduces check/array_crosscheck's tables",
+  "rule": "every table: same rows, columns and text; numbers within 1e-6 relative",
+  "tables": {
+    "04.compare/signals.tsv": {
+      "pass": true,
+      "max_rel_diff": 0.0,
+      "column": ""
+    },
+    "04.compare/signals.direct_on_array.tsv": {
+      "pass": true,
+      "max_rel_diff": 0.0,
+      "column": ""
+    },
+    "05.rare_direct/rare_direct.tsv": {
+      "pass": true,
+      "max_rel_diff": 0.0,
+      "column": ""
+    },
+    "06.imputed/leads.tsv": {
+      "pass": true,
+      "max_rel_diff": 0.0,
+      "column": ""
+    },
+    "06.imputed/drivers.tsv": {
+      "pass": true,
+      "max_rel_diff": 0.0,
+      "column": ""
+    },
+    "06.imputed/recovery_by_group.tsv": {
+      "pass": true,
+      "max_rel_diff": 0.0,
+      "column": ""
+    },
+    "04.compare/summary.json": {
+      "pass": true,
+      "max_rel_diff": 1.295162749369686e-07
+    }
+  },
+  "pass": true
+}

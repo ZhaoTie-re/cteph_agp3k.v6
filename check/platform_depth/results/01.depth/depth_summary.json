@@ -1,0 +1,23 @@
+{
+  "target_depth": 16.9897,
+  "target_source": "median probe depth, duplicates excluded, full-mainland HiSeqX 15x controls (n = 2662)",
+  "deep_cases": 89,
+  "fraction_median": 0.594,
+  "fraction_by_platform": {
+    "DNBSeq-G400RS 30x": [
+      0.3901,
+      0.4942,
+      0.5789
+    ],
+    "NovaSeq 30x": [
+      0.5414,
+      0.6258,
+      0.6795
+    ]
+  },
+  "local_ratio_deep_after_over_controls": [
+    0.973,
+    1.001,
+    1.022
+  ]
+}

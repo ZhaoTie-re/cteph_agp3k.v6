@@ -1,0 +1,8 @@
+{
+  "association_rows": 16,
+  "driver_rows": 0,
+  "signals_by_verdict": {
+    "consistent on arrays": 16,
+    "not checkable": 1
+  }
+}

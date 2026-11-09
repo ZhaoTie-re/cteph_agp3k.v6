@@ -1,0 +1,50 @@
+{
+  "tool": "HIBAG 1.42.0, published Asian two-field model (hg38, matched by position)",
+  "run": {
+    "hibag_version": "1.42.0",
+    "model_snps": "348",
+    "model_snps_on_array": "255",
+    "model_alleles": "19",
+    "array_snps": "5986",
+    "samples": "1683",
+    "xmhc_snps_both_groups": "6116"
+  },
+  "model_md5": "69339a31653a48b8abb93c934ba1e4cc",
+  "n_cases": 299,
+  "n_controls": 1383,
+  "cases": {
+    "allele_concordance": 0.9615384615384616,
+    "v57_best_agreement": 1.0,
+    "v57_r2": 0.9993957973511232,
+    "v57_freq_typed": 0.10367892976588629,
+    "v57_freq_hibag": 0.10439779021378139,
+    "posterior_median": 0.958736173589383
+  },
+  "controls": {
+    "allele_concordance": 0.9475777295733911,
+    "v57_best_agreement": 0.9971077368040492,
+    "v57_r2": 0.9888167535083547,
+    "v57_freq_typed": 0.1749819233550253,
+    "v57_freq_hibag": 0.17548105810344916,
+    "posterior_median": 0.969547483313878
+  },
+  "residual": {
+    "mean_cases": -0.0014377208957902059,
+    "mean_controls": -0.0009982694968477335,
+    "welch_t": -0.2667686027199737,
+    "p": 0.7896804507080617
+  },
+  "assoc_typed": {
+    "or": 0.5811126117032369,
+    "l95": 0.4320785175027258,
+    "u95": 0.7815520878758492,
+    "p": 0.000330428363340876
+  },
+  "assoc_hibag": {
+    "or": 0.5776941589251852,
+    "l95": 0.42876426501948744,
+    "u95": 0.7783543743812441,
+    "p": 0.0003093911315184148
+  },
+  "unmapped_alleles": []
+}

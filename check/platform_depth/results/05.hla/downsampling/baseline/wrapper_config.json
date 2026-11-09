@@ -1,0 +1,9 @@
+{
+  "ROOT": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2",
+  "RESULTS": "side",
+  "D_INPUTS": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/check/platform_depth/work/5d/35ff8ed0db6222e9edc181d2620b91/inputs",
+  "D_CALLS": "side/01.calls",
+  "D_EVIDENCE": "side/02.evidence",
+  "D_EXPORTS": "side/05.exports",
+  "D_ASSOC": "side/06.assoc_inputs"
+}

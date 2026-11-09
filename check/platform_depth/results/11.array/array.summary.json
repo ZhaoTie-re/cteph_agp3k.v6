@@ -1,0 +1,126 @@
+{
+  "imputation": "Minimac4 v4.1.4 (VCF header of the imputed set, 2025-10-28) against the AGP3K whole-genome reference panel, which holds the controls' own genomes: only the cases' imputed genotypes are independent of WGS",
+  "gate_G10": {
+    "gate": "G10",
+    "what": "the array re-run in full mainland reproduces check/array_crosscheck's tables",
+    "rule": "every table: same rows, columns and text; numbers within 1e-6 relative",
+    "tables": {
+      "04.compare/signals.tsv": {
+        "pass": true,
+        "max_rel_diff": 0.0,
+        "column": ""
+      },
+      "04.compare/signals.direct_on_array.tsv": {
+        "pass": true,
+        "max_rel_diff": 0.0,
+        "column": ""
+      },
+      "05.rare_direct/rare_direct.tsv": {
+        "pass": true,
+        "max_rel_diff": 0.0,
+        "column": ""
+      },
+      "06.imputed/leads.tsv": {
+        "pass": true,
+        "max_rel_diff": 0.0,
+        "column": ""
+      },
+      "06.imputed/drivers.tsv": {
+        "pass": true,
+        "max_rel_diff": 0.0,
+        "column": ""
+      },
+      "06.imputed/recovery_by_group.tsv": {
+        "pass": true,
+        "max_rel_diff": 0.0,
+        "column": ""
+      },
+      "04.compare/summary.json": {
+        "pass": true,
+        "max_rel_diff": 1.295162749369686e-07
+      }
+    },
+    "pass": true
+  },
+  "cohorts": {
+    "narrow_mainland": {
+      "people": {
+        "cases": 279,
+        "controls": 1119
+      },
+      "shared_sites": 319308,
+      "qc_sites": 316531,
+      "concordance_cases_T7_vs_ASA24v1": 0.999883,
+      "concordance_controls_HiSeqX_vs_JSA24v1": 0.999836,
+      "lambda_wgs": 1.1199995370629654,
+      "lambda_array": 1.1276252705536287,
+      "r_z_wgs_array": 0.9864414308671129,
+      "slope_z_array_on_wgs": 0.9874916653607692,
+      "abs_dz_gt4": 6,
+      "sites_wgs_p_lt_1e-4": 58,
+      "of_which_array_same_direction_p_lt_0.01": 58,
+      "signals_by_verdict": {
+        "consistent on arrays": 16,
+        "not checkable": 1
+      }
+    },
+    "intermediate_mainland": {
+      "people": {
+        "cases": 289,
+        "controls": 1171
+      },
+      "shared_sites": 319308,
+      "qc_sites": 316745,
+      "concordance_cases_T7_vs_ASA24v1": 0.999882,
+      "concordance_controls_HiSeqX_vs_JSA24v1": 0.999836,
+      "lambda_wgs": 1.123331938417615,
+      "lambda_array": 1.1297944615966122,
+      "r_z_wgs_array": 0.9864271169663116,
+      "slope_z_array_on_wgs": 0.9873675844535713,
+      "abs_dz_gt4": 5,
+      "sites_wgs_p_lt_1e-4": 77,
+      "of_which_array_same_direction_p_lt_0.01": 77,
+      "signals_by_verdict": {
+        "consistent on arrays": 16,
+        "not checkable": 1
+      }
+    },
+    "full_mainland": {
+      "people": {
+        "cases": 299,
+        "controls": 1384
+      },
+      "shared_sites": 319308,
+      "qc_sites": 317703,
+      "concordance_cases_T7_vs_ASA24v1": 0.999882,
+      "concordance_controls_HiSeqX_vs_JSA24v1": 0.999837,
+      "lambda_wgs": 1.1441492963836788,
+      "lambda_array": 1.1434842099399103,
+      "r_z_wgs_array": 0.9864758739160558,
+      "slope_z_array_on_wgs": 0.9875207674348765,
+      "abs_dz_gt4": 5,
+      "sites_wgs_p_lt_1e-4": 67,
+      "of_which_array_same_direction_p_lt_0.01": 67,
+      "signals_by_verdict": {
+        "consistent on arrays": 16,
+        "carriers counted": 3,
+        "not checkable": 2
+      }
+    }
+  },
+  "r2_min": 0.8,
+  "gene_carriers": {
+    "cohort": "full_mainland",
+    "drivers_counted": 5,
+    "case_carriers_wgs": 20,
+    "case_carriers_recovered": 14,
+    "case_carriers_expected": 13.55,
+    "case_noncarriers_imputed_as_carriers": 0,
+    "not_in_imputed_arrays": [
+      "JAK2 p.Val617Phe"
+    ],
+    "expected": "recovery of case carriers of the rare untyped variants within 500 kb of the drivers with as many control carriers",
+    "controls": "in the imputation panel: their recovery carries no information"
+  },
+  "coverage": "each cohort's unrelated DNBSeq-T7 cases and HiSeq X controls with arrays; NovaSeq and DNBSeq-G400RS cases have none"
+}

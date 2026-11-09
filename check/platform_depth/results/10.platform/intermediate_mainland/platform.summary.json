@@ -1,0 +1,8 @@
+{
+  "cohort": "intermediate_mainland",
+  "markers": 993,
+  "null_snps": 20000,
+  "gwas_signals_Q_p_lt_0_05": 48,
+  "hla_markers_Q_p_lt_0_05": 62,
+  "null_share_p_Q_lt_0_05": 0.05245
+}

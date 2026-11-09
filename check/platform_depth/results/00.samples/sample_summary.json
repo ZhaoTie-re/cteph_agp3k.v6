@@ -1,0 +1,19 @@
+{
+  "n_samples": 3101,
+  "n_case": 439,
+  "n_control": 2662,
+  "cram_fallback": 72,
+  "deep_cases": 89,
+  "deep_cases_by_platform": {
+    "NovaSeq 30x": 50,
+    "DNBSeq-G400RS 30x": 39
+  },
+  "deep_cases_in_every_cohort": 1,
+  "deep_cases_by_batch": {
+    "v6": 39,
+    "v5": 25,
+    "v4_or_earlier": 25
+  },
+  "deep_cases_with_original_gvcf": 12,
+  "controls_with_original_gvcf": 507
+}

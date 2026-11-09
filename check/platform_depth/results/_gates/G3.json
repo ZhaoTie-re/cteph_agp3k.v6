@@ -1,0 +1,30 @@
+{
+  "files": {
+    "narrow_mainland/allele_dosage.tsv": {
+      "published": "3b68b6556c0deca25f8703b5a4679718",
+      "reproduced": "3b68b6556c0deca25f8703b5a4679718"
+    },
+    "narrow_mainland/residue_dosage.tsv": {
+      "published": "a05e65385155adebb1c6a456a04a7291",
+      "reproduced": "a05e65385155adebb1c6a456a04a7291"
+    },
+    "intermediate_mainland/allele_dosage.tsv": {
+      "published": "d85b2ae86b0312ab878b9d1c7ef895cd",
+      "reproduced": "d85b2ae86b0312ab878b9d1c7ef895cd"
+    },
+    "intermediate_mainland/residue_dosage.tsv": {
+      "published": "dbc7f000343021a3b1b257ce00339c92",
+      "reproduced": "dbc7f000343021a3b1b257ce00339c92"
+    },
+    "full_mainland/allele_dosage.tsv": {
+      "published": "3dd04de546837074b2a39401f2e262ec",
+      "reproduced": "3dd04de546837074b2a39401f2e262ec"
+    },
+    "full_mainland/residue_dosage.tsv": {
+      "published": "74ec42b1c67bd67c2fc448354522b0c7",
+      "reproduced": "74ec42b1c67bd67c2fc448354522b0c7"
+    }
+  },
+  "mismatches": [],
+  "pass": true
+}

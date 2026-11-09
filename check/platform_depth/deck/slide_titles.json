@@ -1,0 +1,129 @@
+[
+ {
+  "key": "cover"
+ },
+ {
+  "key": "background",
+  "title": "Four Features of Our Data Could Each Create a False Signal"
+ },
+ {
+  "key": "aims",
+  "title": "Four Questions Ask Whether Any Signal Is a Technical Artifact"
+ },
+ {
+  "key": "samples",
+  "title": "Three Nested Cohorts; Every Signal Is Re-Tested in Each"
+ },
+ {
+  "key": "models",
+  "title": "Each Signal Is Re-Tested With Its Main-Analysis Model and Threshold"
+ },
+ {
+  "key": "threat",
+  "title": "Six Possible Sources of Bias, Each With a Prediction and Its Test"
+ },
+ {
+  "key": "workflow",
+  "title": "Fidelity Checks Pass; Four Questions Then Feed One Evidence Matrix"
+ },
+ {
+  "key": "dsDesign",
+  "title": "Q1 · Depth: Down-Sampling Brings 408 Cases to the Controls' Depth"
+ },
+ {
+  "key": "dsEmulation",
+  "title": "Q1 · Depth: Cases Reach the Controls' Depth; Missing Genotypes Rise"
+ },
+ {
+  "key": "dsSignals",
+  "title": "Q1 · Depth: At the Controls' Depth the Largest Fall in Median |z| Is 0.22"
+ },
+ {
+  "key": "platDesign",
+  "title": "Q2 · Platform: Each Case Platform Is Tested Alone and Left Out"
+ },
+ {
+  "key": "looRule",
+  "title": "Q2 · Platform Left Out: A Fall in z Counts Only Beyond Lost Power"
+ },
+ {
+  "key": "looPlat",
+  "title": "Q2 · Platform: Leaving Out DNBSeq-T7 Flags *ADARB2* and *LINC01146*"
+ },
+ {
+  "key": "platRes",
+  "title": "Q2 · Platform: No Common Marker's Platform Estimates Stand Apart"
+ },
+ {
+  "key": "arrayDesign",
+  "title": "Q3 · Technology: The Same People Are Re-Tested on SNP Arrays"
+ },
+ {
+  "key": "arrayMatch",
+  "title": "Q3 · Technology: 15 of 16 Leads Have an Array Marker; *ADARB2* Has None"
+ },
+ {
+  "key": "hlahdMethod",
+  "title": "Q3 · Technology: The HLA-HD Typing Algorithm, From WGS Reads"
+ },
+ {
+  "key": "hibagMethod",
+  "title": "Q3 · Technology: The HIBAG Typing Algorithm, From Array SNPs"
+ },
+ {
+  "key": "hlaCompare",
+  "title": "Q3 · Technology: Two Independent Typings of DQB1 Agree on 57 V"
+ },
+ {
+  "key": "arrayRes",
+  "title": "Q3 · Technology: No GWAS or HLA Signal Is Contradicted on the Arrays"
+ },
+ {
+  "key": "arrayGenes",
+  "title": "Q3 · Technology: Imputation Confirms 14 of 20 Gene-Driver Case Carriers"
+ },
+ {
+  "key": "ctrlDesign",
+  "title": "Q4 · Control Source: Each Source Is Tested Alone and Left Out"
+ },
+ {
+  "key": "looSrc",
+  "title": "Q4 · Control Source: Leaving Out Any Source Flags No Signal"
+ },
+ {
+  "key": "ctrlRes",
+  "title": "Q4 · Control Source: No Common Marker Differs Across the Five Sources"
+ },
+ {
+  "key": "matrix",
+  "title": "Evidence Matrix: 21 Signals, Four Questions, Three Cohorts, Two Flags"
+ },
+ {
+  "key": "adarb2",
+  "title": "*ADARB2*: The Flag Comes From T7 Calls, Which Miss All 32 T7 Carriers"
+ },
+ {
+  "key": "linc",
+  "title": "*LINC01146*: The Flag Comes From 31 G400RS 15x Cases; Genotypes Hold"
+ },
+ {
+  "key": "summary",
+  "title": "19 of 21 Signals Carry No Flag; T7 Calls Missed *ADARB2*'s Carriers"
+ },
+ {
+  "key": "apGates",
+  "title": "Fidelity in Detail: All Ten Pipeline Gates Pass in Every Cohort"
+ },
+ {
+  "key": "apDsGenes",
+  "title": "Q1 · Gene Sets at the Controls' Depth: Only *STBD1* Loses a Case Carrier"
+ },
+ {
+  "key": "apTbl",
+  "title": "The Matrix in Numbers: 19 of 21 Signals Carry No Flag"
+ },
+ {
+  "key": "apHcIds",
+  "title": "*ADARB2* Case Carriers by Sample: No T7 Deletion Is Reconstructed"
+ }
+]

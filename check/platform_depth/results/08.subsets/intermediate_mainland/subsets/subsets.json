@@ -1,0 +1,18 @@
+{
+  "pooled_equals_published": {
+    "pheno_covar.random.tsv": true,
+    "pheno_covar.fixed.tsv": true,
+    "fixed.keep": true
+  },
+  "subsets": [
+    "pooled",
+    "only_t7",
+    "without_t7",
+    "only_novaseq",
+    "without_novaseq",
+    "only_g400rs30",
+    "without_g400rs30",
+    "only_g400rs15",
+    "without_g400rs15"
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "single_markers": {
+    "rows_ours": 2461,
+    "rows_published": 2461,
+    "only_ours": 0,
+    "only_published": 0,
+    "max_rel_diff_or": 0.0,
+    "nan_mismatch_or": 0,
+    "max_rel_diff_p": 0.0,
+    "nan_mismatch_p": 0,
+    "max_rel_diff_p_spa": 0.0,
+    "nan_mismatch_p_spa": 0,
+    "max_rel_diff_beta": 0.0,
+    "nan_mismatch_beta": 0,
+    "max_rel_diff_se": 0.0,
+    "nan_mismatch_se": 0,
+    "max_rel_diff_n_case": 0.0,
+    "nan_mismatch_n_case": 0,
+    "max_rel_diff_n_control": 0.0,
+    "nan_mismatch_n_control": 0,
+    "worst": 0.0
+  },
+  "omnibus": {
+    "rows_ours": 888,
+    "rows_published": 888,
+    "only_ours": 0,
+    "only_published": 0,
+    "max_rel_diff_chisq": 0.0,
+    "nan_mismatch_chisq": 0,
+    "max_rel_diff_p": 0.0,
+    "nan_mismatch_p": 0,
+    "max_rel_diff_df": 0.0,
+    "nan_mismatch_df": 0,
+    "max_rel_diff_cases": 0.0,
+    "nan_mismatch_cases": 0,
+    "max_rel_diff_controls": 0.0,
+    "nan_mismatch_controls": 0,
+    "worst": 0.0
+  },
+  "compared_columns": {
+    "single": [
+      "or",
+      "p",
+      "p_spa",
+      "beta",
+      "se",
+      "n_case",
+      "n_control"
+    ],
+    "omnibus": [
+      "chisq",
+      "p",
+      "df",
+      "cases",
+      "controls"
+    ]
+  },
+  "pass": true
+}

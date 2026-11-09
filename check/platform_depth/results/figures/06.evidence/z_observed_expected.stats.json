@@ -1,0 +1,16 @@
+{
+  "points": 567,
+  "flagged": {
+    "lopo:narrow_mainland": [
+      "LINC01146 -t7",
+      "ADARB2 -t7"
+    ],
+    "lopo:intermediate_mainland": [
+      "LINC01146 -t7",
+      "ADARB2 -t7"
+    ],
+    "lopo:full_mainland": [
+      "ADARB2 -t7"
+    ]
+  }
+}

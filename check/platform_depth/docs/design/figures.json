@@ -1,0 +1,58 @@
+{
+ "threat_model": {
+  "png": "docs/design/threat_model.png",
+  "source": "scripts/design_figures.py",
+  "tool": "matplotlib",
+  "width_in": 12.6,
+  "height_in": 4.193,
+  "min_font_pt": 9.5
+ },
+ "coverage": {
+  "png": "docs/design/coverage.png",
+  "source": "scripts/design_figures.py",
+  "tool": "matplotlib",
+  "width_in": 12.6,
+  "height_in": 5.35,
+  "min_font_pt": 9.5
+ },
+ "master_workflow": {
+  "png": "docs/design/master_workflow.png",
+  "source": "docs/design/master_workflow.dot",
+  "tool": "graphviz dot",
+  "width_in": 10.04,
+  "height_in": 4.707,
+  "min_font_pt": 9.5
+ },
+ "numbers_flow": {
+  "png": "docs/design/numbers_flow.png",
+  "source": "docs/design/numbers_flow.dot",
+  "tool": "graphviz dot",
+  "width_in": 12.457,
+  "height_in": 5.19,
+  "min_font_pt": 9.5
+ },
+ "process_dag": {
+  "png": "docs/design/process_dag.png",
+  "source": "docs/design/process_dag.dot",
+  "tool": "graphviz dot",
+  "width_in": 48.15,
+  "height_in": 12.153,
+  "min_font_pt": 10
+ },
+ "process_dag_part1": {
+  "png": "docs/design/process_dag_part1.png",
+  "source": "docs/design/process_dag_part1.dot",
+  "tool": "graphviz dot",
+  "width_in": 11.78,
+  "height_in": 6.053,
+  "min_font_pt": 9
+ },
+ "process_dag_part2": {
+  "png": "docs/design/process_dag_part2.png",
+  "source": "docs/design/process_dag_part2.dot",
+  "tool": "graphviz dot",
+  "width_in": 17.483,
+  "height_in": 4.357,
+  "min_font_pt": 9
+ }
+}

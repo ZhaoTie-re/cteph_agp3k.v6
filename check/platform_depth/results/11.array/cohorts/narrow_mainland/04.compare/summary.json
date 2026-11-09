@@ -1,0 +1,75 @@
+{
+  "samples": {
+    "cases": 279,
+    "controls": 1119
+  },
+  "sites": {
+    "shared": 319308,
+    "qc_pass": 316531,
+    "allele_flipped": 169
+  },
+  "concordance_all_shared_cases": {
+    "nonmissing_both": 87668254,
+    "concordant": 87658006,
+    "rate": 0.999883
+  },
+  "concordance_all_shared_controls": {
+    "nonmissing_both": 345654947,
+    "concordant": 345598109,
+    "rate": 0.999836
+  },
+  "genome_wide": {
+    "lambda_wgs": 1.1199995370629654,
+    "lambda_array": 1.1276252705536287,
+    "r_z": 0.9864414308671129,
+    "slope_z_array_on_wgs": 0.9874916653607692,
+    "abs_dz_gt3": 26,
+    "abs_dz_gt4": 6,
+    "wgs_p_lt_1e-4": 58,
+    "wgs_p_lt_1e-4_array_same_direction": 58,
+    "wgs_p_lt_1e-4_array_p_lt_1e-2": 58,
+    "median_disc_rate_cases": 0.0,
+    "median_disc_rate_controls": 0.0,
+    "mean_disc_rate_cases": 0.00011772805769693234,
+    "mean_disc_rate_controls": 0.00016577357026400228,
+    "sites_disc_rate_gt_1pct_cases": 411,
+    "sites_disc_rate_gt_1pct_controls": 191,
+    "r_absdz_vs_disc_rate_gap": 0.0524497842155813
+  },
+  "signals": {
+    "leads": 21,
+    "with_proxy_r2_ge_0.8": 10,
+    "with_proxy_r2_ge_0.5": 12,
+    "credible_set_members_on_array": 11
+  },
+  "hla_dqb1_57V": {
+    "features": 1553,
+    "alpha": 57.361525104486816,
+    "n_cases": 279,
+    "n_controls": 1118,
+    "r2_controls_out_of_fold": 0.9849518431869898,
+    "r2_cases_trained_on_controls": 0.9983828075193786,
+    "freq_typed_cases": 0.1003584229390681,
+    "freq_typed_controls": 0.16994633273703041,
+    "freq_array_pred_cases": 0.1037028924986996,
+    "freq_array_pred_controls": 0.17342671326093675,
+    "resid_mean_cases": -0.006688939119263002,
+    "resid_mean_controls": -0.006960761047812638,
+    "resid_diff_welch_t": 0.12180033938395102,
+    "resid_diff_p": 0.9030747318765577,
+    "best_call_agreement_cases": 1.0,
+    "best_call_agreement_controls": 0.9955277280858676,
+    "assoc_typed": {
+      "or": 0.6464299450358103,
+      "l95": 0.4705550537738107,
+      "u95": 0.8880399232517135,
+      "p": 0.007083762601928269
+    },
+    "assoc_array_predicted": {
+      "or": 0.6350140792749778,
+      "l95": 0.45955160568708503,
+      "u95": 0.8774702903595583,
+      "p": 0.005919544942319645
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "cohort": "narrow_mainland",
+  "variants_ours": 2110,
+  "variants_published": 2110,
+  "missing_from_published": 0,
+  "columns_differing": {},
+  "max_rel_diff": 0.0,
+  "pass": true
+}

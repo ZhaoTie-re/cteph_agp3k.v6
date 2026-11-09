@@ -1,0 +1,23 @@
+{
+  "people": {
+    "cases": 299,
+    "controls": 1384
+  },
+  "shared_sites": 319308,
+  "concordance_cases_T7_vs_ASA24v1": 0.999882,
+  "concordance_controls_HiSeqX_vs_JSA24v1": 0.999837,
+  "lambda_wgs": 1.1441492963836788,
+  "lambda_array": 1.1434842099399103,
+  "r_z_wgs_array": 0.9864758739679252,
+  "sites_wgs_p_lt_1e-4": 67,
+  "of_which_array_same_direction_p_lt_0.01": 67,
+  "panel": "imputed arrays use the AGP3K panel (the controls' own genomes): only the case side is independent",
+  "coverage": "full mainland only: DNBSeq-T7 cases and HiSeq X controls with arrays; NovaSeq and DNBSeq-G400RS cases have none",
+  "signals_by_verdict": {
+    "case genotypes confirmed": 9,
+    "reproduced on arrays": 8,
+    "case genotypes not confirmed": 2,
+    "not checkable": 1,
+    "case genotypes partly confirmed": 1
+  }
+}

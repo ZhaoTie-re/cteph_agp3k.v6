@@ -1,0 +1,8 @@
+{
+  "cohort": "full_mainland",
+  "markers": 989,
+  "null_snps": 20000,
+  "gwas_signals_Q_p_lt_0_05": 41,
+  "hla_markers_Q_p_lt_0_05": 60,
+  "null_share_p_Q_lt_0_05": 0.05245
+}

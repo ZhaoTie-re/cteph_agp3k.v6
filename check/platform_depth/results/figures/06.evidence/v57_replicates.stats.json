@@ -1,0 +1,11 @@
+{
+  "deep_cases_changed": 1,
+  "arms": [
+    "original",
+    "baseline",
+    "r01",
+    "r02",
+    "r03"
+  ],
+  "identical_in_all_three_cohorts": true
+}

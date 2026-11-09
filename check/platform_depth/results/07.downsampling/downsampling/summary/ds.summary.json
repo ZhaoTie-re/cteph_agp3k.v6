@@ -1,0 +1,28 @@
+{
+  "gwas_variants": 168,
+  "dqb1_57v_copies": {
+    "narrow_mainland": {
+      "cases": 84.0,
+      "downsampled_cases": 74.0,
+      "deep_cases": 16.0,
+      "t7_cases": 58.0
+    },
+    "intermediate_mainland": {
+      "cases": 87.0,
+      "downsampled_cases": 77.0,
+      "deep_cases": 16.0,
+      "t7_cases": 61.0
+    },
+    "full_mainland": {
+      "cases": 90.0,
+      "downsampled_cases": 80.0,
+      "deep_cases": 16.0,
+      "t7_cases": 64.0
+    }
+  },
+  "replicates": [
+    "r01",
+    "r02",
+    "r03"
+  ]
+}

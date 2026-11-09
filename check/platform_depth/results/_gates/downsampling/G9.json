@@ -1,0 +1,8 @@
+{
+  "gate": "G9",
+  "calls": 7752,
+  "differing": 0,
+  "differences": [],
+  "pass": true,
+  "note": "if differing > 0, the f = 1 re-typing is the baseline for the depth effect"
+}
