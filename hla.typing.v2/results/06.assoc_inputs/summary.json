@@ -1,0 +1,65 @@
+{
+ "thresholds": {
+  "min_call_rate": 0.95,
+  "min_maf": 0.005
+ },
+ "genes": [
+  "A",
+  "B",
+  "C",
+  "E",
+  "F",
+  "G",
+  "DRA",
+  "DRB1",
+  "DQA1",
+  "DQB1",
+  "DPA1",
+  "DPB1",
+  "DMA",
+  "DMB",
+  "DOA",
+  "DOB"
+ ],
+ "rules": [
+  "varies in the cohort",
+  "DRB3, DRB4 and DRB5 left out",
+  "call rate >= 0.95 in cases and in controls",
+  "MAF >= 0.005"
+ ],
+ "cohorts": {
+  "narrow_mainland": {
+   "samples": 2195,
+   "cases": 419,
+   "controls": 1776,
+   "alleles_tested": 143,
+   "residues_tested": 672,
+   "md5": {
+    "allele_dosage.tsv": "3b68b6556c0deca25f8703b5a4679718",
+    "residue_dosage.tsv": "a05e65385155adebb1c6a456a04a7291"
+   }
+  },
+  "intermediate_mainland": {
+   "samples": 2508,
+   "cases": 429,
+   "controls": 2079,
+   "alleles_tested": 144,
+   "residues_tested": 681,
+   "md5": {
+    "allele_dosage.tsv": "d85b2ae86b0312ab878b9d1c7ef895cd",
+    "residue_dosage.tsv": "dbc7f000343021a3b1b257ce00339c92"
+   }
+  },
+  "full_mainland": {
+   "samples": 3101,
+   "cases": 439,
+   "controls": 2662,
+   "alleles_tested": 142,
+   "residues_tested": 679,
+   "md5": {
+    "allele_dosage.tsv": "3dd04de546837074b2a39401f2e262ec",
+    "residue_dosage.tsv": "74ec42b1c67bd67c2fc448354522b0c7"
+   }
+  }
+ }
+}

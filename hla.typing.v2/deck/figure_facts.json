@@ -1,0 +1,25 @@
+{
+ "structure": {
+  "n_alleles_A": 9175,
+  "top_positions_A": [
+   62,
+   9,
+   114,
+   76,
+   116,
+   127
+  ]
+ },
+ "diversity": {
+  "first_release": "3.0.0",
+  "last_release": "3.64.0",
+  "total_first": 4743,
+  "total_last": 46005,
+  "B_first": 1605,
+  "B_last": 11110
+ },
+ "reads": {
+  "diff_in_window": 2,
+  "window_start_in_exon2": 5
+ }
+}
