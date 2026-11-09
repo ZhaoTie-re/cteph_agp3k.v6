@@ -1,0 +1,138 @@
+{
+ "people": 1683,
+ "cases": 299,
+ "controls": 1384,
+ "rare_imputed_sites": 18017,
+ "recovery": [
+  {
+   "group": "cases",
+   "bin": "0",
+   "variants": 585,
+   "wgs_carriers": 659,
+   "recovered": 269,
+   "wgs_noncarriers": 171600,
+   "imputed_only": 27,
+   "recovery": 0.4082,
+   "false_carrier_rate": 0.0002
+  },
+  {
+   "group": "cases",
+   "bin": "1",
+   "variants": 874,
+   "wgs_carriers": 1069,
+   "recovered": 575,
+   "wgs_noncarriers": 2635623,
+   "imputed_only": 721,
+   "recovery": 0.5379,
+   "false_carrier_rate": 0.0003
+  },
+  {
+   "group": "cases",
+   "bin": "2-3",
+   "variants": 1249,
+   "wgs_carriers": 1754,
+   "recovered": 1285,
+   "wgs_noncarriers": 1249915,
+   "imputed_only": 488,
+   "recovery": 0.7326,
+   "false_carrier_rate": 0.0004
+  },
+  {
+   "group": "cases",
+   "bin": "4-10",
+   "variants": 1657,
+   "wgs_carriers": 3061,
+   "recovered": 2383,
+   "wgs_noncarriers": 827742,
+   "imputed_only": 600,
+   "recovery": 0.7785,
+   "false_carrier_rate": 0.0007
+  },
+  {
+   "group": "cases",
+   "bin": ">=11",
+   "variants": 1320,
+   "wgs_carriers": 4380,
+   "recovered": 3642,
+   "wgs_noncarriers": 408371,
+   "imputed_only": 718,
+   "recovery": 0.8315,
+   "false_carrier_rate": 0.0018
+  },
+  {
+   "group": "controls",
+   "bin": "0",
+   "variants": 0,
+   "wgs_carriers": 0,
+   "recovered": 0,
+   "wgs_noncarriers": 785972,
+   "imputed_only": 20,
+   "recovery": NaN,
+   "false_carrier_rate": 0.0
+  },
+  {
+   "group": "controls",
+   "bin": "1",
+   "variants": 8955,
+   "wgs_carriers": 8955,
+   "recovered": 8906,
+   "wgs_noncarriers": 12024007,
+   "imputed_only": 337,
+   "recovery": 0.9945,
+   "false_carrier_rate": 0.0
+  },
+  {
+   "group": "controls",
+   "bin": "2-3",
+   "variants": 4253,
+   "wgs_carriers": 9932,
+   "recovered": 9815,
+   "wgs_noncarriers": 5703346,
+   "imputed_only": 126,
+   "recovery": 0.9882,
+   "false_carrier_rate": 0.0
+  },
+  {
+   "group": "controls",
+   "bin": "4-10",
+   "variants": 2822,
+   "wgs_carriers": 16872,
+   "recovered": 16824,
+   "wgs_noncarriers": 3774916,
+   "imputed_only": 40,
+   "recovery": 0.9972,
+   "false_carrier_rate": 0.0
+  },
+  {
+   "group": "controls",
+   "bin": ">=11",
+   "variants": 1402,
+   "wgs_carriers": 22712,
+   "recovered": 22676,
+   "wgs_noncarriers": 1861022,
+   "imputed_only": 24,
+   "recovery": 0.9984,
+   "false_carrier_rate": 0.0
+  }
+ ],
+ "presence": [
+  {
+   "carriers": "both",
+   "variants": 5297,
+   "in_imputed_set": 5150,
+   "share": 0.9722
+  },
+  {
+   "carriers": "cases only",
+   "variants": 2233,
+   "in_imputed_set": 585,
+   "share": 0.262
+  },
+  {
+   "carriers": "controls only",
+   "variants": 12755,
+   "in_imputed_set": 12341,
+   "share": 0.9675
+  }
+ ]
+}
