@@ -1,0 +1,37 @@
+{
+ "cohort": "narrow_mainland",
+ "case_set": "dvt_case_only",
+ "phenotype": "PHENO1",
+ "coding": {
+  "0": "case without DVT",
+  "1": "case with DVT"
+ },
+ "plink2_flag": "--1",
+ "covariates": [
+  "SEX",
+  "PC1_AVG",
+  "PC2_AVG",
+  "PC3_AVG",
+  "PC4_AVG",
+  "PC5_AVG",
+  "PC6_AVG",
+  "PC7_AVG",
+  "PC8_AVG",
+  "PC9_AVG",
+  "PC10_AVG"
+ ],
+ "cases_dropped_by_dvt": {
+  "unknown": 129
+ },
+ "controls_dropped": 1776,
+ "fixed": {
+  "samples": 290,
+  "cases": 150,
+  "controls": 140
+ },
+ "random": {
+  "samples": 290,
+  "cases": 150,
+  "controls": 140
+ }
+}

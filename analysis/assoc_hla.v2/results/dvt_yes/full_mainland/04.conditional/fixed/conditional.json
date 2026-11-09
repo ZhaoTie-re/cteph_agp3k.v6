@@ -1,0 +1,12 @@
+{
+ "case_set": "dvt_yes",
+ "cohort": "full_mainland",
+ "model": "fixed",
+ "n_hla": 821,
+ "n_engine_runs": 21,
+ "signal_leads": [],
+ "leads": [
+  "chr6:32632861:A:G"
+ ],
+ "positions": {}
+}

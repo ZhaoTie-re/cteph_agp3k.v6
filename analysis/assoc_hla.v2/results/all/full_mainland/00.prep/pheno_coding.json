@@ -1,0 +1,35 @@
+{
+ "cohort": "full_mainland",
+ "case_set": "all",
+ "phenotype": "PHENO1",
+ "coding": {
+  "0": "control",
+  "1": "case"
+ },
+ "plink2_flag": "--1",
+ "covariates": [
+  "SEX",
+  "PC1_AVG",
+  "PC2_AVG",
+  "PC3_AVG",
+  "PC4_AVG",
+  "PC5_AVG",
+  "PC6_AVG",
+  "PC7_AVG",
+  "PC8_AVG",
+  "PC9_AVG",
+  "PC10_AVG"
+ ],
+ "cases_dropped_by_dvt": {},
+ "controls_dropped": 0,
+ "fixed": {
+  "samples": 3071,
+  "cases": 439,
+  "controls": 2632
+ },
+ "random": {
+  "samples": 3101,
+  "cases": 439,
+  "controls": 2662
+ }
+}

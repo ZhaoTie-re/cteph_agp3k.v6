@@ -1,0 +1,169 @@
+{
+ "cohort": "full_mainland",
+ "n_checks": 30,
+ "n_failed": 0,
+ "samples": 3101,
+ "cases": 439,
+ "controls": 2662,
+ "fixed_samples": 3071,
+ "variance_ratio": [
+  0.91791597
+ ],
+ "case_dvt": {
+  "yes": 159,
+  "no": 145,
+  "unknown": 135
+ },
+ "checks": [
+  {
+   "check": "allele: md5 equals summary.json",
+   "ok": true,
+   "detail": "3dd04de546837074b2a39401f2e262ec vs 3dd04de546837074b2a39401f2e262ec"
+  },
+  {
+   "check": "allele: column count equals summary.json",
+   "ok": true,
+   "detail": "142 vs 142"
+  },
+  {
+   "check": "allele: columns equal the markers.tsv \"tested\" rows",
+   "ok": true,
+   "detail": "0 names differ"
+  },
+  {
+   "check": "allele: column names unique",
+   "ok": true,
+   "detail": "142 columns"
+  },
+  {
+   "check": "allele: samples equal the phenotype file, in order",
+   "ok": true,
+   "detail": "3101 matrix rows, 3101 phenotype rows"
+  },
+  {
+   "check": "allele: values in {blank, 0, 1, 2}",
+   "ok": true,
+   "detail": "values: '', '0', '1', '2'"
+  },
+  {
+   "check": "residue: md5 equals summary.json",
+   "ok": true,
+   "detail": "74ec42b1c67bd67c2fc448354522b0c7 vs 74ec42b1c67bd67c2fc448354522b0c7"
+  },
+  {
+   "check": "residue: column count equals summary.json",
+   "ok": true,
+   "detail": "679 vs 679"
+  },
+  {
+   "check": "residue: columns equal the markers.tsv \"tested\" rows",
+   "ok": true,
+   "detail": "0 names differ"
+  },
+  {
+   "check": "residue: column names unique",
+   "ok": true,
+   "detail": "679 columns"
+  },
+  {
+   "check": "residue: samples equal the phenotype file, in order",
+   "ok": true,
+   "detail": "3101 matrix rows, 3101 phenotype rows"
+  },
+  {
+   "check": "residue: values in {blank, 0, 1, 2}",
+   "ok": true,
+   "detail": "values: '', '0', '1', '2'"
+  },
+  {
+   "check": "phenotype: coded 0/1, no missing",
+   "ok": true,
+   "detail": "values: 0, 1"
+  },
+  {
+   "check": "phenotype: samples equal summary.json",
+   "ok": true,
+   "detail": "3101 vs 3101"
+  },
+  {
+   "check": "phenotype: cases equal summary.json",
+   "ok": true,
+   "detail": "439 vs 439"
+  },
+  {
+   "check": "phenotype: IID unique",
+   "ok": true,
+   "detail": "3101 rows"
+  },
+  {
+   "check": "covariates: every requested column present",
+   "ok": true,
+   "detail": "SEX, PC1_AVG, PC2_AVG, PC3_AVG, PC4_AVG, PC5_AVG, PC6_AVG, PC7_AVG, PC8_AVG, PC9_AVG, PC10_AVG"
+  },
+  {
+   "check": "covariates: every phenotype sample has a row",
+   "ok": true,
+   "detail": "0 without a row"
+  },
+  {
+   "check": "covariates: all values numeric and present",
+   "ok": true,
+   "detail": "0 samples incomplete"
+  },
+  {
+   "check": "covariates: SEX takes two values",
+   "ok": true,
+   "detail": "values [1, 2]"
+  },
+  {
+   "check": "fixed set: every .fam sample is in the phenotype file",
+   "ok": true,
+   "detail": "0 outside"
+  },
+  {
+   "check": "fixed set: smaller than the cohort (relatives removed)",
+   "ok": true,
+   "detail": "3071 of 3101"
+  },
+  {
+   "check": "null model: binary trait",
+   "ok": true,
+   "detail": "binary"
+  },
+  {
+   "check": "null model: fitted with LOCO",
+   "ok": true,
+   "detail": "True"
+  },
+  {
+   "check": "null model: sample set equals the phenotype file",
+   "ok": true,
+   "detail": "3101 null samples, 0 differ"
+  },
+  {
+   "check": "null model: case/control label equals the phenotype file for every sample",
+   "ok": true,
+   "detail": "0 disagree"
+  },
+  {
+   "check": "null model: cases equal the phenotype file",
+   "ok": true,
+   "detail": "439 vs 439"
+  },
+  {
+   "check": "null model: covariates equal the requested list",
+   "ok": true,
+   "detail": "null: SEX,PC1_AVG,PC2_AVG,PC3_AVG,PC4_AVG,PC5_AVG,PC6_AVG,PC7_AVG,PC8_AVG,PC9_AVG,PC10_AVG"
+  },
+  {
+   "check": "DVT: every case has a row in the sample sheet",
+   "ok": true,
+   "detail": "0 cases absent"
+  },
+  {
+   "check": "DVT: controls carry no DVT status",
+   "ok": true,
+   "detail": "controls with yes/no"
+  }
+ ]
+}

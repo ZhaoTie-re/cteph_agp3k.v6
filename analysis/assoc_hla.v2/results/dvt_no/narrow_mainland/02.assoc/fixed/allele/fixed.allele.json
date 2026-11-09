@@ -1,0 +1,24 @@
+{
+ "engine": "logit_scan.py (Newton-Raphson logistic regression, Wald test)",
+ "samples": 1889,
+ "cases": 140,
+ "controls": 1749,
+ "covariates": [
+  "SEX",
+  "PC1_AVG",
+  "PC2_AVG",
+  "PC3_AVG",
+  "PC4_AVG",
+  "PC5_AVG",
+  "PC6_AVG",
+  "PC7_AVG",
+  "PC8_AVG",
+  "PC9_AVG",
+  "PC10_AVG"
+ ],
+ "n_covariates": 11,
+ "markers": 143,
+ "errcodes": {
+  "SEPARATION": 2
+ }
+}

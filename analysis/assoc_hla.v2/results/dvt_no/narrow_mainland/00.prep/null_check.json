@@ -1,0 +1,43 @@
+{
+ "case_set": "dvt_no",
+ "cohort": "narrow_mainland",
+ "n_checks": 6,
+ "n_failed": 0,
+ "samples": 1916,
+ "cases": 140,
+ "variance_ratio": [
+  0.95350488
+ ],
+ "checks": [
+  {
+   "check": "binary trait",
+   "ok": true,
+   "detail": "binary"
+  },
+  {
+   "check": "fitted with LOCO",
+   "ok": true,
+   "detail": "True"
+  },
+  {
+   "check": "sample set equals the case set",
+   "ok": true,
+   "detail": "1916 null samples, 1916 case-set samples, 0 differ"
+  },
+  {
+   "check": "label equals the case set for every sample",
+   "ok": true,
+   "detail": "0 disagree"
+  },
+  {
+   "check": "cases equal the case set",
+   "ok": true,
+   "detail": "140 vs 140"
+  },
+  {
+   "check": "covariates equal the requested list",
+   "ok": true,
+   "detail": "SEX,PC1_AVG,PC2_AVG,PC3_AVG,PC4_AVG,PC5_AVG,PC6_AVG,PC7_AVG,PC8_AVG,PC9_AVG,PC10_AVG"
+  }
+ ]
+}

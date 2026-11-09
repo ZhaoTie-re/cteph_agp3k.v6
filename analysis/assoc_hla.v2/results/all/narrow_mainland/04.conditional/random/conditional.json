@@ -1,0 +1,24 @@
+{
+ "case_set": "all",
+ "cohort": "narrow_mainland",
+ "model": "random",
+ "n_hla": 815,
+ "n_engine_runs": 23,
+ "signal_leads": [
+  "DQB1:57:V"
+ ],
+ "leads": [
+  "chr6:32632861:A:G"
+ ],
+ "positions": {
+  "DQB1:57": {
+   "columns": [
+    "DQB1:57:A",
+    "DQB1:57:S",
+    "DQB1:57:V"
+   ],
+   "why": "position_jointly:residue_lead,omnibus_lead",
+   "reference": "DQB1:57:D"
+  }
+ }
+}

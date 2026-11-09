@@ -1,0 +1,10 @@
+{
+  "rda": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_saige/results/intermediate_mainland/01.assoc/main/null.rda",
+  "trait_type": "binary",
+  "loco": true,
+  "n": 2508,
+  "cases": 429,
+  "controls": 2079,
+  "coefficients": ["minus1", "SEX", "PC1_AVG", "PC2_AVG", "PC3_AVG", "PC4_AVG", "PC5_AVG", "PC6_AVG", "PC7_AVG", "PC8_AVG", "PC9_AVG", "PC10_AVG"],
+  "variance_ratio": [0.93056594]
+}

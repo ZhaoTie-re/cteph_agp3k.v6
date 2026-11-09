@@ -1,0 +1,32 @@
+{
+ "case_set": "dvt_no",
+ "cohort": "full_mainland",
+ "model": "random",
+ "n_hla": 821,
+ "n_engine_runs": 26,
+ "signal_leads": [
+  "DPB1*05:01",
+  "DQB1:87:Y"
+ ],
+ "leads": [
+  "chr6:32632861:A:G"
+ ],
+ "positions": {
+  "DQB1:87": {
+   "columns": [
+    "DQB1:87:F",
+    "DQB1:87:Y"
+   ],
+   "why": "position_jointly:residue_lead",
+   "reference": "DQB1:87:L"
+  },
+  "DQB1:125": {
+   "columns": [
+    "DQB1:125:G",
+    "DQB1:125:S"
+   ],
+   "why": "position_jointly:omnibus_lead",
+   "reference": "DQB1:125:A"
+  }
+ }
+}

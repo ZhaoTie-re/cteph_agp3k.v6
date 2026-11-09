@@ -1,0 +1,18 @@
+{
+  "component": "assoc_hla.v2",
+  "cohorts": ["narrow_mainland","intermediate_mainland","full_mainland"],
+  "cohort_nesting": "narrow_mainland is a strict subset of intermediate_mainland is a strict subset of full_mainland; they differ mainly in controls (419 / 429 / 439 cases). Agreement across cohorts is a sample-selection sensitivity analysis, not replication.",
+  "markers": "hla.typing.v2 results/06.assoc_inputs/<cohort>/{allele,residue}_dosage.tsv, read unchanged (md5 checked against summary.json); 2-field alleles and amino-acid residues at IMGT positions; 0/1/2 copies, blank = undetermined",
+  "markers_tested": {"narrow_mainland":{"allele":143,"residue":672},"intermediate_mainland":{"allele":144,"residue":681},"full_mainland":{"allele":142,"residue":679}},
+  "coding": "VCF hard calls, REF A = copy does not carry the marker, ALT P = copy carries it; effects are per copy carrying the marker",
+  "positions": "chromosome 6, gene start (RefSeq hg38_refGene, union of chr6 transcripts) + rank of the marker within its gene; labels, not physical residue positions",
+  "phenotype": "PHENO1, 0 = control / 1 = case (plink2 --1)",
+  "covariates": "SEX,PC1_AVG-PC10_AVG (bbj_mainland)",
+  "fixed_model": "plink2 --glm omit-ref no-firth hide-covar --ci 0.95 on the 12_model_inputs fixed_model sample set (relatives removed); complete case per marker",
+  "random_model": "SAIGE step 2 (--LOCO=TRUE --chrom=6 --AlleleOrder=alt-first --is_Firth_beta=FALSE --impute_method=mean --maxMissing=0.15 --minMAC=0.5) on the reused analysis/assoc_saige 'main' null model (full GRM, LOCO, SEX + 10 PCs), all phenotype samples",
+  "random_model_p": "p = p.value.NA (no SPA), as in the genome-wide SAIGE scan; p_spa = p.value kept as a secondary column; se = 1/sqrt(var), consistent with p.value.NA; OR = exp(BETA)",
+  "significance": "Per (cohort, class, model): Bonferroni p < 0.05 / markers tested; Benjamini-Hochberg q < 0.05 over the same family (missing P counted as 1). Not corrected across cohorts or models. lambda_GC reported, never applied.",
+  "tools": {"plink2": "/home/b/b37974/plink2", "saige_step2": "/home/b/b37974/anaconda3/envs/saige/bin/step2_SPAtests.R", "python": "/home/b/b37974/anaconda3/envs/cteph_geno_pro/bin/python3"},
+  "independence": "designed and run without reading any file, script, null model or result of analysis/assoc_hla",
+  "figures": "results/figures/0N.<family>/, four families in reading order, one README.md per family"
+}
