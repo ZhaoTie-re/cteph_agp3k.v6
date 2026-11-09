@@ -64,3 +64,16 @@
 #   values next to sample ids (carrier read counts, QC outliers), which must not
 #   reach a public remote. Files already tracked there stay tracked.
 tmp/**
+# - the platform_depth deck's rendered PDF: since 2026-11-07 an appendix slide lists the ADARB2 carriers by sample ID
+#   (the user's choice). The .pptx is ignored already (no rule allows it); the PDF would match !**/*.pdf above.
+check/platform_depth/deck/platform_depth_summary.pdf
+# - check/jak2_clonal: labels the JAK2 p.Val617Phe carriers by sample ID in its scripts, results, figures and deck
+#   (the user's choice for this internal analysis, 2026-10-18), so the whole component stays off the public remote.
+check/jak2_clonal/**
+# - figures that print a sample ID inside the image (found by OCR before the 2026-11-09 push; a text scan cannot
+#   see them): the DQB1:57:V replicate trace names its case.
+check/platform_depth/results/figures/06.evidence/v57_replicates.png
+# - published articles and third-party manuals kept next to the analyses for reading: not ours to redistribute
+#   (GEC's SOURCE.md, which says where the tool comes from, is committed).
+hla.typing.v2/ref/**
+analysis/assoc_hla.v2/tools/gec-0.2/*.pdf
