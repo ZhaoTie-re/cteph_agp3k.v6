@@ -1,0 +1,203 @@
+{
+ "all_passed": true,
+ "checks": [
+  {
+   "id": "deck|T1",
+   "group": "Deck agreement",
+   "sheet": "T1 Typing run",
+   "what": "every quantity the sheet shares with the HLA typing deck, against the data the deck was built from",
+   "route": "deck data files (below)",
+   "compared": 22,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "deck|T2",
+   "group": "Deck agreement",
+   "sheet": "T2 DRB3, DRB4, DRB5",
+   "what": "every quantity the sheet shares with the HLA typing deck, against the data the deck was built from",
+   "route": "deck data files (below)",
+   "compared": 40,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "deck|T3",
+   "group": "Deck agreement",
+   "sheet": "T3 Completeness",
+   "what": "every quantity the sheet shares with the HLA typing deck, against the data the deck was built from",
+   "route": "deck data files (below)",
+   "compared": 442,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "deck|T4",
+   "group": "Deck agreement",
+   "sheet": "T4 ToMMo comparison",
+   "what": "every quantity the sheet shares with the HLA typing deck, against the data the deck was built from",
+   "route": "deck data files (below)",
+   "compared": 323,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "deck|T5",
+   "group": "Deck agreement",
+   "sheet": "T5 Marker QC",
+   "what": "every quantity the sheet shares with the HLA typing deck, against the data the deck was built from",
+   "route": "deck data files (below)",
+   "compared": 471,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "deck|T6",
+   "group": "Deck agreement",
+   "sheet": "T6 P groups",
+   "what": "every quantity the sheet shares with the HLA typing deck, against the data the deck was built from",
+   "route": "deck data files (below)",
+   "compared": 280,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "deck|A1",
+   "group": "Deck agreement",
+   "sheet": "A1 Design",
+   "what": "every quantity the sheet shares with the HLA association deck, against the data the deck was built from",
+   "route": "deck data files (below)",
+   "compared": 189,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "deck|A2",
+   "group": "Deck agreement",
+   "sheet": "A2 Thresholds",
+   "what": "every quantity the sheet shares with the HLA association deck, against the data the deck was built from",
+   "route": "deck data files (below)",
+   "compared": 769,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "deck|A3",
+   "group": "Deck agreement",
+   "sheet": "A3 Q1 Association",
+   "what": "every quantity the sheet shares with the HLA association deck, against the data the deck was built from",
+   "route": "deck data files (below)",
+   "compared": 263,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "deck|A4",
+   "group": "Deck agreement",
+   "sheet": "A4 Q2 Conditioning",
+   "what": "every quantity the sheet shares with the HLA association deck, against the data the deck was built from",
+   "route": "deck data files (below)",
+   "compared": 123,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "deck|A5",
+   "group": "Deck agreement",
+   "sheet": "A5 Q3 GWAS lead",
+   "what": "every quantity the sheet shares with the HLA association deck, against the data the deck was built from",
+   "route": "deck data files (below)",
+   "compared": 1329,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "deck|A6",
+   "group": "Deck agreement",
+   "sheet": "A6 Inflation",
+   "what": "every quantity the sheet shares with the HLA association deck, against the data the deck was built from",
+   "route": "deck data files (below)",
+   "compared": 123,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "deck|A7",
+   "group": "Deck agreement",
+   "sheet": "A7 Summary",
+   "what": "every quantity the sheet shares with the HLA association deck, against the data the deck was built from",
+   "route": "deck data files (below)",
+   "compared": 235,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "deck|A8",
+   "group": "Deck agreement",
+   "sheet": "A8 DVT",
+   "what": "every quantity the sheet shares with the HLA association deck, against the data the deck was built from",
+   "route": "deck data files (below)",
+   "compared": 305,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "deck|A9",
+   "group": "Deck agreement",
+   "sheet": "A9 Reported alleles",
+   "what": "every quantity the sheet shares with the HLA association deck, against the data the deck was built from",
+   "route": "deck data files (below)",
+   "compared": 160,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "deck|A10",
+   "group": "Deck agreement",
+   "sheet": "A10 Appendix",
+   "what": "every quantity the sheet shares with the HLA association deck, against the data the deck was built from",
+   "route": "deck data files (below)",
+   "compared": 852,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  }
+ ],
+ "deck_files": [
+  {
+   "deck": "HLA typing",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/deck/stats.json",
+   "md5": "e905938e42cc0bd04b74219b339f1a9a"
+  },
+  {
+   "deck": "HLA association",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/tmp/ppt/hla_assoc/stats.json",
+   "md5": "dc8d8ba58d8ffc69a3339511b66aba97"
+  },
+  {
+   "deck": "HLA association",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/tmp/ppt/hla_assoc/data/results_all.json",
+   "md5": "c032d3077d81ea8bcf4ece348c6792fb"
+  },
+  {
+   "deck": "HLA association",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/tmp/ppt/hla_assoc/data/pos57_pgroups.tsv",
+   "md5": "54feb824b04442f0a1b189bf1c326e35"
+  }
+ ]
+}

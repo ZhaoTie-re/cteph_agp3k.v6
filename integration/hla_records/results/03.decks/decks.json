@@ -1,0 +1,950 @@
+{
+ "typing": {
+  "name": "HLA typing",
+  "slides": [
+   {
+    "number": 1,
+    "key": "cover",
+    "section": "Cover",
+    "title": "",
+    "runs": []
+   },
+   {
+    "number": 2,
+    "key": "disease",
+    "section": "Introduction",
+    "title": "HLA Associations with Disease, Including CTEPH",
+    "runs": [
+     [
+      "HLA Associations with Disease, Including CTEPH",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 3,
+    "key": "aims",
+    "section": "Introduction",
+    "title": "Aims and Outline",
+    "runs": [
+     [
+      "Aims and Outline",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 4,
+    "key": "what",
+    "section": "Background",
+    "title": "Function of the HLA Molecules",
+    "runs": [
+     [
+      "Function of the HLA Molecules",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 5,
+    "key": "structure",
+    "section": "Background",
+    "title": "Structure of the HLA Molecules and the Site of Allelic Variation",
+    "runs": [
+     [
+      "Structure of the HLA Molecules and the Site of Allelic Variation",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 6,
+    "key": "map",
+    "section": "Background",
+    "title": "The HLA Region on Chromosome 6",
+    "runs": [
+     [
+      "The HLA Region on Chromosome 6",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 7,
+    "key": "inherit",
+    "section": "Background",
+    "title": "Inheritance of the HLA Haplotypes",
+    "runs": [
+     [
+      "Inheritance of the HLA Haplotypes",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 8,
+    "key": "diversity",
+    "section": "Background",
+    "title": "Allelic Diversity of the HLA Genes",
+    "runs": [
+     [
+      "Allelic Diversity of the HLA Genes",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 9,
+    "key": "names",
+    "section": "Background",
+    "title": "Allele Nomenclature and Typing Resolution",
+    "runs": [
+     [
+      "Allele Nomenclature and Typing Resolution",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 10,
+    "key": "drb",
+    "section": "Background",
+    "title": "DR Haplotypes and the DRB Genes",
+    "runs": [
+     [
+      "DR Haplotypes and the DRB Genes",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 11,
+    "key": "hard",
+    "section": "Method",
+    "title": "Typing from Sequencing Reads",
+    "runs": [
+     [
+      "Typing from Sequencing Reads",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 12,
+    "key": "hlahd",
+    "section": "Method",
+    "title": "The HLA-HD Typing Algorithm",
+    "runs": [
+     [
+      "The HLA-HD Typing Algorithm",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 13,
+    "key": "drbrule",
+    "section": "Method",
+    "title": "Validation of DRB3, DRB4, and DRB5 Copy Number against DRB1",
+    "runs": [
+     [
+      "Validation of DRB3, DRB4, and DRB5 Copy Number against DRB1",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 14,
+    "key": "judge",
+    "section": "Method",
+    "title": "Criteria for Assessing Typing Quality",
+    "runs": [
+     [
+      "Criteria for Assessing Typing Quality",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 15,
+    "key": "harmonize",
+    "section": "Method",
+    "title": "Making Our Calls and the ToMMo Table Comparable",
+    "runs": [
+     [
+      "Making Our Calls and the ToMMo Table Comparable",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 16,
+    "key": "complete",
+    "section": "Quality",
+    "title": "Completeness of Typing",
+    "runs": [
+     [
+      "Completeness of Typing",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 17,
+    "key": "coverage",
+    "section": "Quality",
+    "title": "Presence of the Called Alleles in ToMMo 61KJPN",
+    "runs": [
+     [
+      "Presence of the Called Alleles in ToMMo 61KJPN",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 18,
+    "key": "freq",
+    "section": "Quality",
+    "title": "Concordance of Allele Frequencies with ToMMo 61KJPN",
+    "runs": [
+     [
+      "Concordance of Allele Frequencies with ToMMo 61KJPN",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 19,
+    "key": "outlier",
+    "section": "Quality",
+    "title": "The One Dot off the Diagonal: DRB1*15:13",
+    "runs": [
+     [
+      "The One Dot off the Diagonal: DRB1*15:13",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 20,
+    "key": "aminoacid",
+    "section": "Markers",
+    "title": "Amino-Acid Residues: Rationale and Encoding",
+    "runs": [
+     [
+      "Amino-Acid Residues: Rationale and Encoding",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 21,
+    "key": "inputs",
+    "section": "Markers",
+    "title": "Encoding of the Markers for Association Testing",
+    "runs": [
+     [
+      "Encoding of the Markers for Association Testing",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 22,
+    "key": "callrate",
+    "section": "Markers",
+    "title": "Call Rate of the HLA Markers",
+    "runs": [
+     [
+      "Call Rate of the HLA Markers",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 23,
+    "key": "macmaf",
+    "section": "Markers",
+    "title": "Minor Allele Frequency of the HLA Markers",
+    "runs": [
+     [
+      "Minor Allele Frequency of the HLA Markers",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 24,
+    "key": "record",
+    "section": "Markers",
+    "title": "Marker Quality Control: Stepwise Record in Three Cohorts",
+    "runs": [
+     [
+      "Marker Quality Control: Stepwise Record in Three Cohorts",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 25,
+    "key": "alleles",
+    "section": "Markers",
+    "title": "Allele Columns Retained at Each Step, by Gene",
+    "runs": [
+     [
+      "Allele Columns Retained at Each Step, by Gene",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 26,
+    "key": "residues",
+    "section": "Markers",
+    "title": "Residue Columns Retained at Each Step, by Gene",
+    "runs": [
+     [
+      "Residue Columns Retained at Each Step, by Gene",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 27,
+    "key": "summary",
+    "section": "Summary",
+    "title": "Summary and Conclusions",
+    "runs": [
+     [
+      "Summary and Conclusions",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 28,
+    "key": "pgmap",
+    "section": "Notes",
+    "title": "Notes: How Our Alleles Map onto the ToMMo Table",
+    "runs": [
+     [
+      "Notes: How Our Alleles Map onto the ToMMo Table",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 29,
+    "key": "pgexample",
+    "section": "Notes",
+    "title": "Notes: One Gene through the Comparison, DQA1",
+    "runs": [
+     [
+      "Notes: One Gene through the Comparison, DQA1",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 30,
+    "key": "pgsplit",
+    "section": "Notes",
+    "title": "Notes: Tested Allele Columns That Share a P Group",
+    "runs": [
+     [
+      "Notes: Tested Allele Columns That Share a P Group",
+      false
+     ]
+    ]
+   }
+  ],
+  "n": 30,
+  "md5": "d479a8de16d3cafb54171474a884676a"
+ },
+ "association": {
+  "name": "HLA association",
+  "slides": [
+   {
+    "number": 1,
+    "key": "cover",
+    "section": "Cover",
+    "title": "",
+    "runs": []
+   },
+   {
+    "number": 2,
+    "key": "prior",
+    "section": "Introduction",
+    "title": "Two HLA Alleles Were Reported; Our Genome-Wide Scan Shows One MHC Peak",
+    "runs": [
+     [
+      "Two HLA Alleles Were Reported; Our Genome-Wide Scan Shows One MHC Peak",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 3,
+    "key": "aims",
+    "section": "Introduction",
+    "title": "Four Questions Are Asked of Alleles, Residues, and Positions Alike",
+    "runs": [
+     [
+      "Four Questions Are Asked of Alleles, Residues, and Positions Alike",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 4,
+    "key": "cohorts",
+    "section": "Data and design",
+    "title": "Each of the Three Nested Cohorts Has One Main and Three DVT Comparisons",
+    "runs": [
+     [
+      "Each of the Three Nested Cohorts Has One Main and Three DVT Comparisons",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 5,
+    "key": "design",
+    "section": "Data and design",
+    "title": "Each Test Examines One Allele, One Residue, or a Whole Position",
+    "runs": [
+     [
+      "Each Test Examines One Allele, One Residue, or a Whole Position",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 6,
+    "key": "markers",
+    "section": "Data and design",
+    "title": "The Three Cohorts Have Nearly the Same Number of Tests",
+    "runs": [
+     [
+      "The Three Cohorts Have Nearly the Same Number of Tests",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 7,
+    "key": "models",
+    "section": "Association models",
+    "title": "Single Markers Use a Logistic Mixed Model; Positions, an Omnibus Test",
+    "runs": [
+     [
+      "Single Markers Use a Logistic Mixed Model; Positions, an Omnibus Test",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 8,
+    "key": "testCount",
+    "section": "Thresholds",
+    "title": "Single Markers Use GEC Thresholds; Positions Use Bonferroni",
+    "runs": [
+     [
+      "Single Markers Use GEC Thresholds; Positions Use Bonferroni",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 9,
+    "key": "mtFrame",
+    "section": "Thresholds",
+    "title": "A Single-Marker Threshold Must Meet Four Criteria",
+    "runs": [
+     [
+      "A Single-Marker Threshold Must Meet Four Criteria",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 10,
+    "key": "corr",
+    "section": "Thresholds",
+    "title": "HLA Tests Are Correlated, Residues Far More Than Alleles",
+    "runs": [
+     [
+      "HLA Tests Are Correlated, Residues Far More Than Alleles",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 11,
+    "key": "gec",
+    "section": "Thresholds",
+    "title": "GEC Divides 0.05 by the Effective Number of Tests",
+    "runs": [
+     [
+      "GEC Divides 0.05 by the Effective Number of Tests",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 12,
+    "key": "gecMe",
+    "section": "Thresholds",
+    "title": "Me Is About 80% of Allele Tests and 40% of Residue Tests",
+    "runs": [
+     [
+      "Me Is About 80% of Allele Tests and 40% of Residue Tests",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 13,
+    "key": "gecGene",
+    "section": "Thresholds",
+    "title": "HLA-B Alleles Count Fully; DQB1 Residue Groups Count as One to Two Tests",
+    "runs": [
+     [
+      "HLA-B",
+      true
+     ],
+     [
+      " Alleles Count Fully; ",
+      false
+     ],
+     [
+      "DQB1",
+      true
+     ],
+     [
+      " Residue Groups Count as One to Two Tests",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 14,
+    "key": "benchMethod",
+    "section": "Thresholds",
+    "title": "The Exact Max-T Reruns Our Tests on Parametric-Bootstrap Null Phenotypes",
+    "runs": [
+     [
+      "The Exact Max-T Reruns Our Tests on Parametric-Bootstrap Null Phenotypes",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 15,
+    "key": "nullMu",
+    "section": "Thresholds",
+    "title": "Fitted Probabilities Rest on Sex and Ancestry and Are Higher in Cases",
+    "runs": [
+     [
+      "Fitted Probabilities Rest on Sex and Ancestry and Are Higher in Cases",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 16,
+    "key": "nullDraws",
+    "section": "Thresholds",
+    "title": "Bernoulli Draws Keep the Case Count and Follow Each Fitted Probability",
+    "runs": [
+     [
+      "Bernoulli Draws Keep the Case Count and Follow Each Fitted Probability",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 17,
+    "key": "maxtWhy",
+    "section": "Thresholds",
+    "title": "The FWER Is Read Directly Off the Null Distribution",
+    "runs": [
+     [
+      "The FWER Is Read Directly Off the Null Distribution",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 18,
+    "key": "benchmark",
+    "section": "Thresholds",
+    "title": "Against the Exact Max-T, GEC Holds the FWER Near 0.05",
+    "runs": [
+     [
+      "Against the Exact Max-T, GEC Holds the FWER Near 0.05",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 19,
+    "key": "criteria",
+    "section": "Thresholds",
+    "title": "Only GEC Meets All Four Criteria",
+    "runs": [
+     [
+      "Only GEC Meets All Four Criteria",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 20,
+    "key": "resAllele",
+    "section": "Results: all cases, three cohorts",
+    "title": "No HLA Allele Reaches the GEC Threshold in Any Cohort",
+    "runs": [
+     [
+      "No HLA Allele Reaches the GEC Threshold in Any Cohort",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 21,
+    "key": "resResidue",
+    "section": "Results: all cases, three cohorts",
+    "title": "DQB1 57 V Is the Only Significant Residue, in All Three Cohorts",
+    "runs": [
+     [
+      "DQB1",
+      true
+     ],
+     [
+      " 57 V Is the Only Significant Residue, in All Three Cohorts",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 22,
+    "key": "resPos",
+    "section": "Results: all cases, three cohorts",
+    "title": "DQB1 Position 57 Is Significant in All Three Cohorts",
+    "runs": [
+     [
+      "DQB1",
+      true
+     ],
+     [
+      " Position 57 Is Significant in All Three Cohorts",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 23,
+    "key": "resCond",
+    "section": "Results: all cases, three cohorts",
+    "title": "Given DQB1 57 V, No Further Residue or Position Is Significant",
+    "runs": [
+     [
+      "Given ",
+      false
+     ],
+     [
+      "DQB1",
+      true
+     ],
+     [
+      " 57 V, No Further Residue or Position Is Significant",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 24,
+    "key": "resGwas",
+    "section": "Results: all cases, three cohorts",
+    "title": "The Genome-Wide MHC Signal Is the DQB1 57 V Signal",
+    "runs": [
+     [
+      "The Genome-Wide MHC Signal Is the ",
+      false
+     ],
+     [
+      "DQB1",
+      true
+     ],
+     [
+      " 57 V Signal",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 25,
+    "key": "resQQ",
+    "section": "Results: all cases, three cohorts",
+    "title": "Before Conditioning, Every HLA Scan Shows λGC Well Above 1",
+    "runs": [
+     [
+      "Before Conditioning, Every HLA Scan Shows λ",
+      false
+     ],
+     [
+      "GC",
+      false
+     ],
+     [
+      " Well Above 1",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 26,
+    "key": "resLambda",
+    "section": "Results: all cases, three cohorts",
+    "title": "HLA λGC Falls Toward 1 Once the Signal Is Conditioned On",
+    "runs": [
+     [
+      "HLA λ",
+      false
+     ],
+     [
+      "GC",
+      false
+     ],
+     [
+      " Falls Toward 1 Once the Signal Is Conditioned On",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 27,
+    "key": "sumFind",
+    "section": "Summary",
+    "title": "DQB1 57 V Is Protective in Every Cohort and in Both Models",
+    "runs": [
+     [
+      "DQB1",
+      true
+     ],
+     [
+      " 57 V Is Protective in Every Cohort and in Both Models",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 28,
+    "key": "sumAlleles",
+    "section": "Summary",
+    "title": "Valine Alone Is Associated at Position 57; No Single Allele Explains It",
+    "runs": [
+     [
+      "Valine Alone Is Associated at Position 57; No Single Allele Explains It",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 29,
+    "key": "sumAnswers",
+    "section": "Summary",
+    "title": "DQB1 57 V Answers All Three Main Questions",
+    "runs": [
+     [
+      "DQB1",
+      true
+     ],
+     [
+      " 57 V Answers All Three Main Questions",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 30,
+    "key": "suppDvt",
+    "section": "Supplementary",
+    "title": "DQB1 57 V Has an OR Below 1 With and Without a History of DVT",
+    "runs": [
+     [
+      "DQB1",
+      true
+     ],
+     [
+      " 57 V Has an OR Below 1 With and Without a History of DVT",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 31,
+    "key": "suppNoDvtScan",
+    "section": "Supplementary",
+    "title": "Without DVT vs. Controls: Nearly Everything That Passes Lies in HLA-DQ",
+    "runs": [
+     [
+      "Without DVT vs. Controls: Nearly Everything That Passes Lies in HLA-DQ",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 32,
+    "key": "suppNoDvtWhat",
+    "section": "Supplementary",
+    "title": "Without DVT vs. Controls: One HLA-DQ Signal, Overlapping DQB1 57 V",
+    "runs": [
+     [
+      "Without DVT vs. Controls: One HLA-DQ Signal, Overlapping ",
+      false
+     ],
+     [
+      "DQB1",
+      true
+     ],
+     [
+      " 57 V",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 33,
+    "key": "suppNoDvtNew",
+    "section": "Supplementary",
+    "title": "Without DVT vs. Controls: Given DQB1 57 V, No Marker Passes in Any Cohort",
+    "runs": [
+     [
+      "Without DVT vs. Controls: Given ",
+      false
+     ],
+     [
+      "DQB1",
+      true
+     ],
+     [
+      " 57 V, No Marker Passes in Any Cohort",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 34,
+    "key": "suppDvtYes",
+    "section": "Supplementary",
+    "title": "With DVT vs. Controls: No Marker Reaches the Threshold",
+    "runs": [
+     [
+      "With DVT vs. Controls: No Marker Reaches the Threshold",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 35,
+    "key": "suppDvtOnly",
+    "section": "Supplementary",
+    "title": "With vs. Without DVT: No Marker Distinguishes the Two Case Groups",
+    "runs": [
+     [
+      "With vs. Without DVT: No Marker Distinguishes the Two Case Groups",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 36,
+    "key": "suppPrior",
+    "section": "Supplementary",
+    "title": "The Alleles Previously Reported in Japanese CTEPH Are Not Replicated",
+    "runs": [
+     [
+      "The Alleles Previously Reported in Japanese CTEPH Are Not Replicated",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 37,
+    "key": "tests",
+    "section": "Appendix",
+    "title": "Appendix: A Mirror Pair of Residues Counts as One Test",
+    "runs": [
+     [
+      "Appendix: A Mirror Pair of Residues Counts as One Test",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 38,
+    "key": "fixed",
+    "section": "Appendix",
+    "title": "Appendix: The Fixed and Random Models Agree on P and OR",
+    "runs": [
+     [
+      "Appendix: The Fixed and Random Models Agree on P and OR",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 39,
+    "key": "meTable",
+    "section": "Appendix",
+    "title": "Appendix: Me Changes Little Across Comparisons and Cohorts",
+    "runs": [
+     [
+      "Appendix: Me Changes Little Across Comparisons and Cohorts",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 40,
+    "key": "platform",
+    "section": "Appendix",
+    "title": "Appendix: Platform Coincides With Case Status; Two Checks Are Planned",
+    "runs": [
+     [
+      "Appendix: Platform Coincides With Case Status; Two Checks Are Planned",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 41,
+    "key": "panels57",
+    "section": "Appendix",
+    "title": "Appendix: At the Allele Level, Each Source Is Compared as P Groups",
+    "runs": [
+     [
+      "Appendix: At the Allele Level, Each Source Is Compared as P Groups",
+      false
+     ]
+    ]
+   },
+   {
+    "number": 42,
+    "key": "panels57groups",
+    "section": "Appendix",
+    "title": "Appendix: At Position 57, Cases Resemble ToMMo; Controls Carry More Valine",
+    "runs": [
+     [
+      "Appendix: At Position 57, Cases Resemble ToMMo; Controls Carry More Valine",
+      false
+     ]
+    ]
+   }
+  ],
+  "n": 42,
+  "md5": "bdea84ef341288f72c1664551211ff94"
+ }
+}

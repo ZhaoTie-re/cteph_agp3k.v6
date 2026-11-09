@@ -1,0 +1,62 @@
+{
+ "all_passed": true,
+ "xlsx_md5": "faf1c1e0a4bf9be9308f0ab277759a69",
+ "checks": [
+  {
+   "id": "sheets",
+   "what": "sheet names and order",
+   "compared": 1,
+   "failures": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "cells",
+   "what": "every body cell shows the value the writer meant, at its row and column",
+   "compared": 507644,
+   "failures": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "p-format",
+   "what": "every P printed in the decks' format (two significant digits from 0.001, m.mm × 10⁻ⁿ below)",
+   "compared": 1599,
+   "failures": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "detail",
+   "what": "detail sheets: every number and P equals its table (row by row)",
+   "compared": 312139,
+   "failures": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "notes",
+   "what": "every header letter has its note; every — and – has its reason under Missing values",
+   "compared": 22,
+   "failures": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "text",
+   "what": "no artefacts; no internal names on the content sheets; no sample identifier on any sheet (3,101 identifiers)",
+   "compared": 508907,
+   "failures": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "xml",
+   "what": "no inline strings, no split-less frozen pane, no overlapping merges, trimmed shared strings",
+   "compared": 22,
+   "failures": 0,
+   "passed": true,
+   "detail": []
+  }
+ ]
+}

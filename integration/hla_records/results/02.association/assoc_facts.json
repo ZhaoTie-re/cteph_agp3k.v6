@@ -1,0 +1,161 @@
+{
+ "grm_markers": {
+  "narrow_mainland": 378924,
+  "intermediate_mainland": 378570,
+  "full_mainland": 378452
+ },
+ "b114": {
+  "narrow_mainland": {
+   "before": 0.000321043,
+   "after": 0.0366661
+  },
+  "intermediate_mainland": {
+   "before": 0.000455972,
+   "after": 0.0274616
+  },
+  "full_mainland": {
+   "before": 0.000132124,
+   "after": 0.0139084
+  }
+ },
+ "gwas_leads_kept": [
+  "chr6:32632861:A:G"
+ ],
+ "positions_multi_df": {
+  "n": 64,
+  "in_dr_dq": 31
+ },
+ "panels_v57": {
+  "cases": 0.10250569476082004,
+  "controls": 0.15332581736189402,
+  "tommo": 0.11582606147434212,
+  "tommo_chr": 122848,
+  "kg": 0.16129032258064516,
+  "kg_chr": 186,
+  "cases_chr": 878,
+  "controls_chr": 5322
+ },
+ "carrier_alleles_57v": [
+  "DQB1*05:01",
+  "DQB1*06:04"
+ ],
+ "ld_57_87_without_dvt": {
+  "r2": 0.6451090200778368,
+  "dprime": 0.9969705999205403,
+  "r2_ceiling": 0.6490354397331142,
+  "freq_v": 0.14950106913756236,
+  "freq_y": 0.21311475409836064,
+  "n_cases": 145,
+  "n_controls": 2661,
+  "v_not_y": [
+   "DQB1*06:494"
+  ],
+  "v_not_y_control": 2
+ },
+ "spa_calls": {
+  "all": {
+   "calls": 3,
+   "calls_spa": 3,
+   "both": 3
+  },
+  "dvt_yes": {
+   "calls": 0,
+   "calls_spa": 0,
+   "both": 0
+  },
+  "dvt_no": {
+   "calls": 34,
+   "calls_spa": 31,
+   "both": 31
+  },
+  "dvt_case_only": {
+   "calls": 0,
+   "calls_spa": 0,
+   "both": 0
+  }
+ },
+ "given57v_marginal_rows_checked": 2461,
+ "pop_reported": {
+  "B*52:01": {
+   "tommo": 0.0985645,
+   "tommo_chr": 122813,
+   "controls_pgroup": 0.112024,
+   "kg": 0.124402,
+   "kg_chr": 209,
+   "tommo_vs_controls_p": 0.00167297,
+   "kg_vs_controls_p": 0.576386
+  },
+  "DPB1*02:02": {
+   "tommo": 0.0404402,
+   "tommo_chr": 122848,
+   "controls_pgroup": 0.0419343,
+   "kg": null,
+   "kg_chr": null,
+   "tommo_vs_controls_p": 0.593209,
+   "kg_vs_controls_p": null
+  }
+ },
+ "mirror_full": {
+  "columns": 679,
+  "tests": 512,
+  "pairs": 167,
+  "two_residue_positions": 231,
+  "near_not_merged": 64,
+  "break_min": 1,
+  "break_max": 24,
+  "samples": 3101,
+  "max_dlog10p": 0.0,
+  "max_logor_sum": 5.130013158500223e-06
+ },
+ "pos57_totals": {
+  "cases_chr": 878,
+  "controls_chr": 5322,
+  "tommo_chr": 122848,
+  "kg_chr": 186,
+  "tommo_vintage": "3.21.0",
+  "kg_vintage": "2.12.0",
+  "tommo_null_copies": 0,
+  "kg_people": 105,
+  "kg_missing": 24,
+  "kg_dropped": 0,
+  "dictionary_ours": "3.64.0"
+ },
+ "gwas_lambda": {
+  "full_mainland": {
+   "mhc": 1.7630604091918576,
+   "rest": 1.0192577699217826,
+   "mhc_snps": 16656,
+   "rest_snps": 5098460,
+   "mhc_span_mb": [
+    29.6,
+    33.4
+   ],
+   "min_maf": 0.005
+  },
+  "intermediate_mainland": {
+   "mhc": 1.736855609602632,
+   "rest": 1.036495511796432,
+   "mhc_snps": 16618,
+   "rest_snps": 5097364,
+   "mhc_span_mb": [
+    29.6,
+    33.4
+   ],
+   "min_maf": 0.005
+  },
+  "narrow_mainland": {
+   "mhc": 1.9620194125856572,
+   "rest": 1.0370102395178322,
+   "mhc_snps": 16593,
+   "rest_snps": 5097033,
+   "mhc_span_mb": [
+    29.6,
+    33.4
+   ],
+   "min_maf": 0.005
+  }
+ },
+ "run": {
+  "manifest_component": "assoc_hla.v2"
+ }
+}

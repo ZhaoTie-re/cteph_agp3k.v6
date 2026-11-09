@@ -1,0 +1,137 @@
+{
+ "all_passed": true,
+ "checks": [
+  {
+   "id": "recheck|T3",
+   "group": "Independent recheck",
+   "sheet": "T3 Completeness",
+   "what": "calls by result and by confidence, per gene",
+   "route": "counted from the per-sample genotype and confidence tables",
+   "compared": 171,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "recheck|T7",
+   "group": "Independent recheck",
+   "sheet": "T7 Alleles (detail)",
+   "what": "every column in every cohort: status, copies in cases and controls, call rates, MAF",
+   "route": "recomputed from the dosage matrices of all genomes and the case status of the cohort (MAF to six decimals, as the typing component prints it)",
+   "compared": 35910,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "recheck|T8",
+   "group": "Independent recheck",
+   "sheet": "T8 Residues (detail)",
+   "what": "every column in every cohort: status, copies in cases and controls, call rates, MAF",
+   "route": "recomputed from the dosage matrices of all genomes and the case status of the cohort (MAF to six decimals, as the typing component prints it)",
+   "compared": 51696,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "recheck|T5",
+   "group": "Independent recheck",
+   "sheet": "T5 Marker QC",
+   "what": "the stepwise record per cohort and class",
+   "route": "counted from the statuses recomputed above",
+   "compared": 24,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "recheck|A1",
+   "group": "Independent recheck",
+   "sheet": "A1 Design",
+   "what": "samples of both models, per comparison and cohort",
+   "route": "counted from the phenotype files of each run",
+   "compared": 72,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "recheck|A11",
+   "group": "Independent recheck",
+   "sheet": "A11 Single markers (detail)",
+   "what": "every allele and residue row of both models (OR, CI, P, SPA P, counts, frequencies)",
+   "route": "compared cell by cell with the association tables of each of the 48 runs",
+   "compared": 157505,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "recheck|A12",
+   "group": "Independent recheck",
+   "sheet": "A12 Positions (detail)",
+   "what": "every position row (n, df, χ², P, threshold)",
+   "route": "compared cell by cell with the omnibus table of each comparison",
+   "compared": 21313,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "recheck|A2",
+   "group": "Independent recheck",
+   "sheet": "A2 Thresholds",
+   "what": "GEC = 0.05 / Me and Bonferroni = 0.05 / tests per scan",
+   "route": "recomputed from Me and the test count of each run (Me is printed by GEC to six digits)",
+   "compared": 72,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "recheck|A3",
+   "group": "Independent recheck",
+   "sheet": "A3 Q1 Association; A8 DVT",
+   "what": "per scan: tests, significant (primary, Bonferroni, SPA), smallest P and its marker, λGC",
+   "route": "counted from the detail rows (one row per test) with λGC from its own χ² implementation",
+   "compared": 216,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "recheck|A10",
+   "group": "Independent recheck",
+   "sheet": "A2 Thresholds; A10 Appendix",
+   "what": "mirror pairs of residue columns, all cases vs. controls",
+   "route": "columns of one position that are complements (both undetermined, or summing to 2) in every genome",
+   "compared": 3,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "recheck|A7",
+   "group": "Independent recheck",
+   "sheet": "A7 Summary",
+   "what": "copies of valine at DQB1 57 per person, cases and controls",
+   "route": "counted from the residue matrix of each cohort and the case status",
+   "compared": 42,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  },
+  {
+   "id": "cross|all",
+   "group": "Cross-sheet",
+   "sheet": "T5, A1–A3, A7, A8, A11, A12",
+   "what": "a number shown on two sheets: columns kept, tests per scan, tests per gene, DQB1 57 V and position 57",
+   "route": "the two sheets' tables read side by side",
+   "compared": 84,
+   "mismatches": 0,
+   "passed": true,
+   "detail": []
+  }
+ ]
+}

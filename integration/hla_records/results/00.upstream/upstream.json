@@ -1,0 +1,1771 @@
+{
+ "runs": [
+  {
+   "component": "HLA association",
+   "item": "Component folder",
+   "value": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2"
+  },
+  {
+   "component": "HLA association",
+   "item": "Run",
+   "value": "run 17, manifest of 2026-10-26 13:40"
+  },
+  {
+   "component": "HLA association",
+   "item": "Verification",
+   "value": "verify.run17.log: 814 passed, 0 failed"
+  },
+  {
+   "component": "HLA association",
+   "item": "Cohorts, comparisons",
+   "value": "3 cohorts × 4 comparisons, as the manifest"
+  },
+  {
+   "component": "HLA association",
+   "item": "Supplementary run",
+   "value": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/tmp/hla_dvtno_given57v (without DVT, given DQB1 57 V; the pipeline scripts run unchanged outside the component)"
+  },
+  {
+   "component": "HLA typing",
+   "item": "Component folder",
+   "value": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2"
+  },
+  {
+   "component": "HLA typing",
+   "item": "Association matrices",
+   "value": "md5 of the 6 matrices equal to the typing summary of 2026-10-21 23:14"
+  },
+  {
+   "component": "HLA typing",
+   "item": "Verification",
+   "value": "its verify.sh, run read-only by this pipeline: 76 checks ok, 0 failed"
+  },
+  {
+   "component": "HLA typing deck",
+   "item": "Deck",
+   "value": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/deck/hla_typing.pptx, saved 2026-10-23 11:41, md5 d479a8de16d3cafb54171474a884676a"
+  },
+  {
+   "component": "HLA association deck",
+   "item": "Deck",
+   "value": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/tmp/ppt/hla_assoc/hla_assoc.pptx, saved 2026-10-28 17:42, md5 bdea84ef341288f72c1664551211ff94"
+  }
+ ],
+ "files": [
+  {
+   "sheets": "T1",
+   "role": "per genome: inputs and HLA read pairs",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/00.inputs/sample_inputs.tsv",
+   "modified": "2026-10-19 15:57",
+   "md5": "2227b373f56769ed65cdf7108a246642"
+  },
+  {
+   "sheets": "T1",
+   "role": "typing run: versions and settings",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/00.inputs/provenance.json",
+   "modified": "2026-10-19 15:57",
+   "md5": "b7acf213d21d560288b416265c3be74b"
+  },
+  {
+   "sheets": "T3",
+   "role": "raw HLA-HD calls",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/01.calls/calls_long.tsv",
+   "modified": "2026-10-19 16:09",
+   "md5": "ce21b8738caaa030ddb8c0db96af2443"
+  },
+  {
+   "sheets": "T2",
+   "role": "DRB3/4/5 reconciliation",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/01.calls/drb_reconciliation.tsv",
+   "modified": "2026-10-19 16:09",
+   "md5": "2a75e97260540e04f4bc8e8a8f31c49e"
+  },
+  {
+   "sheets": "T1, T3",
+   "role": "read evidence and confidence per call",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/02.evidence/call_evidence.tsv",
+   "modified": "2026-10-19 16:09",
+   "md5": "403ce4d8cc958f96b66b5340b4bdac72"
+  },
+  {
+   "sheets": "T2",
+   "role": "DRB3/4/5 against DRB1",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/02.evidence/drb_consistency.tsv",
+   "modified": "2026-10-19 16:09",
+   "md5": "4f04030f633016b80cb9457a7205c058"
+  },
+  {
+   "sheets": "T3",
+   "role": "per gene summary",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/02.evidence/gene_summary.tsv",
+   "modified": "2026-10-19 16:09",
+   "md5": "4ab45418c752484c4ed56f4cd2679119"
+  },
+  {
+   "sheets": "T1",
+   "role": "sample outliers",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/02.evidence/sample_qc.tsv",
+   "modified": "2026-10-19 16:09",
+   "md5": "4fced5dcaa42d9917b679d08ddd15f37"
+  },
+  {
+   "sheets": "T4, T6, T7, A10",
+   "role": "allele frequencies against the panels",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/03.panels/allele_concordance.tsv",
+   "modified": "2026-10-20 21:51",
+   "md5": "f580b5e2b27b82d8465643b1a7d9d707"
+  },
+  {
+   "sheets": "T4",
+   "role": "absent from ToMMo by confidence",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/03.panels/confidence_vs_panel.tsv",
+   "modified": "2026-10-20 21:51",
+   "md5": "f57ace9e61c99f756c41924e58e27e48"
+  },
+  {
+   "sheets": "T4",
+   "role": "homozygosity and dropout",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/03.panels/homozygosity.tsv",
+   "modified": "2026-10-20 21:51",
+   "md5": "7a5465c44f1fc6fc1b37903634c69a5d"
+  },
+  {
+   "sheets": "T4",
+   "role": "per gene and panel",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/03.panels/locus_concordance.tsv",
+   "modified": "2026-10-20 21:51",
+   "md5": "13e9fa107b8bf11307bf9ecb1732417d"
+  },
+  {
+   "sheets": "T4",
+   "role": "shift direction",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/03.panels/shift_direction.tsv",
+   "modified": "2026-10-20 21:51",
+   "md5": "94769ce60d9fe1ece3f435d90635a31d"
+  },
+  {
+   "sheets": "T4",
+   "role": "alleles absent from ToMMo",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/03.panels/unconfirmed_alleles.tsv",
+   "modified": "2026-10-20 21:51",
+   "md5": "676224838e8094e839a608e0f6e6cd45"
+  },
+  {
+   "sheets": "T3",
+   "role": "locus tiers",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/04.confidence/locus_tiers.tsv",
+   "modified": "2026-10-20 21:51",
+   "md5": "93d88c05344eda19ccbe367cad7825bc"
+  },
+  {
+   "sheets": "T7, A7, A10",
+   "role": "allele copies, every genome",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/05.exports/allele_dosage.tsv",
+   "modified": "2026-10-21 22:45",
+   "md5": "f17d8071b874e7dd2d604b43b6c27571"
+  },
+  {
+   "sheets": "T8",
+   "role": "residue copies, every genome",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/05.exports/residue_dosage.tsv",
+   "modified": "2026-10-21 22:45",
+   "md5": "de8eabea70da2acc967f95b740f7f910"
+  },
+  {
+   "sheets": "T7, A7, A8",
+   "role": "allele to reference sequence",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/05.exports/allele_match_map.tsv",
+   "modified": "2026-10-21 22:45",
+   "md5": "883bae8e7ae431d0fd04dcd5898867ff"
+  },
+  {
+   "sheets": "T6, T7",
+   "role": "allele to P group",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/05.exports/allele_pgroup_map.tsv",
+   "modified": "2026-10-21 22:45",
+   "md5": "fee78197cfcda82029da2826c123c6b1"
+  },
+  {
+   "sheets": "T5, T8",
+   "role": "residue positions",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/05.exports/residue_sites.tsv",
+   "modified": "2026-10-21 22:45",
+   "md5": "fef35acb5eccf946b66984dd967ed68c"
+  },
+  {
+   "sheets": "A7, A8, A10",
+   "role": "DQB1 residues per allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/05.exports/residue_reference/DQB1.tsv",
+   "modified": "2026-10-21 22:45",
+   "md5": "b085075c362900b065bb4ebb0b36e433"
+  },
+  {
+   "sheets": "T5, T7, T8",
+   "role": "every column per cohort, with its status",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/06.assoc_inputs/markers.tsv",
+   "modified": "2026-10-21 23:14",
+   "md5": "5b3329a9a136f27d2f8b719718018bcb"
+  },
+  {
+   "sheets": "T5",
+   "role": "stepwise QC record",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/06.assoc_inputs/qc_record.tsv",
+   "modified": "2026-10-21 23:14",
+   "md5": "6149540b0a277cbae7ec464dd1ddb635"
+  },
+  {
+   "sheets": "T5, A1",
+   "role": "typing summary",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/06.assoc_inputs/summary.json",
+   "modified": "2026-10-21 23:14",
+   "md5": "3285849bc2daffe06b5bf50abd1e966e"
+  },
+  {
+   "sheets": "T5, A7, A10",
+   "role": "association matrix, alleles, narrow mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/06.assoc_inputs/narrow_mainland/allele_dosage.tsv",
+   "modified": "2026-10-21 23:14",
+   "md5": "3b68b6556c0deca25f8703b5a4679718"
+  },
+  {
+   "sheets": "T5, A7, A10",
+   "role": "association matrix, residues, narrow mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/06.assoc_inputs/narrow_mainland/residue_dosage.tsv",
+   "modified": "2026-10-21 23:14",
+   "md5": "a05e65385155adebb1c6a456a04a7291"
+  },
+  {
+   "sheets": "T5, A7, A10",
+   "role": "association matrix, alleles, intermediate mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/06.assoc_inputs/intermediate_mainland/allele_dosage.tsv",
+   "modified": "2026-10-21 23:14",
+   "md5": "d85b2ae86b0312ab878b9d1c7ef895cd"
+  },
+  {
+   "sheets": "T5, A7, A10",
+   "role": "association matrix, residues, intermediate mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/06.assoc_inputs/intermediate_mainland/residue_dosage.tsv",
+   "modified": "2026-10-21 23:14",
+   "md5": "dbc7f000343021a3b1b257ce00339c92"
+  },
+  {
+   "sheets": "T5, A7, A10",
+   "role": "association matrix, alleles, full mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/06.assoc_inputs/full_mainland/allele_dosage.tsv",
+   "modified": "2026-10-21 23:14",
+   "md5": "3dd04de546837074b2a39401f2e262ec"
+  },
+  {
+   "sheets": "T5, A7, A10",
+   "role": "association matrix, residues, full mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/results/06.assoc_inputs/full_mainland/residue_dosage.tsv",
+   "modified": "2026-10-21 23:14",
+   "md5": "74ec42b1c67bd67c2fc448354522b0c7"
+  },
+  {
+   "sheets": "T4, A9, A10",
+   "role": "ToMMo 61KJPN allele frequencies",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/jMorp_HLA_types/HLA_allele_frequencies_61K.txt",
+   "modified": "2026-08-26 17:55",
+   "md5": "ce2064cf639ab3a1aeb9ecc8329099b4"
+  },
+  {
+   "sheets": "T4, A10",
+   "role": "1000 Genomes HLA types",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/1KG_HLA_types/20181129_HLA_types_full_1000_Genomes_Project_panel.txt",
+   "modified": "2026-08-25 02:15",
+   "md5": "7256686c53f6e118c6f0969ca3dac03c"
+  },
+  {
+   "sheets": "T6, T7",
+   "role": "P groups (IPD-IMGT/HLA)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/jMorp_HLA_types/hla_nom_p.txt",
+   "modified": "2026-08-26 17:55",
+   "md5": "5b5f5300ac2884eb12f923563a3b1ad2"
+  },
+  {
+   "sheets": "T4, T7",
+   "role": "IPD-IMGT/HLA allele release history",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/hla.typing.v2/assets/imgt/Allelelist_history.txt",
+   "modified": "2026-10-19 15:54",
+   "md5": "1e73c981a01fdacddd4a0d5550b6d1e4"
+  },
+  {
+   "sheets": "A1",
+   "role": "run manifest",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/_run_info/run_manifest.json",
+   "modified": "2026-10-26 13:40",
+   "md5": "0d4f2a8d2bc3f01409110189ea352800"
+  },
+  {
+   "sheets": "A1",
+   "role": "comparisons",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/_reference/case_sets.tsv",
+   "modified": "2026-10-22 19:51",
+   "md5": "0e176c5ac09c220137093d2836fbb84e"
+  },
+  {
+   "sheets": "A4, A8",
+   "role": "stepwise conditioning",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/_conditional/steps_all.tsv",
+   "modified": "2026-10-25 20:58",
+   "md5": "426ba8f2df0cfda7c8cc816e51210a5f"
+  },
+  {
+   "sheets": "A4, A7",
+   "role": "signals",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/_conditional/signals_all.tsv",
+   "modified": "2026-10-25 20:58",
+   "md5": "2e580f31164da2c60a25b14cd8cf72ab"
+  },
+  {
+   "sheets": "A5",
+   "role": "the GWAS lead given HLA markers",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/_conditional/lead_given_hla_all.tsv",
+   "modified": "2026-10-25 20:58",
+   "md5": "fbfaa88a8bda0d89dcade2eb0bc5977c"
+  },
+  {
+   "sheets": "A5, A6",
+   "role": "HLA markers given the GWAS lead",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/_conditional/hla_given_lead_all.tsv",
+   "modified": "2026-10-25 20:58",
+   "md5": "939a3f0ebbfee395b84432c016881d2a"
+  },
+  {
+   "sheets": "A5",
+   "role": "candidate GWAS leads",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/_conditional/gwas_leads.tsv",
+   "modified": "2026-10-22 21:18",
+   "md5": "6b68547c65a1ddb4e8986c8a0d14bb0d"
+  },
+  {
+   "sheets": "A5",
+   "role": "conditional summary",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/_conditional/summary.tsv",
+   "modified": "2026-10-25 20:58",
+   "md5": "53fd72785009876e6d1a40db412e837a"
+  },
+  {
+   "sheets": "A5",
+   "role": "LD of the lead with HLA markers",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/_conditional/ld_lead_hla.tsv",
+   "modified": "2026-10-25 20:58",
+   "md5": "8bb914533bfa5c67731eaec54e51108c"
+  },
+  {
+   "sheets": "A3, A12",
+   "role": "whole positions, stacked",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/_omnibus/omnibus_all.tsv",
+   "modified": "2026-10-25 20:58",
+   "md5": "5d1db94bd6d66ac956af5c309e459221"
+  },
+  {
+   "sheets": "A4",
+   "role": "position walks",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/_omnibus/omnibus_steps_all.tsv",
+   "modified": "2026-10-25 20:58",
+   "md5": "b8c02711590b75bd95681b25fff3ff26"
+  },
+  {
+   "sheets": "A4",
+   "role": "position signals",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/_omnibus/omnibus_signals_all.tsv",
+   "modified": "2026-10-25 20:58",
+   "md5": "d427712f11cf39c95f7994e0d7d6ef2b"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, all, stacked",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/_comparison/assoc_all.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "d9fff3671382810133bfb181b476fb98"
+  },
+  {
+   "sheets": "A4, A5, A6",
+   "role": "positions given a marker, all",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/_omnibus/omnibus_given.residue.tsv",
+   "modified": "2026-10-26 13:41",
+   "md5": "a0a68e27330d74f95c89c51e31396130"
+  },
+  {
+   "sheets": "A4",
+   "role": "position walk, all",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/_omnibus/omnibus_stepwise.residue.tsv",
+   "modified": "2026-10-25 20:05",
+   "md5": "9b14a575ad87f43073141e9dbece44eb"
+  },
+  {
+   "sheets": "A12",
+   "role": "positions, all (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/_omnibus/omnibus.residue.tsv",
+   "modified": "2026-10-25 20:05",
+   "md5": "b158f9a8cb4366e93e503aefc9b51e4a"
+  },
+  {
+   "sheets": "A4",
+   "role": "stepwise scans, all allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/_conditional/random/stepwise.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "010e36eee2fdaa0b5626278b2cc7947e"
+  },
+  {
+   "sheets": "A4",
+   "role": "stepwise scans, all residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/_conditional/random/stepwise.residue.tsv",
+   "modified": "2026-10-23 01:24",
+   "md5": "2904534cbc28b187c9b6ef8a11217c1c"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, all narrow_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/narrow_mainland/01.markers/allele/effective_tests.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "a13ad71f47e6c6ba4a1d51b733d6382a"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, all narrow_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/narrow_mainland/01.markers/allele/maxt_boot.allele.tsv",
+   "modified": "2026-10-23 19:44",
+   "md5": "458ce5913cc49dc3cf8c2d48bb6c48f7"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, all narrow_mainland random allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/narrow_mainland/03.tables/assoc.random.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "41f3d42781deda7d51f1d5494b14754e"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, all narrow_mainland fixed allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/narrow_mainland/03.tables/assoc.fixed.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "a8aaecca9ca8c557a5aec4098155664d"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, all narrow_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/narrow_mainland/01.markers/residue/effective_tests.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "9cacd137f568bcceac313d9af2209441"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, all narrow_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/narrow_mainland/01.markers/residue/maxt_boot.residue.tsv",
+   "modified": "2026-10-23 19:51",
+   "md5": "6e4f5f296f2767352042690b735820cf"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, all narrow_mainland random residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/narrow_mainland/03.tables/assoc.random.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "bd92e56724d4d7fdafd74572823d1569"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, all narrow_mainland fixed residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/narrow_mainland/03.tables/assoc.fixed.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "3577d4cb5390eb00d2e72264451bc5ec"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, all narrow_mainland random",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/narrow_mainland/00.prep/pheno_covar.random.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "98d67fee46f1979ad3f812188f070899"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, all narrow_mainland fixed",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/narrow_mainland/00.prep/pheno_covar.fixed.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "004aeb926f798ade0ad581920349abb2"
+  },
+  {
+   "sheets": "A1",
+   "role": "null model, all narrow_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/narrow_mainland/00.prep/null_model.json",
+   "modified": "2026-10-22 19:51",
+   "md5": "dddeb4ac1b73a14a411008598bc746ca"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotype coding, all narrow_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/narrow_mainland/00.prep/pheno_coding.json",
+   "modified": "2026-10-22 20:00",
+   "md5": "648be0c1b0f0656a493a796c472f2b2c"
+  },
+  {
+   "sheets": "A4, A5, A6, A8",
+   "role": "conditional scans, all narrow_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/narrow_mainland/04.conditional/random/hla_given_signal.tsv",
+   "modified": "2026-10-26 13:41",
+   "md5": "2ff7161a53b82335cadc99031932692b"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, all intermediate_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/intermediate_mainland/01.markers/allele/effective_tests.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "193150778c58b7ecf99ca41c57440acc"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, all intermediate_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/intermediate_mainland/01.markers/allele/maxt_boot.allele.tsv",
+   "modified": "2026-10-23 19:45",
+   "md5": "24519a4e7dd0a42b20253cbc739d1486"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, all intermediate_mainland random allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/intermediate_mainland/03.tables/assoc.random.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "d5067a0be7be30ce8e3dcb1c04c5ef9d"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, all intermediate_mainland fixed allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/intermediate_mainland/03.tables/assoc.fixed.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "9c9f4864ff9d4f7a17a1e00bd53cd853"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, all intermediate_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/intermediate_mainland/01.markers/residue/effective_tests.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "e11e41bdd313ce1c67bb1d85e1fcbd20"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, all intermediate_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/intermediate_mainland/01.markers/residue/maxt_boot.residue.tsv",
+   "modified": "2026-10-23 19:54",
+   "md5": "a9a83c8d04f24830cb2dd14a3f508f03"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, all intermediate_mainland random residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/intermediate_mainland/03.tables/assoc.random.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "7ba3713d8aff9d63ecfd07818ca65fe1"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, all intermediate_mainland fixed residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/intermediate_mainland/03.tables/assoc.fixed.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "57fcae25ca5b07cec24f63cba1704fa6"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, all intermediate_mainland random",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/intermediate_mainland/00.prep/pheno_covar.random.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "3ed37b29751ddc1d21c9be59b20e8b0e"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, all intermediate_mainland fixed",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/intermediate_mainland/00.prep/pheno_covar.fixed.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "36c43ff382e03bc7178523120b6e641b"
+  },
+  {
+   "sheets": "A1",
+   "role": "null model, all intermediate_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/intermediate_mainland/00.prep/null_model.json",
+   "modified": "2026-10-22 19:51",
+   "md5": "9a1986caa31abe10b02efbe591ac2e10"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotype coding, all intermediate_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/intermediate_mainland/00.prep/pheno_coding.json",
+   "modified": "2026-10-22 20:00",
+   "md5": "f5c4a95767d2e6adb66fb707fbcc5b9f"
+  },
+  {
+   "sheets": "A4, A5, A6, A8",
+   "role": "conditional scans, all intermediate_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/intermediate_mainland/04.conditional/random/hla_given_signal.tsv",
+   "modified": "2026-10-26 13:41",
+   "md5": "67a9eee2d6497b21a2c02b10ae5c02e9"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, all full_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/01.markers/allele/effective_tests.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "1e2cbe7fe2502e0d92e16a157461318f"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, all full_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/01.markers/allele/maxt_boot.allele.tsv",
+   "modified": "2026-10-23 19:44",
+   "md5": "69e121fd68cefaafb26c6b0b2a87062f"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, all full_mainland random allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/03.tables/assoc.random.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "1a66d3f759db4571f256cbf7ddf590b4"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, all full_mainland fixed allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/03.tables/assoc.fixed.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "14296c2f567e899cb7c0debf12a812e5"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, all full_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/01.markers/residue/effective_tests.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "2ae7f569532b804b18dcf89a937c8945"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, all full_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/01.markers/residue/maxt_boot.residue.tsv",
+   "modified": "2026-10-23 20:00",
+   "md5": "9c204491a0c471b81769990d918cbdde"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, all full_mainland random residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/03.tables/assoc.random.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "3c0ca9970a0c102dfbcdda234874a700"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, all full_mainland fixed residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/03.tables/assoc.fixed.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "6d5f5f4b820a73222d6fc4dbbbc83302"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, all full_mainland random",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/00.prep/pheno_covar.random.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "ecd504acc376b6ada89773dd4a4329e1"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, all full_mainland fixed",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/00.prep/pheno_covar.fixed.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "62a56ae2fd3b046ed2d979e5ab116017"
+  },
+  {
+   "sheets": "A1",
+   "role": "null model, all full_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/00.prep/null_model.json",
+   "modified": "2026-10-22 19:51",
+   "md5": "14afd14f265d331931d1f3d4f41181aa"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotype coding, all full_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/00.prep/pheno_coding.json",
+   "modified": "2026-10-22 20:00",
+   "md5": "9311b16a8c801ce6edbe994a836f3dce"
+  },
+  {
+   "sheets": "A4, A5, A6, A8",
+   "role": "conditional scans, all full_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/04.conditional/random/hla_given_signal.tsv",
+   "modified": "2026-10-26 13:41",
+   "md5": "870d183b9b23856bbe1668661c69105d"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_yes, stacked",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/_comparison/assoc_all.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "a9c0f79dc1148176225db0a92ad8bd22"
+  },
+  {
+   "sheets": "A4, A5, A6",
+   "role": "positions given a marker, dvt_yes",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/_omnibus/omnibus_given.residue.tsv",
+   "modified": "2026-10-26 13:41",
+   "md5": "c15b886d5b9ebd9ce2bcd563251322d1"
+  },
+  {
+   "sheets": "A4",
+   "role": "position walk, dvt_yes",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/_omnibus/omnibus_stepwise.residue.tsv",
+   "modified": "2026-10-25 20:05",
+   "md5": "77769f68dfb148054385307360333600"
+  },
+  {
+   "sheets": "A12",
+   "role": "positions, dvt_yes (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/_omnibus/omnibus.residue.tsv",
+   "modified": "2026-10-25 20:05",
+   "md5": "f1bdf85ae6468256d8bc7e92e0f6ed0c"
+  },
+  {
+   "sheets": "A4",
+   "role": "stepwise scans, dvt_yes allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/_conditional/random/stepwise.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "3214e3aade2de193050829128d2938d8"
+  },
+  {
+   "sheets": "A4",
+   "role": "stepwise scans, dvt_yes residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/_conditional/random/stepwise.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "fa5cd070b8a5fa46c3266b89a8205456"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, dvt_yes narrow_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/narrow_mainland/01.markers/allele/effective_tests.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "2d8123af5eb5e8d38c395601ac507197"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, dvt_yes narrow_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/narrow_mainland/01.markers/allele/maxt_boot.allele.tsv",
+   "modified": "2026-10-23 19:53",
+   "md5": "5ed53b96914de8c0536d2a975269aa49"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_yes narrow_mainland random allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/narrow_mainland/03.tables/assoc.random.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "5583b23fc1438f92e7647ed9d302441c"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_yes narrow_mainland fixed allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/narrow_mainland/03.tables/assoc.fixed.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "f2ba8de25fb9fd20d8a58bbe6ec98257"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, dvt_yes narrow_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/narrow_mainland/01.markers/residue/effective_tests.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "578962d653c328ca184113fa1c330f68"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, dvt_yes narrow_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/narrow_mainland/01.markers/residue/maxt_boot.residue.tsv",
+   "modified": "2026-10-23 19:52",
+   "md5": "358cf51897d98e1c9b5bc7596518343d"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_yes narrow_mainland random residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/narrow_mainland/03.tables/assoc.random.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "d54d52acec7d0684aaa6064fe24f0a36"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_yes narrow_mainland fixed residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/narrow_mainland/03.tables/assoc.fixed.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "1527348479812d7d8b281a4112d57a4d"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, dvt_yes narrow_mainland random",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/narrow_mainland/00.prep/pheno_covar.random.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "a995a6c1525b78ad6eeeff9fbca6b30c"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, dvt_yes narrow_mainland fixed",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/narrow_mainland/00.prep/pheno_covar.fixed.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "ca1551e825f5d3dc30fa32b469a3fa0e"
+  },
+  {
+   "sheets": "A1",
+   "role": "null model, dvt_yes narrow_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/narrow_mainland/00.prep/null_model.json",
+   "modified": "2026-10-22 20:30",
+   "md5": "497d7d55c46997994715382167751838"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotype coding, dvt_yes narrow_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/narrow_mainland/00.prep/pheno_coding.json",
+   "modified": "2026-10-22 20:00",
+   "md5": "d39e6b6f2d017a34298d2ec859ad5750"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, dvt_yes intermediate_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/intermediate_mainland/01.markers/allele/effective_tests.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "0bfa1985174329adb6776bc18ace1ed2"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, dvt_yes intermediate_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/intermediate_mainland/01.markers/allele/maxt_boot.allele.tsv",
+   "modified": "2026-10-23 19:50",
+   "md5": "7f34c54ddfdc9f64843f5e5390c39bf9"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_yes intermediate_mainland random allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/intermediate_mainland/03.tables/assoc.random.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "e145feab110a1b094e9c14ef66d50318"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_yes intermediate_mainland fixed allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/intermediate_mainland/03.tables/assoc.fixed.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "6512827c823cb428c073895fe591422b"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, dvt_yes intermediate_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/intermediate_mainland/01.markers/residue/effective_tests.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "cf2263cdd28f17237ba8f51cdf58b926"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, dvt_yes intermediate_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/intermediate_mainland/01.markers/residue/maxt_boot.residue.tsv",
+   "modified": "2026-10-23 20:00",
+   "md5": "16579ce07b8670e88e665728b8ae1d36"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_yes intermediate_mainland random residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/intermediate_mainland/03.tables/assoc.random.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "8162b2d0dd7abf5dee41c27e820b6f2d"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_yes intermediate_mainland fixed residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/intermediate_mainland/03.tables/assoc.fixed.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "8709f2d09d497bc1fd892d75fe146714"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, dvt_yes intermediate_mainland random",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/intermediate_mainland/00.prep/pheno_covar.random.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "74b9c2989171eba4f98ed905113382cc"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, dvt_yes intermediate_mainland fixed",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/intermediate_mainland/00.prep/pheno_covar.fixed.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "17c41916f1d2505dc28ab4831ad90027"
+  },
+  {
+   "sheets": "A1",
+   "role": "null model, dvt_yes intermediate_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/intermediate_mainland/00.prep/null_model.json",
+   "modified": "2026-10-22 20:34",
+   "md5": "27179df2f0c11a735b379543a6ea07fb"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotype coding, dvt_yes intermediate_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/intermediate_mainland/00.prep/pheno_coding.json",
+   "modified": "2026-10-22 20:00",
+   "md5": "406b55d11e962adad51d0bc98cdf301a"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, dvt_yes full_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/full_mainland/01.markers/allele/effective_tests.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "6d5334316e5193ab12f7dbb9f4e6ca02"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, dvt_yes full_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/full_mainland/01.markers/allele/maxt_boot.allele.tsv",
+   "modified": "2026-10-23 19:52",
+   "md5": "f39bdf715e9fd096f7c38ecd1e00a946"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_yes full_mainland random allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/full_mainland/03.tables/assoc.random.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "b2ccb73c053ac409caac9738db6e85f8"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_yes full_mainland fixed allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/full_mainland/03.tables/assoc.fixed.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "1335b1bb42f7b8a7a863d6d2e837d526"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, dvt_yes full_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/full_mainland/01.markers/residue/effective_tests.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "9c57facc16c3dab364d7dd891464c856"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, dvt_yes full_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/full_mainland/01.markers/residue/maxt_boot.residue.tsv",
+   "modified": "2026-10-23 20:08",
+   "md5": "8569fa1b21d00d378fb52454114e8310"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_yes full_mainland random residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/full_mainland/03.tables/assoc.random.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "fc07beff25c5e103d3bfa9d0a6aaf358"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_yes full_mainland fixed residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/full_mainland/03.tables/assoc.fixed.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "9caa04b61a15a36da6411610bee8c168"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, dvt_yes full_mainland random",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/full_mainland/00.prep/pheno_covar.random.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "e297f5ec39348d98c5aec9492273988a"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, dvt_yes full_mainland fixed",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/full_mainland/00.prep/pheno_covar.fixed.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "5123c32c57b4f5e9a90d3500fc73d83d"
+  },
+  {
+   "sheets": "A1",
+   "role": "null model, dvt_yes full_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/full_mainland/00.prep/null_model.json",
+   "modified": "2026-10-22 20:49",
+   "md5": "7b7fa7f90482ede363fa22034230cfa4"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotype coding, dvt_yes full_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_yes/full_mainland/00.prep/pheno_coding.json",
+   "modified": "2026-10-22 20:00",
+   "md5": "cc182e2c7425459ba6af1fb10b0ab603"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_no, stacked",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/_comparison/assoc_all.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "d968889a607ba434e451c87631fcc42a"
+  },
+  {
+   "sheets": "A4, A5, A6",
+   "role": "positions given a marker, dvt_no",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/_omnibus/omnibus_given.residue.tsv",
+   "modified": "2026-10-26 13:41",
+   "md5": "b39c0def62f3c7e01f75d8291dcc5779"
+  },
+  {
+   "sheets": "A4",
+   "role": "position walk, dvt_no",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/_omnibus/omnibus_stepwise.residue.tsv",
+   "modified": "2026-10-25 20:05",
+   "md5": "7f510b06cd8f743fbc067383873d107f"
+  },
+  {
+   "sheets": "A12",
+   "role": "positions, dvt_no (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/_omnibus/omnibus.residue.tsv",
+   "modified": "2026-10-25 20:05",
+   "md5": "7017fab0e6bd98b885cd0c8b279974a9"
+  },
+  {
+   "sheets": "A4",
+   "role": "stepwise scans, dvt_no allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/_conditional/random/stepwise.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "508fd8000fbd21e2d612b41635e7f9c1"
+  },
+  {
+   "sheets": "A4",
+   "role": "stepwise scans, dvt_no residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/_conditional/random/stepwise.residue.tsv",
+   "modified": "2026-10-23 01:24",
+   "md5": "fc100525879f29dd282678a7fe861788"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, dvt_no narrow_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/narrow_mainland/01.markers/allele/effective_tests.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "1d73fc6ee9dad8a75e21fac24a16a5e1"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, dvt_no narrow_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/narrow_mainland/01.markers/allele/maxt_boot.allele.tsv",
+   "modified": "2026-10-23 19:42",
+   "md5": "877894a19fe73a54845ebccf5a4a4be5"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_no narrow_mainland random allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/narrow_mainland/03.tables/assoc.random.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "dd1309b8ca8bf1887e93c756b6a721db"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_no narrow_mainland fixed allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/narrow_mainland/03.tables/assoc.fixed.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "d1e78ce3882686ab6fd43ac6b3c6d472"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, dvt_no narrow_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/narrow_mainland/01.markers/residue/effective_tests.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "fabfabdf1f082de1229bb57193878ee3"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, dvt_no narrow_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/narrow_mainland/01.markers/residue/maxt_boot.residue.tsv",
+   "modified": "2026-10-23 19:52",
+   "md5": "1f0938ef6a626d17ee1c5e63b6063756"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_no narrow_mainland random residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/narrow_mainland/03.tables/assoc.random.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "4c42af274326ff25e34f6b0a2f2f5f30"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_no narrow_mainland fixed residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/narrow_mainland/03.tables/assoc.fixed.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "0aa74a38be7218b067e54b6b72288625"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, dvt_no narrow_mainland random",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/narrow_mainland/00.prep/pheno_covar.random.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "4b250a888e8fc9e63dbb6bb7f7c27201"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, dvt_no narrow_mainland fixed",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/narrow_mainland/00.prep/pheno_covar.fixed.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "838626c5b225dec7db3edc0029e488cb"
+  },
+  {
+   "sheets": "A1",
+   "role": "null model, dvt_no narrow_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/narrow_mainland/00.prep/null_model.json",
+   "modified": "2026-10-22 20:32",
+   "md5": "96c5193add6bf8ef6acf2af3539c9007"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotype coding, dvt_no narrow_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/narrow_mainland/00.prep/pheno_coding.json",
+   "modified": "2026-10-22 20:00",
+   "md5": "2ad189aeb6732d2ec840bfaa06866b0d"
+  },
+  {
+   "sheets": "A4, A5, A6, A8",
+   "role": "conditional scans, dvt_no narrow_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/narrow_mainland/04.conditional/random/hla_given_signal.tsv",
+   "modified": "2026-10-26 13:41",
+   "md5": "ee2e9c93ac16a65eaedec792a7782456"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, dvt_no intermediate_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/intermediate_mainland/01.markers/allele/effective_tests.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "4d8e2b8ab03ba7b842ed05d1b5da5b8b"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, dvt_no intermediate_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/intermediate_mainland/01.markers/allele/maxt_boot.allele.tsv",
+   "modified": "2026-10-23 19:51",
+   "md5": "5babf7d6c67ccd9e220a19cc7b4cc479"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_no intermediate_mainland random allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/intermediate_mainland/03.tables/assoc.random.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "bf8b2984525d0d8776396873f0297819"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_no intermediate_mainland fixed allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/intermediate_mainland/03.tables/assoc.fixed.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "4b19f3068301a6c2888556df173ebcb0"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, dvt_no intermediate_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/intermediate_mainland/01.markers/residue/effective_tests.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "5da0fcb335ea4ee38a56f414cb76af4b"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, dvt_no intermediate_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/intermediate_mainland/01.markers/residue/maxt_boot.residue.tsv",
+   "modified": "2026-10-23 19:55",
+   "md5": "0e3b3ad8b4704740b3f363e5249bd46d"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_no intermediate_mainland random residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/intermediate_mainland/03.tables/assoc.random.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "25d5b9d28469f19748935ac916b1e7d0"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_no intermediate_mainland fixed residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/intermediate_mainland/03.tables/assoc.fixed.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "1a2d28fb524da56d9c60830254e75b6a"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, dvt_no intermediate_mainland random",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/intermediate_mainland/00.prep/pheno_covar.random.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "9b6bf03944ad545eceae5b51880035fc"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, dvt_no intermediate_mainland fixed",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/intermediate_mainland/00.prep/pheno_covar.fixed.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "29dc6a7b5f2971f33ea4e24b509fa3c6"
+  },
+  {
+   "sheets": "A1",
+   "role": "null model, dvt_no intermediate_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/intermediate_mainland/00.prep/null_model.json",
+   "modified": "2026-10-22 20:36",
+   "md5": "5f252195094fd10e30408e3f2c9ed4dd"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotype coding, dvt_no intermediate_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/intermediate_mainland/00.prep/pheno_coding.json",
+   "modified": "2026-10-22 20:00",
+   "md5": "99f8dc05c66448dbaec632a53fe498c1"
+  },
+  {
+   "sheets": "A4, A5, A6, A8",
+   "role": "conditional scans, dvt_no intermediate_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/intermediate_mainland/04.conditional/random/hla_given_signal.tsv",
+   "modified": "2026-10-26 13:41",
+   "md5": "63db254b4645d258a0b5275742d7b2f9"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, dvt_no full_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/full_mainland/01.markers/allele/effective_tests.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "31ffe2b7a9618954b1b20e123e0c944b"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, dvt_no full_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/full_mainland/01.markers/allele/maxt_boot.allele.tsv",
+   "modified": "2026-10-23 19:45",
+   "md5": "225679c8181e8d218b9f8ebc7aa04961"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_no full_mainland random allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/full_mainland/03.tables/assoc.random.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "fa59e852556d20f08fe3e01711124549"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_no full_mainland fixed allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/full_mainland/03.tables/assoc.fixed.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "744d7f8c791d11ea2489b68856f9c6cc"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, dvt_no full_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/full_mainland/01.markers/residue/effective_tests.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "d7bf904fc6cde7a4d8fff1f3f7d3558f"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, dvt_no full_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/full_mainland/01.markers/residue/maxt_boot.residue.tsv",
+   "modified": "2026-10-23 20:00",
+   "md5": "0735b8e8cc01685ac2d5973ba6321239"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_no full_mainland random residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/full_mainland/03.tables/assoc.random.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "a80f6d571da194ef29c5d57b003ff33d"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_no full_mainland fixed residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/full_mainland/03.tables/assoc.fixed.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "552066e411852ae9eff3eb3c2aa2febb"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, dvt_no full_mainland random",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/full_mainland/00.prep/pheno_covar.random.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "f7a4d768e0f95cca3cfe8b848951cc1e"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, dvt_no full_mainland fixed",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/full_mainland/00.prep/pheno_covar.fixed.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "61f3fa3bc45e4f617db755fc53ec0606"
+  },
+  {
+   "sheets": "A1",
+   "role": "null model, dvt_no full_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/full_mainland/00.prep/null_model.json",
+   "modified": "2026-10-22 21:16",
+   "md5": "024bb99e969e751a4ac49c8e7c9a5b5a"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotype coding, dvt_no full_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/full_mainland/00.prep/pheno_coding.json",
+   "modified": "2026-10-22 20:00",
+   "md5": "a779231ae00877a05b940f0b85f3a2f9"
+  },
+  {
+   "sheets": "A4, A5, A6, A8",
+   "role": "conditional scans, dvt_no full_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_no/full_mainland/04.conditional/random/hla_given_signal.tsv",
+   "modified": "2026-10-26 13:41",
+   "md5": "07318b886deda26e6f184db905794b7e"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_case_only, stacked",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/_comparison/assoc_all.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "c45fbd38346a2cb89927f75fc820467a"
+  },
+  {
+   "sheets": "A4, A5, A6",
+   "role": "positions given a marker, dvt_case_only",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/_omnibus/omnibus_given.residue.tsv",
+   "modified": "2026-10-26 13:40",
+   "md5": "5777dc29e108c2accd7073e0920cb0fe"
+  },
+  {
+   "sheets": "A4",
+   "role": "position walk, dvt_case_only",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/_omnibus/omnibus_stepwise.residue.tsv",
+   "modified": "2026-10-25 20:05",
+   "md5": "d016511fb87b14f06b587be70c2da140"
+  },
+  {
+   "sheets": "A12",
+   "role": "positions, dvt_case_only (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/_omnibus/omnibus.residue.tsv",
+   "modified": "2026-10-25 20:05",
+   "md5": "2c7ec17154e9df12869ae32a7508b03c"
+  },
+  {
+   "sheets": "A4",
+   "role": "stepwise scans, dvt_case_only allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/_conditional/random/stepwise.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "9fe553d0a1ba4cad06f31639bf2b1b82"
+  },
+  {
+   "sheets": "A4",
+   "role": "stepwise scans, dvt_case_only residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/_conditional/random/stepwise.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "e2d69772f4891b2ee83ed62d936eb8b2"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, dvt_case_only narrow_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/narrow_mainland/01.markers/allele/effective_tests.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "615491b2f25a28553eb8955a9b5c97ad"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, dvt_case_only narrow_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/narrow_mainland/01.markers/allele/maxt_boot.allele.tsv",
+   "modified": "2026-10-23 19:43",
+   "md5": "1015dbefb7f68971a601c16a63faaf2d"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_case_only narrow_mainland random allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/narrow_mainland/03.tables/assoc.random.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "e99f9093adcbd8960a4f2705e2cd87a4"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_case_only narrow_mainland fixed allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/narrow_mainland/03.tables/assoc.fixed.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "fda58b8bc0eb309c9709871b20dd0b6b"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, dvt_case_only narrow_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/narrow_mainland/01.markers/residue/effective_tests.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "782d3c3f116d820975d7684a1dab6558"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, dvt_case_only narrow_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/narrow_mainland/01.markers/residue/maxt_boot.residue.tsv",
+   "modified": "2026-10-23 19:40",
+   "md5": "4dfc83ea0665bdce3c420ae0fc79e598"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_case_only narrow_mainland random residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/narrow_mainland/03.tables/assoc.random.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "1d0a9bae4d377b29806c1fcc49139e5b"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_case_only narrow_mainland fixed residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/narrow_mainland/03.tables/assoc.fixed.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "0e475867f6403e29da176c395e98627c"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, dvt_case_only narrow_mainland random",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/narrow_mainland/00.prep/pheno_covar.random.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "ee0fb5e063b2f724d85aa5496aa8703d"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, dvt_case_only narrow_mainland fixed",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/narrow_mainland/00.prep/pheno_covar.fixed.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "ee0fb5e063b2f724d85aa5496aa8703d"
+  },
+  {
+   "sheets": "A1",
+   "role": "null model, dvt_case_only narrow_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/narrow_mainland/00.prep/null_model.json",
+   "modified": "2026-10-22 20:04",
+   "md5": "5539589b6a7e997f11b0caacb4fb5543"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotype coding, dvt_case_only narrow_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/narrow_mainland/00.prep/pheno_coding.json",
+   "modified": "2026-10-22 20:00",
+   "md5": "7d86cbb90db7c058f754942c54701c67"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, dvt_case_only intermediate_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/intermediate_mainland/01.markers/allele/effective_tests.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "a8b3802208df513b40158cf7f740ccfa"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, dvt_case_only intermediate_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/intermediate_mainland/01.markers/allele/maxt_boot.allele.tsv",
+   "modified": "2026-10-23 19:38",
+   "md5": "b5a85758e50929b69c940d9a48969640"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_case_only intermediate_mainland random allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/intermediate_mainland/03.tables/assoc.random.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "d1733fa7a925fa26bbad85f0f3f6a315"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_case_only intermediate_mainland fixed allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/intermediate_mainland/03.tables/assoc.fixed.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "e409f9ef71701abf30cc72d1da88b481"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, dvt_case_only intermediate_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/intermediate_mainland/01.markers/residue/effective_tests.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "b59046f20529f3216066f7b07047186f"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, dvt_case_only intermediate_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/intermediate_mainland/01.markers/residue/maxt_boot.residue.tsv",
+   "modified": "2026-10-23 19:40",
+   "md5": "d6a7ba2ccfc7a7c544e0019d6cfce13e"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_case_only intermediate_mainland random residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/intermediate_mainland/03.tables/assoc.random.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "6c00a1264da5e338c785f9224dbefd17"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_case_only intermediate_mainland fixed residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/intermediate_mainland/03.tables/assoc.fixed.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "a42da1041f8bafd31e1cdfe43ddd1117"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, dvt_case_only intermediate_mainland random",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/intermediate_mainland/00.prep/pheno_covar.random.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "43f0da38945dcd207ef1b0a9c64dd888"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, dvt_case_only intermediate_mainland fixed",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/intermediate_mainland/00.prep/pheno_covar.fixed.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "43f0da38945dcd207ef1b0a9c64dd888"
+  },
+  {
+   "sheets": "A1",
+   "role": "null model, dvt_case_only intermediate_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/intermediate_mainland/00.prep/null_model.json",
+   "modified": "2026-10-22 20:04",
+   "md5": "5bda8c8fd64da8529e3dd84953f39075"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotype coding, dvt_case_only intermediate_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/intermediate_mainland/00.prep/pheno_coding.json",
+   "modified": "2026-10-22 20:00",
+   "md5": "673066f5d20f8fa9b4719b0b9c1691c4"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, dvt_case_only full_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/full_mainland/01.markers/allele/effective_tests.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "07ea42d2b5de09f43ff275435364b9e0"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, dvt_case_only full_mainland allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/full_mainland/01.markers/allele/maxt_boot.allele.tsv",
+   "modified": "2026-10-23 19:38",
+   "md5": "61d12828a0ade8954da692af407879d9"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_case_only full_mainland random allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/full_mainland/03.tables/assoc.random.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "2388392f60a38572dee58dc0a7fcc859"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_case_only full_mainland fixed allele (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/full_mainland/03.tables/assoc.fixed.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "38e69b01df8df79fc961478d5dade2cd"
+  },
+  {
+   "sheets": "A2",
+   "role": "thresholds, dvt_case_only full_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/full_mainland/01.markers/residue/effective_tests.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "aa5561433ede4004b6cd8288e3c8d6ce"
+  },
+  {
+   "sheets": "A2",
+   "role": "exact max-T, dvt_case_only full_mainland residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/full_mainland/01.markers/residue/maxt_boot.residue.tsv",
+   "modified": "2026-10-23 19:45",
+   "md5": "0ff374707a24e6336688ed2b24cd572b"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_case_only full_mainland random residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/full_mainland/03.tables/assoc.random.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "bd639ea9296ce9cc7fa9cd8cf8c39536"
+  },
+  {
+   "sheets": "A11",
+   "role": "single markers, dvt_case_only full_mainland fixed residue (recheck)",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/full_mainland/03.tables/assoc.fixed.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "1d6590d04da006d7fec81b23227df39b"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, dvt_case_only full_mainland random",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/full_mainland/00.prep/pheno_covar.random.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "afb7974c1eda264e93ff76aef3d2d427"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotypes, dvt_case_only full_mainland fixed",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/full_mainland/00.prep/pheno_covar.fixed.tsv",
+   "modified": "2026-10-22 20:00",
+   "md5": "afb7974c1eda264e93ff76aef3d2d427"
+  },
+  {
+   "sheets": "A1",
+   "role": "null model, dvt_case_only full_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/full_mainland/00.prep/null_model.json",
+   "modified": "2026-10-22 20:05",
+   "md5": "f2b808994bd89bf4eba96d5911b86490"
+  },
+  {
+   "sheets": "A1",
+   "role": "phenotype coding, dvt_case_only full_mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/dvt_case_only/full_mainland/00.prep/pheno_coding.json",
+   "modified": "2026-10-22 20:00",
+   "md5": "4d928a76dae3ea43d6e982882be4f53b"
+  },
+  {
+   "sheets": "A2",
+   "role": "GEC recomputation, allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/01.markers/allele/tests.allele.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "deda41f0219a12238993afa7184a4750"
+  },
+  {
+   "sheets": "A2",
+   "role": "GEC recomputation, allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/01.markers/allele/allele.bed",
+   "modified": "2026-10-22 20:00",
+   "md5": "6ceff05cdc2d4f98e4a8af482388746c"
+  },
+  {
+   "sheets": "A2",
+   "role": "GEC recomputation, allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/01.markers/allele/allele.bim",
+   "modified": "2026-10-22 20:00",
+   "md5": "09c1e2563203389ee0bc61db365aab72"
+  },
+  {
+   "sheets": "A2",
+   "role": "GEC recomputation, allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/01.markers/allele/allele.fam",
+   "modified": "2026-10-22 20:00",
+   "md5": "9a8202d46bcf737c12d36dcaec19ef37"
+  },
+  {
+   "sheets": "A2",
+   "role": "GEC recomputation, allele",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/01.markers/allele/gec.allele.block.txt",
+   "modified": "2026-10-23 01:23",
+   "md5": "b0bc4f10fad5da73aa4d91243eb74fd8"
+  },
+  {
+   "sheets": "A2",
+   "role": "GEC recomputation, residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/01.markers/residue/tests.residue.tsv",
+   "modified": "2026-10-23 01:23",
+   "md5": "291dd11758602a9789e13ef2ef46cf41"
+  },
+  {
+   "sheets": "A2",
+   "role": "GEC recomputation, residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/01.markers/residue/residue.bed",
+   "modified": "2026-10-22 20:00",
+   "md5": "562ae44ef8c3dd2036f3694df79ab95f"
+  },
+  {
+   "sheets": "A2",
+   "role": "GEC recomputation, residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/01.markers/residue/residue.bim",
+   "modified": "2026-10-22 20:00",
+   "md5": "40d080fa36397bc23e039195f9af97ac"
+  },
+  {
+   "sheets": "A2",
+   "role": "GEC recomputation, residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/01.markers/residue/residue.fam",
+   "modified": "2026-10-22 20:00",
+   "md5": "9a8202d46bcf737c12d36dcaec19ef37"
+  },
+  {
+   "sheets": "A2",
+   "role": "GEC recomputation, residue",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/01.markers/residue/gec.residue.block.txt",
+   "modified": "2026-10-23 01:23",
+   "md5": "b87f77bd112917f704d161ee18b4a8a5"
+  },
+  {
+   "sheets": "A2",
+   "role": "GEC recomputation, unrelated samples",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_hla.v2/results/all/full_mainland/00.prep/fixed.keep",
+   "modified": "2026-10-22 20:00",
+   "md5": "8b68d9123593190a249c0a10e0db4d9d"
+  },
+  {
+   "sheets": "A8",
+   "role": "without DVT given DQB1 57 V: positions",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/tmp/hla_dvtno_given57v/omnibus/omnibus_given.residue.tsv",
+   "modified": "2026-10-27 18:15",
+   "md5": "db7ab35edda2560d16a7a8c027c59e69"
+  },
+  {
+   "sheets": "A8",
+   "role": "without DVT given DQB1 57 V: markers, narrow mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/tmp/hla_dvtno_given57v/narrow_mainland/hla_given_signal.tsv",
+   "modified": "2026-10-27 18:14",
+   "md5": "27d30e2d6e9dbc244daf50a775386d9f"
+  },
+  {
+   "sheets": "A8",
+   "role": "without DVT given DQB1 57 V: markers, intermediate mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/tmp/hla_dvtno_given57v/intermediate_mainland/hla_given_signal.tsv",
+   "modified": "2026-10-27 18:14",
+   "md5": "481df01b142e86693dd7aa011acb46f6"
+  },
+  {
+   "sheets": "A8",
+   "role": "without DVT given DQB1 57 V: markers, full mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/tmp/hla_dvtno_given57v/full_mainland/hla_given_signal.tsv",
+   "modified": "2026-10-27 18:15",
+   "md5": "cf0e73dd4e431bbb703308cefde4bde5"
+  },
+  {
+   "sheets": "A6",
+   "role": "genome-wide scan, narrow mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_saige/results/narrow_mainland/01.assoc/main/sumstats.tsv",
+   "modified": "2026-08-19 20:11",
+   "md5": "3e323b177af5b4c70ac6ab37721a01c8"
+  },
+  {
+   "sheets": "A1",
+   "role": "GRM markers, narrow mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_saige/results/narrow_mainland/00.prep/grm.prune.in",
+   "modified": "2026-08-24 01:24",
+   "md5": "f14c18f2f96f72db761fbd02c2c99927"
+  },
+  {
+   "sheets": "A6",
+   "role": "genome-wide scan, intermediate mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_saige/results/intermediate_mainland/01.assoc/main/sumstats.tsv",
+   "modified": "2026-08-19 20:11",
+   "md5": "2e1972439d06a8686ee83276d4666400"
+  },
+  {
+   "sheets": "A1",
+   "role": "GRM markers, intermediate mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_saige/results/intermediate_mainland/00.prep/grm.prune.in",
+   "modified": "2026-08-24 01:24",
+   "md5": "eaa0698651246f2e087eefd6ca0bf300"
+  },
+  {
+   "sheets": "A6",
+   "role": "genome-wide scan, full mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_saige/results/full_mainland/01.assoc/main/sumstats.tsv",
+   "modified": "2026-08-19 20:11",
+   "md5": "8ebea237bec3490819ad6c46c0f0fa7e"
+  },
+  {
+   "sheets": "A1",
+   "role": "GRM markers, full mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/analysis/assoc_saige/results/full_mainland/00.prep/grm.prune.in",
+   "modified": "2026-08-24 01:24",
+   "md5": "ade1eb274c55799dfa6960310c8b39c2"
+  },
+  {
+   "sheets": "T1, A10",
+   "role": "sequencing platform per genome",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/tmp/cram.v6/cram.v6.summary.csv",
+   "modified": "2026-07-16 11:48",
+   "md5": "52adf99682c8aba44f499c9d2120d7a9"
+  },
+  {
+   "sheets": "A1, A9",
+   "role": "model inputs (sex, DVT history), narrow mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/wgs.auto.par/results/12_model_inputs/narrow_mainland/phenotype/pheno.tsv",
+   "modified": "2026-08-26 01:52",
+   "md5": "39c245259ca3ac95558309eecbbf0dd0"
+  },
+  {
+   "sheets": "A1, A9",
+   "role": "model inputs (sex, DVT history), intermediate mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/wgs.auto.par/results/12_model_inputs/intermediate_mainland/phenotype/pheno.tsv",
+   "modified": "2026-08-26 01:52",
+   "md5": "6c06b682a04adf605f7b02741d5d7353"
+  },
+  {
+   "sheets": "A1, A9",
+   "role": "model inputs (sex, DVT history), full mainland",
+   "path": "/LARGE0/gr10478/b37974/Pulmonary_Hypertension/cteph_agp3k.v6/wgs.auto.par/results/12_model_inputs/full_mainland/phenotype/pheno.tsv",
+   "modified": "2026-08-26 01:52",
+   "md5": "93943bd29d1f876714f9e21d9ae4949d"
+  }
+ ]
+}
