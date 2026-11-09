@@ -51,6 +51,10 @@ Evidence: `check/down_sampling/observed_depth_audit/` (audit + figure + README).
 The audit derives the implied read length from `L_assumed = L_real × Observed/CRAM`
 and finds ~150 bp for T7 against its true 100 bp, ~150 bp elsewhere.
 
+*2026-10-30: `check/down_sampling` was deleted and rebuilt as `check/platform_depth`. The audit's
+table is kept in `check/platform_depth/docs/REMOVED_down_sampling.md`; read length and depth are
+re-measured for every cohort genome in `check/platform_depth/results/01.depth`.*
+
 ---
 
 ## Edit 3 — 2026-08-24 · rebuild `Cram_Path` from the current CRAM directories
@@ -110,6 +114,12 @@ That pipeline is not affected today because it reads its own `cram_info` CSV rat
 workbook. A future consumer reading `Cram_Path` directly needs `samtools -X`, its own index
 map, or `.crai` symlinks placed alongside. Recorded here rather than worked around, because
 the path convention is the deliberate choice: the two directories above are the authority.
+
+*2026-10-30: that pipeline has been deleted; `check/platform_depth` resolves each `Cram_Path` to the
+real file and its index. The 72 full-mainland `AGP3K` links into
+`/LARGE0/gr10478/pub/WGS/cram4temporary/BBJ_AGP3K` no longer resolve (that directory is gone); the
+same CRAMs are in `/LARGE1/gr10478/pub/WGS/cram/Control_BBJ/`, without `.crai`, and their indexes are
+in `hla.typing/results/00.manifest/crai/`. The workbook itself is unchanged.*
 
 ---
 
